@@ -20,7 +20,6 @@ async function bootstrap() {
     origin: frontend_url ?? 'http://localhost:5173',
   });
 
-
   await app.listen(port ?? 3000);
 }
 bootstrap();
