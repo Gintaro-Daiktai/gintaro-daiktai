@@ -1,6 +1,6 @@
 FROM node:lts-alpine
 
-WORKDIR /backend
+WORKDIR /frontend
 
 COPY package.json ./
 
@@ -9,6 +9,6 @@ RUN npm install
 COPY * .
 RUN npm run build
 
-EXPOSE 3000
-
+EXPOSE 5173
+ 
 CMD ["node", "dist/main"]
