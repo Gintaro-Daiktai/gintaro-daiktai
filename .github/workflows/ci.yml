@@ -33,11 +33,11 @@ jobs:
         working-directory: ${{ matrix.project }}
         run: npm ci
 
+      - name: Build project
+        working-directory: ${{ matrix.project }}
+        run: npm run build
+
       - name: Run tests
         if: matrix.project == 'server'
         working-directory: server
         run: npm test
-
-      - name: Build project
-        working-directory: ${{ matrix.project }}
-        run: npm run build
