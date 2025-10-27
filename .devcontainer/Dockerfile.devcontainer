@@ -1,0 +1,44 @@
+FROM ubuntu:latest
+SHELL ["/bin/bash", "-ec"]
+
+ARG NODE_VERSION=22.17.0
+
+# install nvm via curl & git
+RUN apt update 
+RUN apt install curl -y && apt install git -y
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+
+# set env variables for nvm
+ENV NVM_NODEJS_ORG_MIRROR http://nodejs.org/dist/
+ENV NVM_DIR=/root/.nvm
+
+# install node
+RUN source $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm use $NODE_VERSION
+    
+# set env variables for node
+ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
+# SERVER
+
+# setup package.json
+WORKDIR /app/server
+COPY server/package*.json ./
+
+# install dependencies
+RUN npm install
+
+# CLIENT
+
+# setup package.json
+WORKDIR /app/client
+COPY client/package*.json ./
+
+# install dependencies
+RUN npm install
+
+EXPOSE 3000
+EXPOSE 5173
+ENTRYPOINT echo hello && sleep infinity
