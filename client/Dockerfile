@@ -1,14 +1,21 @@
-FROM node:lts-alpine
+# Build
+FROM node:lts-alpine AS builder
 
-WORKDIR /frontend
+WORKDIR /app
 
 COPY package.json ./
-
 RUN npm install
 
-COPY * .
+COPY . .
 RUN npm run build
 
-EXPOSE 5173
- 
-CMD ["node", "dist/main"]
+# Serve
+FROM nginx:stable-alpine
+
+RUN rm -rf /usr/share/nginx/html/*
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80 
+
+CMD ["nginx", "-g", "daemon off;"]
