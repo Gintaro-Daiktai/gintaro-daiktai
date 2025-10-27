@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react'
-import './App.css'
+import { useState, useEffect } from "react";
+import "./App.css";
 
 interface User {
-  name: string,
-  id: string
+  name: string;
+  id: string;
 }
 
 function App() {
-
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,4 +39,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
