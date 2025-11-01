@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Gavel, User } from "lucide-react";
+import { NavLink } from "react-router";
 
 function Header() {
   return (
@@ -35,11 +36,15 @@ function Header() {
 
         <div className="flex items-center gap-4">
           <Button variant="ghost">
-            <a className="cursor-pointer">Log In</a>
+            <NavLink to={"/login"} className="cursor-pointer">
+              Log In
+            </NavLink>
           </Button>
 
           <Button variant="ghost">
-            <a className="cursor-pointer">Sign Up</a>
+            <NavLink to={"/signup"} className="cursor-pointer">
+              Sign Up
+            </NavLink>
           </Button>
 
           <Button>

@@ -3,7 +3,7 @@ import { Gavel } from "lucide-react";
 export function Footer() {
   return (
     <footer className="border-t bg-muted/30 mt-8">
-      <div className="container py-12 mx-auto">
+      <div className="container py-8 mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-4">
             <div className="flex items-center justify-center gap-2">
