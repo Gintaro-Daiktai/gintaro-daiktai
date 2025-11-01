@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Gavel, User, Heart, Bell } from "lucide-react";
+import { Search, Gavel, User } from "lucide-react";
 
 function Header() {
   return (
