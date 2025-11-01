@@ -1,6 +1,8 @@
 import "./App.css";
 import { Route, Routes } from "react-router";
 import HomePage from "./pages/HomePage";
+import LogInPage from "./pages/LogInPage";
+import SignUpPage from "./pages/SignUpPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
           </ProtectedRoute>
         }
       ></Route>
+      <Route path="/login" element={<LogInPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
     </Routes>
   );
 }

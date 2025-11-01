@@ -110,9 +110,22 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    font-family: 
   }
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Ensure the app fills the viewport so pages can use min-h-screen / flex layouts
+   and avoid an unwanted scrollbar when content fits the screen. */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
