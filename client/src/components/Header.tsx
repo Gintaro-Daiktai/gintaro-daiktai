@@ -20,16 +20,16 @@ function Header() {
               Browse
             </a>
             <a
-              href="/categories"
+              href="/how-it-works"
               className="text-sm font-medium hover:text-primary transition-colors"
             >
-              Categories
+              Auctions
             </a>
             <a
               href="/how-it-works"
               className="text-sm font-medium hover:text-primary transition-colors"
             >
-              How It Works
+              Lotteries
             </a>
           </nav>
         </div>
@@ -42,19 +42,19 @@ function Header() {
             </div>
           </div>
 
-          <Button variant="ghost" size="icon" className="hidden md:flex">
-            <Heart className="h-5 w-5" />
+          <Button variant="ghost">
+            <a>LogIn</a>
           </Button>
 
-          <Button variant="ghost" size="icon" className="hidden md:flex">
-            <Bell className="h-5 w-5" />
+          <Button variant="ghost">
+            <a>SignUp</a>
           </Button>
+
+          <Button><a>Sell Item</a></Button>
 
           <Button variant="ghost" size="icon">
             <User className="h-5 w-5" />
           </Button>
-
-          <Button>Sell Item</Button>
         </div>
       </div>
     </header>

@@ -2,11 +2,11 @@ import { Gavel } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t bg-muted/30">
+    <footer className="border-t bg-muted/30 mt-8">
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <Gavel className="h-6 w-6 text-primary" />
               <span className="text-xl font-bold">Gintaro Daiktai</span>
             </div>

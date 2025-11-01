@@ -10,7 +10,7 @@ function HomePage() {
       currentBid: 12500,
       endTime: "2h 34m",
       bids: 23,
-      image: "/client/public/vintage-rolex-watch.jpg",
+      image: "./client/public/vintage-rolex-submariner.jpg",
     },
     {
       id: 2,
@@ -119,15 +119,17 @@ function HomePage() {
       <div>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">
-              Featured Auctions
-            </h2>
-            <p className="text-muted-foreground text-sm mt-1">
+            <div className="flex items-center gap-2 mb-1">
+              <h2 className="text-2xl font-bold tracking-tight">
+                Featured Auctions
+              </h2>
+            </div>
+            <p className="text-muted-foreground text-sm">
               Ending soon - don't miss out!
             </p>
           </div>
           <Button variant="ghost" asChild>
-            <a href="/browse">View All</a>
+            <a href="/lottery">View All</a>
           </Button>
         </div>
 
