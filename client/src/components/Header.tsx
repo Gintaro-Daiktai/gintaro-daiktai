@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, Gavel, User } from "lucide-react";
+import { Gavel, User } from "lucide-react";
 
 function Header() {
   return (
@@ -20,13 +19,13 @@ function Header() {
               Browse
             </a>
             <a
-              href="/how-it-works"
+              href="/auctions"
               className="text-sm font-medium hover:text-primary transition-colors"
             >
               Auctions
             </a>
             <a
-              href="/how-it-works"
+              href="/lotteries"
               className="text-sm font-medium hover:text-primary transition-colors"
             >
               Lotteries
@@ -35,24 +34,19 @@ function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="hidden lg:flex items-center gap-2 max-w-md">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="Search auctions..." className="pl-9 w-full" />
-            </div>
-          </div>
-
           <Button variant="ghost">
-            <a>LogIn</a>
+            <a className="cursor-pointer">Log In</a>
           </Button>
 
           <Button variant="ghost">
-            <a>SignUp</a>
+            <a className="cursor-pointer">Sign Up</a>
           </Button>
 
-          <Button><a>Sell Item</a></Button>
+          <Button>
+            <a className="cursor-pointer">Sell Item</a>
+          </Button>
 
-          <Button variant="ghost" size="icon">
+          <Button className="cursor-pointer" variant="ghost" size="icon">
             <User className="h-5 w-5" />
           </Button>
         </div>

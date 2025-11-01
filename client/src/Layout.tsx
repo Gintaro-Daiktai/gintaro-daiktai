@@ -5,8 +5,10 @@ import Footer from "@/components/Footer";
 function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div>
-      <Header />
-      {children}
+      <div className="max-w-[1280px] mx-auto px-4">
+        <Header />
+        {children}
+      </div>
       <Footer />
     </div>
   );
