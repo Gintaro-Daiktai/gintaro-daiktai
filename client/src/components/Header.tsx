@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Gavel, User } from "lucide-react";
+import { User, Warehouse } from "lucide-react";
 import { NavLink } from "react-router";
 
 function Header() {
@@ -8,7 +8,7 @@ function Header() {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
           <a href="/" className="flex items-center gap-2">
-            <Gavel className="h-6 w-6 text-primary" />
+            <Warehouse className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold">Gintaro Daiktai</span>
           </a>
 

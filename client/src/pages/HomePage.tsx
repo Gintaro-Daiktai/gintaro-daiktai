@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Clock } from "lucide-react";
+import { NavLink } from "react-router";
 
 function HomePage() {
   const featuredAuctions = [
@@ -10,7 +11,7 @@ function HomePage() {
       currentBid: 12500,
       endTime: "2h 34m",
       bids: 23,
-      image: "./client/public/vintage-rolex-submariner.jpg",
+      image: "/rolex.jpg",
     },
     {
       id: 2,
@@ -18,7 +19,7 @@ function HomePage() {
       currentBid: 8900,
       endTime: "5h 12m",
       bids: 45,
-      image: "/client/public/original-iphone-sealed.jpg",
+      image: "/iphone.jpg",
     },
     {
       id: 3,
@@ -26,7 +27,7 @@ function HomePage() {
       currentBid: 3200,
       endTime: "1h 45m",
       bids: 67,
-      image: "/client/public/rare-pokemon-cards.jpg",
+      image: "/pokemon_cards.jpg",
     },
     {
       id: 4,
@@ -34,7 +35,7 @@ function HomePage() {
       currentBid: 1850,
       endTime: "8h 20m",
       bids: 12,
-      image: "/client/public/mid-century-modern-chair.jpg",
+      image: "/chair.jpeg",
     },
   ];
 
@@ -46,7 +47,7 @@ function HomePage() {
       totalTickets: 500,
       soldTickets: 342,
       endTime: "3 days",
-      image: "/client/public/macbook-pro-m3.jpg",
+      image: "/macbook.jpg",
       value: 3499,
     },
     {
@@ -56,7 +57,7 @@ function HomePage() {
       totalTickets: 800,
       soldTickets: 623,
       endTime: "5 days",
-      image: "/client/public/ps5-bundle.jpg",
+      image: "/ps5.jpg",
       value: 699,
     },
     {
@@ -66,7 +67,7 @@ function HomePage() {
       totalTickets: 300,
       soldTickets: 187,
       endTime: "2 days",
-      image: "/client/public/designer-watch-collection.jpg",
+      image: "/designer_watches.jpg",
       value: 5200,
     },
   ];
@@ -82,7 +83,7 @@ function HomePage() {
 
   return (
     <div className="flex min-h-screen flex-col gap-8">
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-row gap-8">
         <div className="relative rounded-xl bg-gradient-to-br from-primary/20 via-background to-accent/20 p-12 border border-primary/20">
           <div className="mx-auto max-w-3xl text-center space-y-6">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-balance">
@@ -94,7 +95,7 @@ function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild>
-                <a href="/browse">Start Bidding</a>
+                <NavLink to={"/browse"}>Start Bidding</NavLink>
               </Button>
             </div>
           </div>
@@ -110,7 +111,7 @@ function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild>
-                <a href="/browse">Buy Tickets</a>
+                <NavLink to={"/browse"}>Buy Tickets</NavLink>
               </Button>
             </div>
           </div>
@@ -129,7 +130,7 @@ function HomePage() {
             </p>
           </div>
           <Button variant="ghost" asChild>
-            <a href="/lottery">View All</a>
+            <NavLink to={"/browse"}>View All</NavLink>
           </Button>
         </div>
 
@@ -195,7 +196,7 @@ function HomePage() {
             </p>
           </div>
           <Button variant="ghost" asChild>
-            <a href="/lottery">View All</a>
+            <NavLink to={"/lottery"}>View All</NavLink>
           </Button>
         </div>
 
@@ -281,9 +282,8 @@ function HomePage() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {categories.map((category) => (
-            <a
+            <NavLink to={"/category/" + category.name.toLowerCase()}
               key={category.name}
-              href={`/category/${category.name.toLowerCase()}`}
             >
               <Card className="hover:shadow-md hover:border-primary/50 transition-all cursor-pointer">
                 <CardContent className="p-4 text-center space-y-1">
@@ -293,7 +293,7 @@ function HomePage() {
                   </p>
                 </CardContent>
               </Card>
-            </a>
+            </NavLink>
           ))}
         </div>
       </div>
