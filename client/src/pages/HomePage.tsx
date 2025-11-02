@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Clock } from "lucide-react";
+import { NavLink } from "react-router";
 
 function HomePage() {
   const featuredAuctions = [
@@ -94,7 +95,7 @@ function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild>
-                <a href="/browse">Start Bidding</a>
+                <NavLink to={"/browse"}>Start Bidding</NavLink>
               </Button>
             </div>
           </div>
@@ -110,7 +111,7 @@ function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild>
-                <a href="/browse">Buy Tickets</a>
+                <NavLink to={"/browse"}>Buy Tickets</NavLink>
               </Button>
             </div>
           </div>
@@ -129,7 +130,7 @@ function HomePage() {
             </p>
           </div>
           <Button variant="ghost" asChild>
-            <a href="/lottery">View All</a>
+            <NavLink to={"/browse"}>View All</NavLink>
           </Button>
         </div>
 
@@ -195,7 +196,7 @@ function HomePage() {
             </p>
           </div>
           <Button variant="ghost" asChild>
-            <a href="/lottery">View All</a>
+            <NavLink to={"/lottery"}>View All</NavLink>
           </Button>
         </div>
 
@@ -281,9 +282,8 @@ function HomePage() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {categories.map((category) => (
-            <a
+            <NavLink to={"/category/" + category.name.toLowerCase()}
               key={category.name}
-              href={`/category/${category.name.toLowerCase()}`}
             >
               <Card className="hover:shadow-md hover:border-primary/50 transition-all cursor-pointer">
                 <CardContent className="p-4 text-center space-y-1">
@@ -293,7 +293,7 @@ function HomePage() {
                   </p>
                 </CardContent>
               </Card>
-            </a>
+            </NavLink>
           ))}
         </div>
       </div>
