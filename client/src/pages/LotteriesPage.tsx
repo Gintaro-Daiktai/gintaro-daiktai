@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Clock, Ticket, TrendingUp, Sparkles } from "lucide-react";
+import { Clock, Ticket, TrendingUp, Sparkles, Plus } from "lucide-react";
 
 export default function LotteriesPage() {
   const lotteries = [
@@ -145,18 +145,30 @@ export default function LotteriesPage() {
                 </p>
               </div>
 
-              <Select defaultValue="ending-soon">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ending-soon">Ending Soon</SelectItem>
-                  <SelectItem value="newly-added">Newly Added</SelectItem>
-                  <SelectItem value="price-low">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  <SelectItem value="most-popular">Most Popular</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex gap-3">
+                <Button asChild>
+                  <NavLink to="/lottery/create">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Lottery
+                  </NavLink>
+                </Button>
+                <Select defaultValue="ending-soon">
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ending-soon">Ending Soon</SelectItem>
+                    <SelectItem value="newly-added">Newly Added</SelectItem>
+                    <SelectItem value="price-low">
+                      Price: Low to High
+                    </SelectItem>
+                    <SelectItem value="price-high">
+                      Price: High to Low
+                    </SelectItem>
+                    <SelectItem value="most-popular">Most Popular</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
