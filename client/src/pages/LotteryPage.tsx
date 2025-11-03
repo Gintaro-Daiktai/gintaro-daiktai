@@ -129,6 +129,15 @@ export default function LotteryPage() {
     <div className="flex min-h-screen flex-col">
       <main className="flex-1">
         <div className="container py-4">
+          {/* Breadcrumb */}
+          <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+            <NavLink to="/lotteries" className="hover:text-primary">
+              Lotteries
+            </NavLink>
+            <span>/</span>
+            <span className="text-foreground">{lottery.title}</span>
+          </div>
+
           <div className="mb-4 flex justify-start">
             <Button size="sm" asChild>
               <NavLink to={"/lotteries"}>← Back to Lotteries</NavLink>

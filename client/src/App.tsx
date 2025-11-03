@@ -34,7 +34,7 @@ function App() {
       <Route path="/browse" element={<BrowsePage />} />
       <Route path="/lotteries" element={<LotteriesPage />} />
       <Route path="/lottery/:id" element={<LotteryPage />} />
-      <Route path="/item/:id" element={<ItemPage />} />
+      <Route path="/lottery/:id/item/:id" element={<ItemPage />} />
     </Routes>
   );
 }
