@@ -9,6 +9,9 @@ import DeliveryStatisticsPage from "./pages/DeliveryStatisticsPage";
 import LotteryStatisticsPage from "./pages/LotteryStatisticsPage";
 import UserStatisticsPage from "./pages/UserStatisticsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ItemPage from "./pages/ItemPage";
+import LotteryPage from "./pages/LotteryPage";
+import LotteriesPage from "./pages/LotteriesPage";
 
 function App() {
   return (
@@ -29,6 +32,9 @@ function App() {
       <Route path="/lotterystats" element={<LotteryStatisticsPage />} />
       <Route path="/userstats" element={<UserStatisticsPage />} />
       <Route path="/browse" element={<BrowsePage />} />
+      <Route path="/lotteries" element={<LotteriesPage />} />
+      <Route path="/lottery/:id" element={<LotteryPage />} />
+      <Route path="/item/:id" element={<ItemPage />} />
     </Routes>
   );
 }
