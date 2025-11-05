@@ -40,7 +40,6 @@ function App() {
       <Route path="/lottery/create" element={<CreateLotteryPage />} />
       <Route path="/lottery/:id" element={<LotteryPage />} />
       <Route path="/lottery/:id/item/:id" element={<ItemPage />} />
-      <Route path="/profiles/:userId" element={<ProfilePage />} />
       <Route path="/user/deliveries" element={<UserDeliveriesPage />} />
       <Route path="/delivery/:id" element={<DeliveryPage />} />
     </Routes>
