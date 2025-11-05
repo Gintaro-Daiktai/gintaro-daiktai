@@ -3,6 +3,8 @@ import { User, Warehouse } from "lucide-react";
 import { NavLink } from "react-router";
 
 function Header() {
+  //placeholder for current user id
+  const CURRENT_USER_ID = "1";
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -52,7 +54,12 @@ function Header() {
           </Button>
 
           <Button className="cursor-pointer" variant="ghost" size="icon">
-            <User className="h-5 w-5" />
+            <NavLink
+              to={`/profiles/${CURRENT_USER_ID}`}
+              className="cursor-pointer"
+            >
+              <User className="h-5 w-5" />
+            </NavLink>
           </Button>
         </div>
       </div>
