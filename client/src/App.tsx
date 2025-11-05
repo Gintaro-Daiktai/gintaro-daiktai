@@ -43,6 +43,7 @@ function App() {
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/deliveries" element={<UserDeliveriesPage />} />
       <Route path="/delivery/:id" element={<DeliveryPage />} />
+      <Route path="/profiles/:userId" element={<ProfilePage />} />
     </Routes>
   );
 }
