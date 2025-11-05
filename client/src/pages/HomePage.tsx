@@ -282,7 +282,8 @@ function HomePage() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {categories.map((category) => (
-            <NavLink to={"/category/" + category.name.toLowerCase()}
+            <NavLink
+              to={"/category/" + category.name.toLowerCase()}
               key={category.name}
             >
               <Card className="hover:shadow-md hover:border-primary/50 transition-all cursor-pointer">
