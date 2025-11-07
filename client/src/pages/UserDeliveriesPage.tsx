@@ -5,13 +5,6 @@ import { Package, Truck, CheckCircle, Clock, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { NavLink } from "react-router"
 
-//const UserDeliveriesPage = () => {
-//  return (
-//    <div>
-//      <h1>User Deliveries</h1>
-//    </div>
-//  )
-//}
 
 export default function UserDeliveriesPage() {
   // Mock data for deliveries
@@ -105,6 +98,7 @@ export default function UserDeliveriesPage() {
 
    return (
     <div className="flex min-h-screen flex-col">
+
       <main className="flex-1">
         <div className="container py-12 space-y-8">
           {/* Page Header */}
@@ -163,68 +157,67 @@ export default function UserDeliveriesPage() {
                     const deliveryStatus = getDeliveryStatus(delivery)
 
                     return (
-                      <Card
-                        key={delivery.id}
-                        className="overflow-hidden border-border hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5"
-                      >
-                        <CardContent className="p-0">
-                          <div className="flex flex-col md:flex-row gap-6 p-6">
-                            {/* Item Image */}
-                            <div className="flex-shrink-0">
-                              <img
-                                src={delivery.image || "/placeholder.svg"}
-                                alt={delivery.itemName}
-                                className="w-24 h-24 object-cover rounded-lg"
-                              />
-                            </div>
+                      <NavLink key={delivery.id} to={`/deliveries/${delivery.id}`}>
+                        <Card className="overflow-hidden border-border hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 cursor-pointer">
+                          <CardContent className="p-0">
+                            <div className="flex flex-col md:flex-row gap-6 p-6">
+                              {/* Item Image */}
+                              <div className="flex-shrink-0">
+                                <img
+                                  src={delivery.image || "/placeholder.svg"}
+                                  alt={delivery.itemName}
+                                  className="w-24 h-24 object-cover rounded-lg"
+                                />
+                              </div>
 
-                            {/* Item Details */}
-                            <div className="flex-1 space-y-3">
-                              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
-                                <div className="space-y-2">
-                                  <h3 className="font-semibold text-lg leading-snug">{delivery.itemName}</h3>
-                                  <div className="flex flex-wrap gap-2">
-                                    <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                                      {getWinTypeLabel(delivery.winType)}
-                                    </Badge>
-                                    <Badge className={statusConfig.color}>
-                                      <StatusIcon className="h-3 w-3 mr-1" />
-                                      {statusConfig.label}
-                                    </Badge>
+                              {/* Item Details */}
+                              <div className="flex-1 space-y-3">
+                                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
+                                  <div className="space-y-2">
+                                    <h3 className="font-semibold text-lg leading-snug">{delivery.itemName}</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                      <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                                        {getWinTypeLabel(delivery.winType)}
+                                      </Badge>
+                                      <Badge className={statusConfig.color}>
+                                        <StatusIcon className="h-3 w-3 mr-1" />
+                                        {statusConfig.label}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                                  {/* Win Date and Hosted By */}
+                                  <div className="space-y-1">
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                      <Calendar className="h-3 w-3" />
+                                      Won On
+                                    </p>
+                                    <p className="text-sm font-semibold">
+                                      {new Date(delivery.winDate).toLocaleDateString()} from{" "}
+                                      <span className="text-primary">{delivery.hostedBy}</span>
+                                    </p>
+                                  </div>
+
+                                  {/* Delivery Status */}
+                                  <div className="space-y-1">
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                      <CheckCircle className="h-3 w-3" />
+                                      {deliveryStatus.label}
+                                    </p>
+                                    <p className={`text-sm font-semibold ${deliveryStatus.color}`}>
+                                      {deliveryStatus.date === "Hasn't arrived"
+                                        ? deliveryStatus.date
+                                        : new Date(deliveryStatus.date).toLocaleDateString()}
+                                    </p>
                                   </div>
                                 </div>
                               </div>
-
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                {/* Win Date and Hosted By */}
-                                <div className="space-y-1">
-                                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    Won On
-                                  </p>
-                                  <p className="text-sm font-semibold">
-                                    {new Date(delivery.winDate).toLocaleDateString()} from{" "}
-                                    <span className="text-primary">{delivery.hostedBy}</span>
-                                  </p>
-                                </div>
-
-                                {/* Delivery Status */}
-                                <div className="space-y-1">
-                                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <CheckCircle className="h-3 w-3" />
-                                    {deliveryStatus.label}
-                                  </p>
-                                  <p className={`text-sm font-semibold ${deliveryStatus.color}`}>
-                                    {deliveryStatus.date === "Hasn't arrived"
-                                      ? deliveryStatus.date
-                                      : new Date(deliveryStatus.date).toLocaleDateString()}
-                                  </p>
-                                </div>
-                              </div>
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                          </CardContent>
+                        </Card>
+                      </NavLink>
                     )
                   })}
                 </div>
@@ -251,66 +244,65 @@ export default function UserDeliveriesPage() {
                     const deliveryStatus = getDeliveryStatus(delivery)
 
                     return (
-                      <Card
-                        key={delivery.id}
-                        className="overflow-hidden border-green-500/30 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5"
-                      >
-                        <CardContent className="p-0">
-                          <div className="flex flex-col md:flex-row gap-6 p-6">
-                            {/* Item Image */}
-                            <div className="flex-shrink-0">
-                              <img
-                                src={delivery.image || "/placeholder.svg"}
-                                alt={delivery.itemName}
-                                className="w-24 h-24 object-cover rounded-lg"
-                              />
-                            </div>
+                      <NavLink key={delivery.id} to={`/deliveries/${delivery.id}`}>
+                        <Card className="overflow-hidden border-green-500/30 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 cursor-pointer">
+                          <CardContent className="p-0">
+                            <div className="flex flex-col md:flex-row gap-6 p-6">
+                              {/* Item Image */}
+                              <div className="flex-shrink-0">
+                                <img
+                                  src={delivery.image || "/placeholder.svg"}
+                                  alt={delivery.itemName}
+                                  className="w-24 h-24 object-cover rounded-lg"
+                                />
+                              </div>
 
-                            {/* Item Details */}
-                            <div className="flex-1 space-y-3">
-                              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
-                                <div className="space-y-2">
-                                  <h3 className="font-semibold text-lg leading-snug">{delivery.itemName}</h3>
-                                  <div className="flex flex-wrap gap-2">
-                                    <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                                      {getWinTypeLabel(delivery.winType)}
-                                    </Badge>
-                                    <Badge className={statusConfig.color}>
-                                      <StatusIcon className="h-3 w-3 mr-1" />
-                                      {statusConfig.label}
-                                    </Badge>
+                              {/* Item Details */}
+                              <div className="flex-1 space-y-3">
+                                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
+                                  <div className="space-y-2">
+                                    <h3 className="font-semibold text-lg leading-snug">{delivery.itemName}</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                      <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                                        {getWinTypeLabel(delivery.winType)}
+                                      </Badge>
+                                      <Badge className={statusConfig.color}>
+                                        <StatusIcon className="h-3 w-3 mr-1" />
+                                        {statusConfig.label}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                                  {/* Win Date and Hosted By */}
+                                  <div className="space-y-1">
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                      <Calendar className="h-3 w-3" />
+                                      Won On
+                                    </p>
+                                    <p className="text-sm font-semibold">
+                                      {new Date(delivery.winDate).toLocaleDateString()} from{" "}
+                                      <span className="text-primary">{delivery.hostedBy}</span>
+                                    </p>
+                                  </div>
+
+                                  {/* Delivery Status */}
+                                  <div className="space-y-1">
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                      <CheckCircle className="h-3 w-3" />
+                                      {deliveryStatus.label}
+                                    </p>
+                                    <p className={`text-sm font-semibold ${deliveryStatus.color}`}>
+                                      {new Date(deliveryStatus.date).toLocaleDateString()}
+                                    </p>
                                   </div>
                                 </div>
                               </div>
-
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                {/* Win Date and Hosted By */}
-                                <div className="space-y-1">
-                                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    Won On
-                                  </p>
-                                  <p className="text-sm font-semibold">
-                                    {new Date(delivery.winDate).toLocaleDateString()} from{" "}
-                                    <span className="text-primary">{delivery.hostedBy}</span>
-                                  </p>
-                                </div>
-
-                                {/* Delivery Status */}
-                                <div className="space-y-1">
-                                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <CheckCircle className="h-3 w-3" />
-                                    {deliveryStatus.label}
-                                  </p>
-                                  <p className={`text-sm font-semibold ${deliveryStatus.color}`}>
-                                    {new Date(deliveryStatus.date).toLocaleDateString()}
-                                  </p>
-                                </div>
-                              </div>
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                          </CardContent>
+                        </Card>
+                      </NavLink>
                     )
                   })}
                 </div>
@@ -334,66 +326,65 @@ export default function UserDeliveriesPage() {
                     const deliveryStatus = getDeliveryStatus(delivery)
 
                     return (
-                      <Card
-                        key={delivery.id}
-                        className="overflow-hidden border-blue-500/30 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5"
-                      >
-                        <CardContent className="p-0">
-                          <div className="flex flex-col md:flex-row gap-6 p-6">
-                            {/* Item Image */}
-                            <div className="flex-shrink-0">
-                              <img
-                                src={delivery.image || "/placeholder.svg"}
-                                alt={delivery.itemName}
-                                className="w-24 h-24 object-cover rounded-lg"
-                              />
-                            </div>
+                      <NavLink key={delivery.id} to={`/deliveries/${delivery.id}`}>
+                        <Card className="overflow-hidden border-blue-500/30 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 cursor-pointer">
+                          <CardContent className="p-0">
+                            <div className="flex flex-col md:flex-row gap-6 p-6">
+                              {/* Item Image */}
+                              <div className="flex-shrink-0">
+                                <img
+                                  src={delivery.image || "/placeholder.svg"}
+                                  alt={delivery.itemName}
+                                  className="w-24 h-24 object-cover rounded-lg"
+                                />
+                              </div>
 
-                            {/* Item Details */}
-                            <div className="flex-1 space-y-3">
-                              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
-                                <div className="space-y-2">
-                                  <h3 className="font-semibold text-lg leading-snug">{delivery.itemName}</h3>
-                                  <div className="flex flex-wrap gap-2">
-                                    <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                                      {getWinTypeLabel(delivery.winType)}
-                                    </Badge>
-                                    <Badge className={statusConfig.color}>
-                                      <StatusIcon className="h-3 w-3 mr-1" />
-                                      {statusConfig.label}
-                                    </Badge>
+                              {/* Item Details */}
+                              <div className="flex-1 space-y-3">
+                                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
+                                  <div className="space-y-2">
+                                    <h3 className="font-semibold text-lg leading-snug">{delivery.itemName}</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                      <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                                        {getWinTypeLabel(delivery.winType)}
+                                      </Badge>
+                                      <Badge className={statusConfig.color}>
+                                        <StatusIcon className="h-3 w-3 mr-1" />
+                                        {statusConfig.label}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                                  {/* Win Date and Hosted By */}
+                                  <div className="space-y-1">
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                      <Calendar className="h-3 w-3" />
+                                      Won On
+                                    </p>
+                                    <p className="text-sm font-semibold">
+                                      {new Date(delivery.winDate).toLocaleDateString()} from{" "}
+                                      <span className="text-primary">{delivery.hostedBy}</span>
+                                    </p>
+                                  </div>
+
+                                  {/* Delivery Status */}
+                                  <div className="space-y-1">
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                      <CheckCircle className="h-3 w-3" />
+                                      {deliveryStatus.label}
+                                    </p>
+                                    <p className={`text-sm font-semibold ${deliveryStatus.color}`}>
+                                      {deliveryStatus.date}
+                                    </p>
                                   </div>
                                 </div>
                               </div>
-
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                {/* Win Date and Hosted By */}
-                                <div className="space-y-1">
-                                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    Won On
-                                  </p>
-                                  <p className="text-sm font-semibold">
-                                    {new Date(delivery.winDate).toLocaleDateString()} from{" "}
-                                    <span className="text-primary">{delivery.hostedBy}</span>
-                                  </p>
-                                </div>
-
-                                {/* Delivery Status */}
-                                <div className="space-y-1">
-                                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <CheckCircle className="h-3 w-3" />
-                                    {deliveryStatus.label}
-                                  </p>
-                                  <p className={`text-sm font-semibold ${deliveryStatus.color}`}>
-                                    {deliveryStatus.date}
-                                  </p>
-                                </div>
-                              </div>
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                          </CardContent>
+                        </Card>
+                      </NavLink>
                     )
                   })}
                 </div>
@@ -417,66 +408,65 @@ export default function UserDeliveriesPage() {
                     const deliveryStatus = getDeliveryStatus(delivery)
 
                     return (
-                      <Card
-                        key={delivery.id}
-                        className="overflow-hidden border-yellow-500/30 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5"
-                      >
-                        <CardContent className="p-0">
-                          <div className="flex flex-col md:flex-row gap-6 p-6">
-                            {/* Item Image */}
-                            <div className="flex-shrink-0">
-                              <img
-                                src={delivery.image || "/placeholder.svg"}
-                                alt={delivery.itemName}
-                                className="w-24 h-24 object-cover rounded-lg"
-                              />
-                            </div>
+                      <NavLink key={delivery.id} to={`/deliveries/${delivery.id}`}>
+                        <Card className="overflow-hidden border-yellow-500/30 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 cursor-pointer">
+                          <CardContent className="p-0">
+                            <div className="flex flex-col md:flex-row gap-6 p-6">
+                              {/* Item Image */}
+                              <div className="flex-shrink-0">
+                                <img
+                                  src={delivery.image || "/placeholder.svg"}
+                                  alt={delivery.itemName}
+                                  className="w-24 h-24 object-cover rounded-lg"
+                                />
+                              </div>
 
-                            {/* Item Details */}
-                            <div className="flex-1 space-y-3">
-                              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
-                                <div className="space-y-2">
-                                  <h3 className="font-semibold text-lg leading-snug">{delivery.itemName}</h3>
-                                  <div className="flex flex-wrap gap-2">
-                                    <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                                      {getWinTypeLabel(delivery.winType)}
-                                    </Badge>
-                                    <Badge className={statusConfig.color}>
-                                      <StatusIcon className="h-3 w-3 mr-1" />
-                                      {statusConfig.label}
-                                    </Badge>
+                              {/* Item Details */}
+                              <div className="flex-1 space-y-3">
+                                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
+                                  <div className="space-y-2">
+                                    <h3 className="font-semibold text-lg leading-snug">{delivery.itemName}</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                      <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                                        {getWinTypeLabel(delivery.winType)}
+                                      </Badge>
+                                      <Badge className={statusConfig.color}>
+                                        <StatusIcon className="h-3 w-3 mr-1" />
+                                        {statusConfig.label}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                                  {/* Win Date and Hosted By */}
+                                  <div className="space-y-1">
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                      <Calendar className="h-3 w-3" />
+                                      Won On
+                                    </p>
+                                    <p className="text-sm font-semibold">
+                                      {new Date(delivery.winDate).toLocaleDateString()} from{" "}
+                                      <span className="text-primary">{delivery.hostedBy}</span>
+                                    </p>
+                                  </div>
+
+                                  {/* Delivery Status */}
+                                  <div className="space-y-1">
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                      <CheckCircle className="h-3 w-3" />
+                                      {deliveryStatus.label}
+                                    </p>
+                                    <p className={`text-sm font-semibold ${deliveryStatus.color}`}>
+                                      {deliveryStatus.date}
+                                    </p>
                                   </div>
                                 </div>
                               </div>
-
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                {/* Win Date and Hosted By */}
-                                <div className="space-y-1">
-                                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    Won On
-                                  </p>
-                                  <p className="text-sm font-semibold">
-                                    {new Date(delivery.winDate).toLocaleDateString()} from{" "}
-                                    <span className="text-primary">{delivery.hostedBy}</span>
-                                  </p>
-                                </div>
-
-                                {/* Delivery Status */}
-                                <div className="space-y-1">
-                                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <CheckCircle className="h-3 w-3" />
-                                    {deliveryStatus.label}
-                                  </p>
-                                  <p className={`text-sm font-semibold ${deliveryStatus.color}`}>
-                                    {deliveryStatus.date}
-                                  </p>
-                                </div>
-                              </div>
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                          </CardContent>
+                        </Card>
+                      </NavLink>
                     )
                   })}
                 </div>
@@ -492,7 +482,7 @@ export default function UserDeliveriesPage() {
           </Tabs>
         </div>
       </main>
-
+      
     </div>
   )
 }
