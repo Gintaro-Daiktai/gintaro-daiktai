@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   Clock,
   Minus,
+  Package,
   Plus,
   Settings,
   Shield,
@@ -43,6 +44,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useParams } from "react-router";
 import { processWithdrawal } from "@/lib/balance";
 import Checkout from "@/components/Checkout";
+import { NavLink } from "react-router"
 
 //placeholder, real one will come from auth
 const CURRENT_USER_ID = "1";
@@ -267,6 +269,15 @@ export default function ProfilePage() {
               </div>
             </div>
 
+              {isOwnProfile && (
+                <NavLink to="/deliveries">
+                  <Button variant="outline">
+                    <Package className="h-4 w-4 mr-2" />
+                    My Deliveries
+                  </Button>
+                </NavLink>
+              )}
+
             {isOwnProfile && (
               <Dialog
                 open={isEditDialogOpen}
@@ -348,12 +359,14 @@ export default function ProfilePage() {
               </Dialog>
             )}
           </div>
-
+          
           {userProfile.description && (
             <p className="text-muted-foreground mt-4 max-w-2xl">
               {userProfile.description}
             </p>
           )}
+          
+
         </div>
       </div>
 
