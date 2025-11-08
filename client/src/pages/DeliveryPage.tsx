@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Package, Truck, CheckCircle, Clock, Calendar, ArrowLeft, Star, Shield, Edit2, AlertCircle } from "lucide-react"
+import { Package, Truck, CheckCircle, Clock, Calendar, ArrowLeft, Star, Shield, Edit2, AlertCircle, MessageSquare } from "lucide-react"
 import { useState } from "react"
 import { EditItemModal } from "@/components/ui/edit-item-modal"
 import { NavLink } from "react-router"
@@ -193,6 +193,13 @@ export default function DeliveryDetailPage({ params }: { params: { id: string } 
               </NavLink>
             </Button>
             <div className="flex gap-2">
+              {/* Message Seller button */}
+              <Button asChild variant="outline" className="gap-2 bg-transparent">
+                <NavLink to={`/messages?userId=${delivery.hostedBy}`}>
+                  <MessageSquare className="h-4 w-4" />
+                  Message Seller
+                </NavLink>
+              </Button>
               <Button asChild variant="outline" className="gap-2 bg-transparent">
                 <NavLink to={`/deliveries/${params.id}/dispute`}>
                   <AlertCircle className="h-4 w-4" />

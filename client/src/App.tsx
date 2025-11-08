@@ -17,6 +17,7 @@ import ProfilePage from "./pages/ProfilePage";
 import UserDeliveriesPage from "./pages/UserDeliveriesPage";
 import DeliveryPage from "./pages/DeliveryPage";
 import DisputeFormPage from "./pages/DisputeFormPage";
+import UserMessagingPage from "./pages/UserMessagingPage";
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
         id: "1"
       }} />} />
       <Route path="/deliveries/:id/dispute" element={<DisputeFormPage params={{id:"1"}} />} />
+      <Route path="/messages" element={<UserMessagingPage searchParams={{ userId: "current-user" }} />}  />
     </Routes>
   );
 }
