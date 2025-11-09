@@ -365,8 +365,6 @@ export default function ProfilePage() {
               {userProfile.description}
             </p>
           )}
-          
-
         </div>
       </div>
 
