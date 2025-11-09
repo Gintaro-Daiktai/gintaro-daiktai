@@ -15,7 +15,7 @@ import {
   Trash2,
   Wallet,
   ChartNoAxesCombined,
-  BookUser
+  BookUser,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -425,7 +425,9 @@ export default function ProfilePage() {
                                   disabled={isDeleting}
                                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 >
-                                  {isDeleting ? "Deleting..." : "Delete Account"}
+                                  {isDeleting
+                                    ? "Deleting..."
+                                    : "Delete Account"}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
@@ -447,7 +449,7 @@ export default function ProfilePage() {
                   </Dialog>
                 )}
               </div>
-              
+
               <div className="flex justify-end gap-3">
                 {isOwnProfile && (
                   <NavLink to="/deliverystats">
@@ -638,7 +640,7 @@ export default function ProfilePage() {
               Lotteries ({userLotteries.length})
             </TabsTrigger>
             <TabsTrigger value="reviews" className="cursor-pointer">
-              Reviews ({userReviews.length})
+              Reviews ({reviews.length})
             </TabsTrigger>
           </TabsList>
 
