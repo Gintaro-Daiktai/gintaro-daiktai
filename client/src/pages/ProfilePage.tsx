@@ -14,6 +14,8 @@ import {
   Ticket,
   Trash2,
   Wallet,
+  ChartNoAxesCombined,
+  BookUser
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -368,7 +370,7 @@ export default function ProfilePage() {
                 {isOwnProfile && (
                   <NavLink to="/deliverystats">
                     <Button className="cursor-pointer" variant="outline">
-                      <Package className="h-4 w-4 mr-2" />
+                      <ChartNoAxesCombined className="h-4 w-4 mr-2" />
                       Delivery statistics
                     </Button>
                   </NavLink>
@@ -377,7 +379,7 @@ export default function ProfilePage() {
                 {isOwnProfile && (
                   <NavLink to="/userstats">
                     <Button className="cursor-pointer" variant="outline">
-                      <Package className="h-4 w-4 mr-2" />
+                      <BookUser className="h-4 w-4 mr-2" />
                       User statistics
                     </Button>
                   </NavLink>
@@ -545,7 +547,7 @@ export default function ProfilePage() {
       )}
 
       <Tabs defaultValue="auctions" className="space-y-6">
-        <div className="flex flex-row gap-6">
+        <div className="flex flex-row">
           <TabsList>
             <TabsTrigger value="auctions" className="cursor-pointer">
               Auctions ({userAuctions.length})
@@ -558,18 +560,18 @@ export default function ProfilePage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsList>
+          <div className="ml-auto">
             <NavLink to="/auctionslist">
-              <TabsTrigger value="auctionslist" className="cursor-pointer">
-                Past Auctions (9)
-              </TabsTrigger>
+              <Button variant="link" className="cursor-pointer">
+                View Past Auctions (9)
+              </Button>
             </NavLink>
             <NavLink to="/lotterieslist">
-              <TabsTrigger value="lotterieslist" className="cursor-pointer">
-                Past Lotteries (5)
-              </TabsTrigger>
+              <Button variant="link" className="cursor-pointer">
+                View Past Lotteries (5)
+              </Button>
             </NavLink>
-          </TabsList>
+          </div>
         </div>
 
         <TabsContent value="auctions" className="space-y-6">
