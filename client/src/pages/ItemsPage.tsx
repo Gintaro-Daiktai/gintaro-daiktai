@@ -1,30 +1,52 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Edit, Clock, Ticket, Gavel, Trash2, Package, Ruler, Weight } from "lucide-react"
-import { useState } from "react"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { NavLink } from "react-router"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Plus,
+  Edit,
+  Clock,
+  Ticket,
+  Gavel,
+  Trash2,
+  Package,
+  Ruler,
+  Weight,
+} from "lucide-react";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { NavLink } from "react-router";
 
 interface Item {
-  id: number
-  title: string
-  description?: string
-  status: "draft" | "active"
-  image: string
-  createdAt: string
-  category?: string
-  condition?: "new" | "used" | "worn" | "broken"
-  estimatedValue?: number
+  id: number;
+  title: string;
+  description?: string;
+  status: "draft" | "active";
+  image: string;
+  createdAt: string;
+  category?: string;
+  condition?: "new" | "used" | "worn" | "broken";
+  estimatedValue?: number;
   dimensions?: {
-    length: number
-    width: number
-    height: number
-  }
-  weight?: number
+    length: number;
+    width: number;
+    height: number;
+  };
+  weight?: number;
 }
 
 export default function MyItemsPage() {
@@ -65,12 +87,12 @@ export default function MyItemsPage() {
       },
       weight: 2.2,
     },
-  ])
+  ]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isDetailViewOpen, setIsDetailViewOpen] = useState(false)
-  const [viewingItem, setViewingItem] = useState<Item | null>(null)
-  const [editingItem, setEditingItem] = useState<Item | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailViewOpen, setIsDetailViewOpen] = useState(false);
+  const [viewingItem, setViewingItem] = useState<Item | null>(null);
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -82,16 +104,16 @@ export default function MyItemsPage() {
     height: "",
     weight: "",
     image: "",
-  })
+  });
 
   const handleViewItem = (item: Item) => {
-    setViewingItem(item)
-    setIsDetailViewOpen(true)
-  }
+    setViewingItem(item);
+    setIsDetailViewOpen(true);
+  };
 
   const handleOpenModal = (item?: Item) => {
     if (item) {
-      setEditingItem(item)
+      setEditingItem(item);
       setFormData({
         title: item.title,
         description: item.description || "",
@@ -103,9 +125,9 @@ export default function MyItemsPage() {
         height: item.dimensions?.height.toString() || "",
         weight: item.weight?.toString() || "",
         image: item.image,
-      })
+      });
     } else {
-      setEditingItem(null)
+      setEditingItem(null);
       setFormData({
         title: "",
         description: "",
@@ -117,10 +139,10 @@ export default function MyItemsPage() {
         height: "",
         weight: "",
         image: "",
-      })
+      });
     }
-    setIsModalOpen(true)
-  }
+    setIsModalOpen(true);
+  };
 
   const handleSaveItem = () => {
     const itemData: Item = {
@@ -129,10 +151,14 @@ export default function MyItemsPage() {
       description: formData.description,
       status: "draft",
       image: formData.image || "/placeholder.svg",
-      createdAt: editingItem ? editingItem.createdAt : new Date().toISOString().split("T")[0],
+      createdAt: editingItem
+        ? editingItem.createdAt
+        : new Date().toISOString().split("T")[0],
       category: formData.category,
       condition: formData.condition,
-      estimatedValue: formData.estimatedValue ? Number.parseFloat(formData.estimatedValue) : undefined,
+      estimatedValue: formData.estimatedValue
+        ? Number.parseFloat(formData.estimatedValue)
+        : undefined,
       dimensions:
         formData.length && formData.width && formData.height
           ? {
@@ -142,22 +168,24 @@ export default function MyItemsPage() {
             }
           : undefined,
       weight: formData.weight ? Number.parseFloat(formData.weight) : undefined,
-    }
+    };
 
     if (editingItem) {
-      setMyItems(myItems.map((item) => (item.id === editingItem.id ? itemData : item)))
+      setMyItems(
+        myItems.map((item) => (item.id === editingItem.id ? itemData : item)),
+      );
     } else {
-      setMyItems([...myItems, itemData])
+      setMyItems([...myItems, itemData]);
     }
 
-    setIsModalOpen(false)
-  }
+    setIsModalOpen(false);
+  };
 
   const handleDeleteItem = (id: number) => {
     if (confirm("Are you sure you want to delete this item?")) {
-      setMyItems(myItems.filter((item) => item.id !== id))
+      setMyItems(myItems.filter((item) => item.id !== id));
     }
-  }
+  };
 
   const myAuctions = [
     {
@@ -168,7 +196,7 @@ export default function MyItemsPage() {
       status: "draft",
       image: "/chair.jpeg",
     },
-  ]
+  ];
 
   const myLotteries = [
     {
@@ -179,7 +207,7 @@ export default function MyItemsPage() {
       status: "draft",
       image: "/macbook.jpg",
     },
-  ]
+  ];
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -187,7 +215,9 @@ export default function MyItemsPage() {
         <div className="border-b bg-muted/30">
           <div className="container py-8">
             <h1 className="text-3xl font-bold tracking-tight">My Items</h1>
-            <p className="text-muted-foreground mt-2">Manage your items, auctions, and lotteries</p>
+            <p className="text-muted-foreground mt-2">
+              Manage your items, auctions, and lotteries
+            </p>
           </div>
         </div>
 
@@ -196,7 +226,10 @@ export default function MyItemsPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-xl">My Items</CardTitle>
-              <Button className="cursor-pointer" onClick={() => handleOpenModal()}>
+              <Button
+                className="cursor-pointer"
+                onClick={() => handleOpenModal()}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Create Item
               </Button>
@@ -213,7 +246,10 @@ export default function MyItemsPage() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {myItems.map((item) => (
-                    <Card key={item.id} className="group overflow-hidden hover:shadow-lg transition-shadow text-left cursor-pointer">
+                    <Card
+                      key={item.id}
+                      className="group overflow-hidden hover:shadow-lg transition-shadow text-left cursor-pointer"
+                    >
                       <div
                         className="relative aspect-[4/3] overflow-hidden bg-muted cursor-pointer"
                         onClick={() => handleViewItem(item)}
@@ -234,12 +270,16 @@ export default function MyItemsPage() {
                         <div className="flex items-center justify-between">
                           <span
                             className={`text-xs px-2 py-1 rounded-full ${
-                              item.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
+                              item.status === "active"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-gray-100 text-gray-700"
                             }`}
                           >
                             {item.status}
                           </span>
-                          <span className="text-xs text-muted-foreground">{item.createdAt}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {item.createdAt}
+                          </span>
                         </div>
                         {item.status === "draft" && (
                           <div className="flex gap-2 pt-2">
@@ -295,36 +335,59 @@ export default function MyItemsPage() {
               ) : (
                 <div className="space-y-4">
                   {myAuctions.map((auction) => (
-                    <div key={auction.id} className="flex items-center gap-4 p-4 border rounded-lg text-left">
+                    <div
+                      key={auction.id}
+                      className="flex items-center gap-4 p-4 border rounded-lg text-left"
+                    >
                       <img
                         src={auction.image || "/placeholder.svg"}
                         alt={auction.title}
                         className="h-20 w-20 object-cover rounded-lg"
                       />
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold truncate">{auction.title}</h3>
+                        <h3 className="font-semibold truncate">
+                          {auction.title}
+                        </h3>
                         <div className="flex items-center gap-4 mt-2 text-sm">
                           <div>
                             <p className="text-muted-foreground">Current Bid</p>
-                            <p className="font-semibold text-primary">${auction.currentBid.toLocaleString()}</p>
+                            <p className="font-semibold text-primary">
+                              ${auction.currentBid.toLocaleString()}
+                            </p>
                           </div>
                           <div className="flex items-center gap-1">
                             <Clock className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-muted-foreground">{auction.endTime}</span>
+                            <span className="text-muted-foreground">
+                              {auction.endTime}
+                            </span>
                           </div>
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-2">
                         <span
                           className={`text-xs px-2 py-1 rounded-full ${
-                            auction.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
+                            auction.status === "active"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-gray-100 text-gray-700"
                           }`}
                         >
                           {auction.status}
                         </span>
-                        <Button size="sm" variant="outline">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="cursor-pointer"
+                        >
                           <Edit className="mr-1 h-3 w-3" />
                           Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-destructive hover:text-destructive cursor-pointer"
+                        >
+                          <Trash2 className="mr-1 h-3 w-3 hover:tex" />
+                          Delete
                         </Button>
                       </div>
                     </div>
@@ -360,17 +423,24 @@ export default function MyItemsPage() {
               ) : (
                 <div className="space-y-4">
                   {myLotteries.map((lottery) => (
-                    <div key={lottery.id} className="flex items-center gap-4 p-4 border rounded-lg text-left">
+                    <div
+                      key={lottery.id}
+                      className="flex items-center gap-4 p-4 border rounded-lg text-left"
+                    >
                       <img
                         src={lottery.image || "/placeholder.svg"}
                         alt={lottery.title}
                         className="h-20 w-20 object-cover rounded-lg"
                       />
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold truncate">{lottery.title}</h3>
+                        <h3 className="font-semibold truncate">
+                          {lottery.title}
+                        </h3>
                         <div className="flex items-center gap-4 mt-2 text-sm">
                           <div>
-                            <p className="text-muted-foreground">Tickets Sold</p>
+                            <p className="text-muted-foreground">
+                              Tickets Sold
+                            </p>
                             <p className="font-semibold">
                               {lottery.ticketsSold} / {lottery.totalTickets}
                             </p>
@@ -379,7 +449,9 @@ export default function MyItemsPage() {
                             <div className="h-2 bg-muted rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-accent"
-                                style={{ width: `${(lottery.ticketsSold / lottery.totalTickets) * 100}%` }}
+                                style={{
+                                  width: `${(lottery.ticketsSold / lottery.totalTickets) * 100}%`,
+                                }}
                               />
                             </div>
                           </div>
@@ -388,7 +460,9 @@ export default function MyItemsPage() {
                       <div className="flex flex-col items-end gap-2">
                         <span
                           className={`text-xs px-2 py-1 rounded-full ${
-                            lottery.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
+                            lottery.status === "active"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-gray-100 text-gray-700"
                           }`}
                         >
                           {lottery.status}
@@ -401,10 +475,25 @@ export default function MyItemsPage() {
                             </NavLink>
                           </Button>
                         ) : (
-                          <Button size="sm" variant="outline" asChild>
-                            <NavLink to={`/lottery/${lottery.id}`}>View</NavLink>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="cursor-pointer"
+                            asChild
+                          >
+                            <NavLink to={`/lottery/${lottery.id}`}>
+                              View
+                            </NavLink>
                           </Button>
                         )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-destructive hover:text-destructive cursor-pointer"
+                        >
+                          <Trash2 className="mr-1 h-3 w-3 hover:tex" />
+                          Delete
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -420,16 +509,22 @@ export default function MyItemsPage() {
           {viewingItem && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-2xl">{viewingItem.title}</DialogTitle>
+                <DialogTitle className="text-2xl">
+                  {viewingItem.title}
+                </DialogTitle>
                 <div className="flex items-center gap-2 pt-2">
                   <span
                     className={`text-xs px-2 py-1 rounded-full ${
-                      viewingItem.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
+                      viewingItem.status === "active"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-100 text-gray-700"
                     }`}
                   >
                     {viewingItem.status}
                   </span>
-                  <span className="text-sm text-muted-foreground">Created: {viewingItem.createdAt}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Created: {viewingItem.createdAt}
+                  </span>
                 </div>
               </DialogHeader>
 
@@ -460,7 +555,9 @@ export default function MyItemsPage() {
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span>Condition</span>
                       </div>
-                      <p className="font-medium capitalize">{viewingItem.condition}</p>
+                      <p className="font-medium capitalize">
+                        {viewingItem.condition}
+                      </p>
                     </div>
                   )}
 
@@ -469,7 +566,9 @@ export default function MyItemsPage() {
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span>Estimated Value</span>
                       </div>
-                      <p className="font-medium text-lg text-primary">${viewingItem.estimatedValue.toLocaleString()}</p>
+                      <p className="font-medium text-lg text-primary">
+                        ${viewingItem.estimatedValue.toLocaleString()}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -478,7 +577,9 @@ export default function MyItemsPage() {
                 {viewingItem.description && (
                   <div className="space-y-2">
                     <h3 className="font-semibold">Description</h3>
-                    <p className="text-muted-foreground leading-relaxed">{viewingItem.description}</p>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {viewingItem.description}
+                    </p>
                   </div>
                 )}
 
@@ -494,7 +595,8 @@ export default function MyItemsPage() {
                             <span>Dimensions (L × W × H)</span>
                           </div>
                           <p className="font-medium">
-                            {viewingItem.dimensions.length}" × {viewingItem.dimensions.width}" ×{" "}
+                            {viewingItem.dimensions.length}" ×{" "}
+                            {viewingItem.dimensions.width}" ×{" "}
                             {viewingItem.dimensions.height}"
                           </p>
                         </div>
@@ -506,7 +608,9 @@ export default function MyItemsPage() {
                             <Weight className="h-4 w-4" />
                             <span>Weight</span>
                           </div>
-                          <p className="font-medium">{viewingItem.weight} lbs</p>
+                          <p className="font-medium">
+                            {viewingItem.weight} lbs
+                          </p>
                         </div>
                       )}
                     </div>
@@ -520,8 +624,8 @@ export default function MyItemsPage() {
                     <Button
                       variant="outline"
                       onClick={() => {
-                        setIsDetailViewOpen(false)
-                        handleOpenModal(viewingItem)
+                        setIsDetailViewOpen(false);
+                        handleOpenModal(viewingItem);
                       }}
                     >
                       <Edit className="mr-2 h-4 w-4" />
@@ -529,18 +633,20 @@ export default function MyItemsPage() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="text-destructive hover:text-destructive bg-transparent"
+                      className="text-destructive hover:text-destructive bg-transparent cursor-pointer"
                       onClick={() => {
-                        handleDeleteItem(viewingItem.id)
-                        setIsDetailViewOpen(false)
+                        handleDeleteItem(viewingItem.id);
+                        setIsDetailViewOpen(false);
                       }}
                     >
-                      <Trash2 className="mr-2 h-4 w-4" />
+                      <Trash2 className="mr-2 h-4 w-4 cursor-pointer" />
                       Delete Item
                     </Button>
                   </>
                 )}
-                <Button onClick={() => setIsDetailViewOpen(false)}>Close</Button>
+                <Button onClick={() => setIsDetailViewOpen(false)}>
+                  Close
+                </Button>
               </div>
             </>
           )}
@@ -551,7 +657,9 @@ export default function MyItemsPage() {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingItem ? "Edit Item" : "Create New Item"}</DialogTitle>
+            <DialogTitle>
+              {editingItem ? "Edit Item" : "Create New Item"}
+            </DialogTitle>
             <DialogDescription>
               {editingItem
                 ? "Update the details of your item."
@@ -566,7 +674,9 @@ export default function MyItemsPage() {
                 id="title"
                 placeholder="e.g., Vintage Rolex Submariner"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
               />
             </div>
 
@@ -577,7 +687,9 @@ export default function MyItemsPage() {
                 placeholder="Detailed description of the item..."
                 rows={4}
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
               />
             </div>
 
@@ -588,7 +700,9 @@ export default function MyItemsPage() {
                   id="category"
                   placeholder="e.g., Watches, Electronics"
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
                 />
               </div>
 
@@ -596,7 +710,9 @@ export default function MyItemsPage() {
                 <Label htmlFor="condition">Condition *</Label>
                 <Select
                   value={formData.condition}
-                  onValueChange={(value: "new" | "used" | "worn" | "broken") => setFormData({ ...formData, condition: value })}
+                  onValueChange={(value: "new" | "used" | "worn" | "broken") =>
+                    setFormData({ ...formData, condition: value })
+                  }
                 >
                   <SelectTrigger id="condition">
                     <SelectValue />
@@ -618,7 +734,9 @@ export default function MyItemsPage() {
                 type="number"
                 placeholder="5000"
                 value={formData.estimatedValue}
-                onChange={(e) => setFormData({ ...formData, estimatedValue: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, estimatedValue: e.target.value })
+                }
               />
             </div>
 
@@ -629,19 +747,25 @@ export default function MyItemsPage() {
                   placeholder="Length"
                   type="number"
                   value={formData.length}
-                  onChange={(e) => setFormData({ ...formData, length: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, length: e.target.value })
+                  }
                 />
                 <Input
                   placeholder="Width"
                   type="number"
                   value={formData.width}
-                  onChange={(e) => setFormData({ ...formData, width: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, width: e.target.value })
+                  }
                 />
                 <Input
                   placeholder="Height"
                   type="number"
                   value={formData.height}
-                  onChange={(e) => setFormData({ ...formData, height: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, height: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -654,7 +778,9 @@ export default function MyItemsPage() {
                 placeholder="2.5"
                 step="0.1"
                 value={formData.weight}
-                onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, weight: e.target.value })
+                }
               />
             </div>
 
@@ -664,7 +790,9 @@ export default function MyItemsPage() {
                 id="image"
                 placeholder="https://example.com/image.jpg or /local-image.jpg"
                 value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, image: e.target.value })
+                }
               />
               {formData.image && (
                 <div className="mt-2 relative aspect-video w-full max-w-xs rounded-lg overflow-hidden border">
@@ -689,5 +817,5 @@ export default function MyItemsPage() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
