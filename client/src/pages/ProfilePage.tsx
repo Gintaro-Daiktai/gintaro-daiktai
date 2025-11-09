@@ -47,6 +47,11 @@ import { useParams } from "react-router";
 import { processWithdrawal } from "@/lib/balance";
 import Checkout from "@/components/Checkout";
 import { NavLink } from "react-router";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 //placeholder, real one will come from auth
 const CURRENT_USER_ID = "1";
@@ -139,6 +144,22 @@ export default function ProfilePage() {
     }
   };
 
+  type EmojiReaction = {
+    emoji: string;
+    count: number;
+    userReacted: boolean;
+  };
+
+  type Review = {
+    id: number;
+    reviewer: string;
+    rating: number;
+    comment: string;
+    date: string;
+    item: string;
+    reactions: EmojiReaction[];
+  };
+
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
     // Handle account deletion logic here
@@ -191,7 +212,7 @@ export default function ProfilePage() {
     },
   ];
 
-  const userReviews = [
+  const [reviews, setReviews] = useState<Review[]>([
     {
       id: 1,
       reviewer: "Sarah M.",
@@ -200,6 +221,11 @@ export default function ProfilePage() {
         "Excellent seller! Item exactly as described and shipped quickly.",
       date: "2 weeks ago",
       item: "Vintage Camera",
+      reactions: [
+        { emoji: "👍", count: 5, userReacted: false },
+        { emoji: "❤️", count: 3, userReacted: false },
+        { emoji: "😊", count: 2, userReacted: false },
+      ],
     },
     {
       id: 2,
@@ -208,6 +234,11 @@ export default function ProfilePage() {
       comment: "Great communication and fast shipping. Highly recommend!",
       date: "1 month ago",
       item: "Collectible Watch",
+      reactions: [
+        { emoji: "👍", count: 8, userReacted: true },
+        { emoji: "❤️", count: 1, userReacted: false },
+        { emoji: "🔥", count: 4, userReacted: false },
+      ],
     },
     {
       id: 3,
@@ -216,8 +247,59 @@ export default function ProfilePage() {
       comment: "Good seller, item was as described. Packaging could be better.",
       date: "2 months ago",
       item: "Vintage Typewriter",
+      reactions: [
+        { emoji: "👍", count: 2, userReacted: false },
+        { emoji: "😊", count: 1, userReacted: false },
+      ],
     },
-  ];
+  ]);
+
+  const availableEmojis = ["👍", "❤️", "😊", "🔥", "👏"];
+
+  const toggleReaction = (reviewId: number, emoji: string) => {
+    setReviews((prevReviews) =>
+      prevReviews.map((review) => {
+        if (review.id !== reviewId) return review;
+
+        const existingReaction = review.reactions.find(
+          (r) => r.emoji === emoji,
+        );
+
+        if (existingReaction) {
+          // Toggle existing reaction
+          return {
+            ...review,
+            reactions: review.reactions
+              .map((r) =>
+                r.emoji === emoji
+                  ? {
+                      ...r,
+                      count: r.userReacted ? r.count - 1 : r.count + 1,
+                      userReacted: !r.userReacted,
+                    }
+                  : r,
+              )
+              .filter((r) => r.count > 0), // Remove reactions with 0 count
+          };
+        } else {
+          // Add new reaction
+          return {
+            ...review,
+            reactions: [
+              ...review.reactions,
+              { emoji, count: 1, userReacted: true },
+            ],
+          };
+        }
+      }),
+    );
+  };
+
+  const deleteReview = (reviewId: number) => {
+    setReviews((prevReviews) =>
+      prevReviews.filter((review) => review.id !== reviewId),
+    );
+  };
 
   return (
     <main className="flex-1">
@@ -713,12 +795,12 @@ export default function ProfilePage() {
         </TabsContent>
 
         <TabsContent value="reviews" className="space-y-6">
-          {userReviews.length > 0 ? (
+          {reviews.length > 0 ? (
             <div className="space-y-4">
-              {userReviews.map((review) => (
+              {reviews.map((review) => (
                 <Card key={review.id}>
-                  <CardContent className="p-6 text-left">
-                    <div className="flex items-start justify-between mb-3">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
                           <AvatarFallback>{review.reviewer[0]}</AvatarFallback>
@@ -730,28 +812,113 @@ export default function ProfilePage() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${
-                              i < review.rating
-                                ? "fill-yellow-500 text-yellow-500"
-                                : "fill-muted text-muted-foreground"
-                            }`}
-                          />
-                        ))}
+                      <div className="flex gap-3">
+                        <div className="flex items-center gap-1">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < review.rating
+                                  ? "fill-yellow-500 text-yellow-500"
+                                  : "fill-muted text-muted-foreground"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Review</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete this review?
+                                This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => deleteReview(review.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
                     <p className="text-muted-foreground mb-2">
                       {review.comment}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground mb-4">
                       Purchase:{" "}
                       <span className="font-medium text-foreground">
                         {review.item}
                       </span>
                     </p>
+
+                    <div className="flex items-center gap-2 pt-3 border-t flex-wrap">
+                      {review.reactions
+                        .filter((reaction) => reaction.count > 0)
+                        .map((reaction) => {
+                          const isActive = reaction.userReacted;
+
+                          return (
+                            <button
+                              key={reaction.emoji}
+                              onClick={() =>
+                                toggleReaction(review.id, reaction.emoji)
+                              }
+                              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-all hover:scale-105 ${
+                                isActive
+                                  ? "bg-primary/20 border-primary/40 border"
+                                  : "bg-muted hover:bg-muted/80 border border-transparent"
+                              }`}
+                            >
+                              <span className="text-base leading-none">
+                                {reaction.emoji}
+                              </span>
+                              <span
+                                className={`text-xs font-medium ${isActive ? "text-primary" : "text-muted-foreground"}`}
+                              >
+                                {reaction.count}
+                              </span>
+                            </button>
+                          );
+                        })}
+
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button className="flex items-center justify-center h-8 w-8 rounded-full bg-muted hover:bg-muted/80 border border-transparent transition-all hover:scale-105">
+                            <Plus className="h-4 w-4 text-muted-foreground" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-2" align="start">
+                          <div className="flex gap-1">
+                            {availableEmojis.map((emoji) => (
+                              <button
+                                key={emoji}
+                                onClick={() => toggleReaction(review.id, emoji)}
+                                className="flex items-center justify-center h-10 w-10 rounded-lg hover:bg-muted transition-colors"
+                              >
+                                <span className="text-xl leading-none">
+                                  {emoji}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
