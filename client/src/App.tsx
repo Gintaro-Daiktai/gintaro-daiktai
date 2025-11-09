@@ -14,13 +14,15 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ItemPage from "./pages/ItemPage";
 import LotteryPage from "./pages/LotteryPage";
 import LotteriesPage from "./pages/LotteriesPage";
-import CreateLotteryPage from "./pages/CreateLotteryPage";
+import LotteryCreationPage from "./pages/LotteryCreationPage";
 import ProfilePage from "./pages/ProfilePage";
 import ReviewPage from "./pages/CreateReviewPage";
 import UserDeliveriesPage from "./pages/UserDeliveriesPage";
 import DeliveryPage from "./pages/DeliveryPage";
 import DisputeFormPage from "./pages/DisputeFormPage";
 import UserMessagingPage from "./pages/UserMessagingPage";
+import MyItemsPage from "./pages/ItemsPage";
+import LotteryEditPage from "./pages/LotteryEditPage";
 import ChargebackPage from "./pages/ChargebackPage";
 
 function App() {
@@ -44,9 +46,11 @@ function App() {
       <Route path="/lotterieslist" element={<LotteriesList />} />
       <Route path="/userstats" element={<UserStatisticsPage />} />
       <Route path="/browse" element={<BrowsePage />} />
+      <Route path="/items" element={<MyItemsPage />} />
       <Route path="/lotteries" element={<LotteriesPage />} />
-      <Route path="/lottery/create" element={<CreateLotteryPage />} />
+      <Route path="/lottery/create" element={<LotteryCreationPage />} />
       <Route path="/lottery/:id" element={<LotteryPage />} />
+      <Route path="/lottery/:id/edit" element={<LotteryEditPage />} />
       <Route path="/lottery/:id/item/:id" element={<ItemPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/profiles/:userId" element={<ProfilePage />} />

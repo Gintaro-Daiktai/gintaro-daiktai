@@ -56,7 +56,9 @@ function Header() {
           </Button>
 
           <Button>
-            <a className="cursor-pointer">Sell Item</a>
+            <NavLink to={"/items"} className="cursor-pointer">
+              My Items
+            </NavLink>
           </Button>
 
           <Button className="cursor-pointer" variant="ghost" size="icon">
