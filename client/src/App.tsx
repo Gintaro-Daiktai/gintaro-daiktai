@@ -18,6 +18,7 @@ import UserDeliveriesPage from "./pages/UserDeliveriesPage";
 import DeliveryPage from "./pages/DeliveryPage";
 import DisputeFormPage from "./pages/DisputeFormPage";
 import UserMessagingPage from "./pages/UserMessagingPage";
+import AuctionsPage from "./pages/AuctionsPage";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/profiles/:userId" element={<ProfilePage />} />
       <Route path="/deliveries" element={<UserDeliveriesPage />} />
+      <Route path="/auctions" element={<AuctionsPage />} />
       <Route path="/deliveries/:id" element={<DeliveryPage params={{
         id: "1"
       }} />} />
