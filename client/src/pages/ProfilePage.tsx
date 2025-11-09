@@ -367,7 +367,7 @@ export default function ProfilePage() {
                   <NavLink to="/deliveries">
                     <Button className="cursor-pointer" variant="outline">
                       <Package className="h-4 w-4 mr-2" />
-                      -liveries
+                      Deliveries
                     </Button>
                   </NavLink>
                 )}
