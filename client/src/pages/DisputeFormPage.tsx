@@ -4,10 +4,22 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Send } from "lucide-react"
 import { useState } from "react"
 import { NavLink } from "react-router"
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { AlertDialogDescription } from "@radix-ui/react-alert-dialog"
+
 
 export default function DisputePage({ params }: { params: { id: string } }) {
   const [reason, setReason] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  
 
   // Mock data for deliveries
   const deliveries = [
@@ -127,24 +139,9 @@ export default function DisputePage({ params }: { params: { id: string } }) {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // TODO: Implement your API call to submit the dispute
-    // Example:
-    // const response = await fetch('/api/disputes', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     itemId: params.id,
-    //     reason: reason,
-    //     itemName: delivery.itemName,
-    //   }),
-    // })
-
-    // For now, simulate submission
-    setTimeout(() => {
-      setIsSubmitting(false)
-      setReason("")
-      // TODO: Show success message or redirect
-    }, 1000)
+    setIsSubmitting(false)
+    setIsConfirmDialogOpen(true)
+    setReason("")
   }
 
   return (
@@ -207,6 +204,7 @@ export default function DisputePage({ params }: { params: { id: string } }) {
                 </form>
               </CardContent>
             </Card>
+            
 
             {/* Info Section */}
             <Card className="border-border/50 bg-muted/30">
@@ -219,6 +217,24 @@ export default function DisputePage({ params }: { params: { id: string } }) {
                 </ul>
               </CardContent>
             </Card>
+            <AlertDialog
+                    open={isConfirmDialogOpen}
+                    onOpenChange={setIsConfirmDialogOpen}
+                  >
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Dispute status:
+                        </AlertDialogTitle>
+                      </AlertDialogHeader>
+                       <AlertDialogDescription>
+                        Dispute created succesfully
+                      </AlertDialogDescription>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Close</AlertDialogCancel>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
           </div>
         </div>
       </main>
