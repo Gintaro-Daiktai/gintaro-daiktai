@@ -5,8 +5,10 @@ import LogInPage from "./pages/LogInPage";
 import SignUpPage from "./pages/SignUpPage";
 import BrowsePage from "./pages/BrowsePage";
 import AuctionStatisticsPage from "./pages/AuctionStatisticsPage";
+import AuctionsList from "./pages/AuctionsList";
 import DeliveryStatisticsPage from "./pages/DeliveryStatisticsPage";
 import LotteryStatisticsPage from "./pages/LotteryStatisticsPage";
+import LotteriesList from "./pages/LotteriesList";
 import UserStatisticsPage from "./pages/UserStatisticsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ItemPage from "./pages/ItemPage";
@@ -36,8 +38,10 @@ function App() {
       <Route path="/login" element={<LogInPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/auctionstats" element={<AuctionStatisticsPage />} />
+      <Route path="/auctionslist" element={<AuctionsList />} />
       <Route path="/deliverystats" element={<DeliveryStatisticsPage />} />
       <Route path="/lotterystats" element={<LotteryStatisticsPage />} />
+      <Route path="/lotterieslist" element={<LotteriesList />} />
       <Route path="/userstats" element={<UserStatisticsPage />} />
       <Route path="/browse" element={<BrowsePage />} />
       <Route path="/lotteries" element={<LotteriesPage />} />
