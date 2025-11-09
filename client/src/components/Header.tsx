@@ -16,12 +16,6 @@ function Header() {
 
           <nav className="hidden md:flex items-center gap-6">
             <NavLink
-              to="/browse"
-              className="text-sm font-medium hover:text-primary transition-colors"
-            >
-              Browse
-            </NavLink>
-            <NavLink
               to="/auctions"
               className="text-sm font-medium hover:text-primary transition-colors"
             >
