@@ -4,10 +4,21 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Send } from "lucide-react"
 import { useState } from "react"
 import { NavLink } from "react-router"
+import * as z from "zod";
+
+const disputeSchema = z.object({
+  reason: z
+    .string()
+    .min(10, "Please provide at least 10 characters explaining the issue")
+    .max(5000, "Reason cannot exceed 5000 characters")
+    .trim(),
+})
 
 export default function DisputePage({ params }: { params: { id: string } }) {
   const [reason, setReason] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  
 
   // Mock data for deliveries
   const deliveries = [
@@ -125,26 +136,21 @@ export default function DisputePage({ params }: { params: { id: string } }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
+
+    const validationResult = disputeSchema.safeParse({
+      reason: reason,
+    })
+
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.issues[0]?.message || "Validation failed"
+      setError(errorMessage)
+      return
+    }
     setIsSubmitting(true)
 
-    // TODO: Implement your API call to submit the dispute
-    // Example:
-    // const response = await fetch('/api/disputes', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     itemId: params.id,
-    //     reason: reason,
-    //     itemName: delivery.itemName,
-    //   }),
-    // })
-
-    // For now, simulate submission
-    setTimeout(() => {
-      setIsSubmitting(false)
-      setReason("")
-      // TODO: Show success message or redirect
-    }, 1000)
+    setIsSubmitting(false)
+    setReason("")
   }
 
   return (
@@ -181,6 +187,11 @@ export default function DisputePage({ params }: { params: { id: string } }) {
             <Card className="border-border">
               <CardContent className="p-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {error && (
+                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                      <p className="text-sm text-destructive">{error}</p>
+                    </div>
+                  )}
                   <div className="space-y-3">
                     <label htmlFor="reason" className="text-sm font-semibold">
                       Explain why you believe you were scammed
@@ -191,8 +202,8 @@ export default function DisputePage({ params }: { params: { id: string } }) {
                       onChange={(e) => setReason(e.target.value)}
                       placeholder="Please provide detailed information about the issue. Include what was promised, what you received, and any relevant details..."
                       className="w-full h-48 p-4 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent"
-                      required
                     />
+                    <div className="text-xs text-muted-foreground text-right">{reason.length} / 5000</div>
                   </div>
 
                   <div className="flex gap-3">
@@ -207,6 +218,7 @@ export default function DisputePage({ params }: { params: { id: string } }) {
                 </form>
               </CardContent>
             </Card>
+            
 
             {/* Info Section */}
             <Card className="border-border/50 bg-muted/30">
