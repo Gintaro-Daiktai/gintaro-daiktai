@@ -293,6 +293,12 @@ export default function ProfilePage() {
     );
   };
 
+  const deleteReview = (reviewId: number) => {
+    setReviews((prevReviews) =>
+      prevReviews.filter((review) => review.id !== reviewId),
+    );
+  };
+
   return (
     <main className="flex-1">
       <div className="border-b bg-muted/30">
@@ -755,7 +761,7 @@ export default function ProfilePage() {
               {reviews.map((review) => (
                 <Card key={review.id}>
                   <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
                           <AvatarFallback>{review.reviewer[0]}</AvatarFallback>
@@ -767,17 +773,48 @@ export default function ProfilePage() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${
-                              i < review.rating
-                                ? "fill-yellow-500 text-yellow-500"
-                                : "fill-muted text-muted-foreground"
-                            }`}
-                          />
-                        ))}
+                      <div className="flex gap-3">
+                        <div className="flex items-center gap-1">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < review.rating
+                                  ? "fill-yellow-500 text-yellow-500"
+                                  : "fill-muted text-muted-foreground"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Review</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete this review?
+                                This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => deleteReview(review.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
                     <p className="text-muted-foreground mb-2">
