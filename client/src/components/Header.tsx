@@ -15,24 +15,30 @@ function Header() {
           </a>
 
           <nav className="hidden md:flex items-center gap-6">
-            <a
-              href="/browse"
+            <NavLink
+              to="/browse"
               className="text-sm font-medium hover:text-primary transition-colors"
             >
               Browse
-            </a>
-            <a
-              href="/auctions"
+            </NavLink>
+            <NavLink
+              to="/auctions"
               className="text-sm font-medium hover:text-primary transition-colors"
             >
               Auctions
-            </a>
-            <a
-              href="/lotteries"
+            </NavLink>
+            <NavLink
+              to="/lotteries"
               className="text-sm font-medium hover:text-primary transition-colors"
             >
               Lotteries
-            </a>
+            </NavLink>
+            <NavLink
+              to="/admin/chargebacks"
+              className="text-sm font-medium hover:text-primary transition-colors"
+            >
+              Chargebacks
+            </NavLink>
           </nav>
         </div>
 
