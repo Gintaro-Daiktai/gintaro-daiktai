@@ -269,6 +269,16 @@ export default function ProfilePage() {
               </div>
             </div>
             <div className="flex gap-3">
+              
+              {isOwnProfile && (
+                <NavLink to="/items">
+                  <Button className="cursor-pointer" variant="outline">
+                    <Package className="h-4 w-4 mr-2" />
+                    My Items
+                  </Button>
+                </NavLink>
+              )}
+
               {isOwnProfile && (
                 <NavLink to="/deliveries">
                   <Button className="cursor-pointer" variant="outline">
@@ -284,7 +294,7 @@ export default function ProfilePage() {
                   onOpenChange={setIsEditDialogOpen}
                 >
                   <DialogTrigger asChild>
-                    <Button variant="outline">
+                    <Button className="cursor-pointer" variant="outline">
                       <Settings className="h-4 w-4 mr-2" />
                       Edit Profile
                     </Button>

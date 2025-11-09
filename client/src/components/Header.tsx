@@ -49,10 +49,6 @@ function Header() {
             </NavLink>
           </Button>
 
-          <Button>
-            <a className="cursor-pointer">Sell Item</a>
-          </Button>
-
           <Button className="cursor-pointer" variant="ghost" size="icon">
             <NavLink
               to={`/profiles/${CURRENT_USER_ID}`}

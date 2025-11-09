@@ -18,6 +18,7 @@ import UserDeliveriesPage from "./pages/UserDeliveriesPage";
 import DeliveryPage from "./pages/DeliveryPage";
 import DisputeFormPage from "./pages/DisputeFormPage";
 import UserMessagingPage from "./pages/UserMessagingPage";
+import ItemsPage from "./pages/ItemsPage";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
       <Route path="/lotterystats" element={<LotteryStatisticsPage />} />
       <Route path="/userstats" element={<UserStatisticsPage />} />
       <Route path="/browse" element={<BrowsePage />} />
+      <Route path="/items" element={<ItemsPage />} />
       <Route path="/lotteries" element={<LotteriesPage />} />
       <Route path="/lottery/create" element={<CreateLotteryPage />} />
       <Route path="/lottery/:id" element={<LotteryPage />} />
