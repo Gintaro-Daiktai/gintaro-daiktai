@@ -166,10 +166,10 @@ export default function ChargebackPage() {
                             className="h-24 w-24 object-cover rounded-lg"
                           />
                           <div className="flex-1">
-                            <p className="text-sm text-muted-foreground mb-1">
+                            <p className="text-left text-sm text-muted-foreground mb-1">
                               Item
                             </p>
-                            <p className="font-semibold mb-2">
+                            <p className="text-left font-semibold mb-2">
                               {chargeback.itemTitle}
                             </p>
                             <div className="flex items-center gap-2">
