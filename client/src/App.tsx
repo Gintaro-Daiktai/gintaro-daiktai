@@ -14,6 +14,7 @@ import LotteryPage from "./pages/LotteryPage";
 import LotteriesPage from "./pages/LotteriesPage";
 import CreateLotteryPage from "./pages/CreateLotteryPage";
 import ProfilePage from "./pages/ProfilePage";
+import ReviewPage from "./pages/CreateReviewPage";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
       <Route path="/lottery/:id" element={<LotteryPage />} />
       <Route path="/lottery/:id/item/:id" element={<ItemPage />} />
       <Route path="/profiles/:userId" element={<ProfilePage />} />
+      <Route path="/review" element={<ReviewPage />} />
     </Routes>
   );
 }
