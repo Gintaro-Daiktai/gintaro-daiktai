@@ -14,6 +14,10 @@ import LotteryPage from "./pages/LotteryPage";
 import LotteriesPage from "./pages/LotteriesPage";
 import CreateLotteryPage from "./pages/CreateLotteryPage";
 import ProfilePage from "./pages/ProfilePage";
+import UserDeliveriesPage from "./pages/UserDeliveriesPage";
+import DeliveryPage from "./pages/DeliveryPage";
+import DisputeFormPage from "./pages/DisputeFormPage";
+import UserMessagingPage from "./pages/UserMessagingPage";
 
 function App() {
   return (
@@ -38,7 +42,14 @@ function App() {
       <Route path="/lottery/create" element={<CreateLotteryPage />} />
       <Route path="/lottery/:id" element={<LotteryPage />} />
       <Route path="/lottery/:id/item/:id" element={<ItemPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
       <Route path="/profiles/:userId" element={<ProfilePage />} />
+      <Route path="/deliveries" element={<UserDeliveriesPage />} />
+      <Route path="/deliveries/:id" element={<DeliveryPage params={{
+        id: "1"
+      }} />} />
+      <Route path="/deliveries/:id/dispute" element={<DisputeFormPage params={{id:"1"}} />} />
+      <Route path="/messages" element={<UserMessagingPage searchParams={{ userId: "current-user" }} />}  />
     </Routes>
   );
 }
