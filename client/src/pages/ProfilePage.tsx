@@ -268,99 +268,121 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-            <div className="flex gap-3">
-              {isOwnProfile && (
-                <NavLink to="/deliveries">
-                  <Button className="cursor-pointer" variant="outline">
-                    <Package className="h-4 w-4 mr-2" />
-                    My Deliveries
-                  </Button>
-                </NavLink>
-              )}
-
-              {isOwnProfile && (
-                <Dialog
-                  open={isEditDialogOpen}
-                  onOpenChange={setIsEditDialogOpen}
-                >
-                  <DialogTrigger asChild>
-                    <Button variant="outline">
-                      <Settings className="h-4 w-4 mr-2" />
-                      Edit Profile
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-end gap-3">
+                {isOwnProfile && (
+                  <NavLink to="/deliveries">
+                    <Button className="cursor-pointer" variant="outline">
+                      <Package className="h-4 w-4 mr-2" />
+                      My Deliveries
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Edit Profile</DialogTitle>
-                      <DialogDescription>
-                        Make changes to your profile here.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form
-                      onSubmit={handleSubmit(onSubmit)}
-                      className="space-y-4"
-                    >
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Name</Label>
-                        <Input id="name" {...register("name")} />
-                        {errors.name && (
-                          <p className="text-sm text-destructive">
-                            {errors.name.message}
-                          </p>
-                        )}
-                      </div>
+                  </NavLink>
+                )}
 
-                      <DialogFooter className="gap-2">
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              className="mr-auto"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete Account
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Are you absolutely sure?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will
-                                permanently delete your account and remove all
-                                your data from our servers.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={handleDeleteAccount}
-                                disabled={isDeleting}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                {isOwnProfile && (
+                  <Dialog
+                    open={isEditDialogOpen}
+                    onOpenChange={setIsEditDialogOpen}
+                  >
+                    <DialogTrigger asChild>
+                      <Button variant="outline">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Edit Profile
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Edit Profile</DialogTitle>
+                        <DialogDescription>
+                          Make changes to your profile here.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        className="space-y-4"
+                      >
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Name</Label>
+                          <Input id="name" {...register("name")} />
+                          {errors.name && (
+                            <p className="text-sm text-destructive">
+                              {errors.name.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <DialogFooter className="gap-2">
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                className="mr-auto"
                               >
-                                {isDeleting ? "Deleting..." : "Delete Account"}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete Account
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Are you absolutely sure?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will
+                                  permanently delete your account and remove all
+                                  your data from our servers.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={handleDeleteAccount}
+                                  disabled={isDeleting}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  {isDeleting ? "Deleting..." : "Delete Account"}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
 
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setIsEditDialogOpen(false)}
-                        >
-                          Cancel
-                        </Button>
-                        <Button type="submit" disabled={isSubmitting}>
-                          {isSubmitting ? "Saving..." : "Save Changes"}
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-              )}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setIsEditDialogOpen(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? "Saving..." : "Save Changes"}
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </div>
+              
+              <div className="flex justify-end gap-3">
+                {isOwnProfile && (
+                  <NavLink to="/deliverystats">
+                    <Button className="cursor-pointer" variant="outline">
+                      <Package className="h-4 w-4 mr-2" />
+                      Delivery statistics
+                    </Button>
+                  </NavLink>
+                )}
+
+                {isOwnProfile && (
+                  <NavLink to="/userstats">
+                    <Button className="cursor-pointer" variant="outline">
+                      <Package className="h-4 w-4 mr-2" />
+                      User statistics
+                    </Button>
+                  </NavLink>
+                )}
+              </div>
             </div>
           </div>
 
@@ -523,17 +545,32 @@ export default function ProfilePage() {
       )}
 
       <Tabs defaultValue="auctions" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="auctions" className="cursor-pointer">
-            Auctions ({userAuctions.length})
-          </TabsTrigger>
-          <TabsTrigger value="lotteries" className="cursor-pointer">
-            Lotteries ({userLotteries.length})
-          </TabsTrigger>
-          <TabsTrigger value="reviews" className="cursor-pointer">
-            Reviews ({userReviews.length})
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex flex-row gap-6">
+          <TabsList>
+            <TabsTrigger value="auctions" className="cursor-pointer">
+              Auctions ({userAuctions.length})
+            </TabsTrigger>
+            <TabsTrigger value="lotteries" className="cursor-pointer">
+              Lotteries ({userLotteries.length})
+            </TabsTrigger>
+            <TabsTrigger value="reviews" className="cursor-pointer">
+              Reviews ({userReviews.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsList>
+            <NavLink to="/auctionslist">
+              <TabsTrigger value="auctionslist" className="cursor-pointer">
+                Past Auctions (9)
+              </TabsTrigger>
+            </NavLink>
+            <NavLink to="/lotterieslist">
+              <TabsTrigger value="lotterieslist" className="cursor-pointer">
+                Past Lotteries (5)
+              </TabsTrigger>
+            </NavLink>
+          </TabsList>
+        </div>
 
         <TabsContent value="auctions" className="space-y-6">
           {userAuctions.length > 0 ? (
