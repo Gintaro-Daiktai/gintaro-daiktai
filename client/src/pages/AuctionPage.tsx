@@ -76,7 +76,7 @@ export default function AuctionPage() {
             <Link to="/">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Auctions
+                Back to Home Page
               </Button>
             </Link>
             <Button variant="destructive" size="sm" onClick={handleDeleteClick}>
