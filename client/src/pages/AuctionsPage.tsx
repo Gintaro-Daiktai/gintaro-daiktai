@@ -111,7 +111,7 @@ export default function AuctionsPage() {
       endTimeMinutes: 4320,
       startDate: "Jan 5, 2025, 8:00 AM",
       endDate: "Jan 15, 2025, 8:00 AM",
-      image: "/chair.jpg",
+      image: "/chair.jpeg",
       status: "active",
     },
     {
