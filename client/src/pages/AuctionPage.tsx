@@ -29,7 +29,7 @@ export default function AuctionPage() {
     title: "MacBook Pro 16-inch M3 Max",
     currentBid: 2450,
     endTime: "2 days 6 hours",
-    image: "/macbook-pro.png",
+    image: "/macbook.jpg",
     bidCount: 45,
     bidHistory: [
       { id: 1, bidder: "User #7892", amount: 2450, time: "2 minutes ago" },

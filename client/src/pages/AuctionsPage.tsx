@@ -36,14 +36,14 @@ export default function AuctionsPage() {
       id: 1,
       name: "Vintage Camera Collection",
       description: "Professional vintage cameras in mint condition",
-      images: ["/professional-camera.png"],
+      images: ["/designer_watches.jpg"],
       category: "electronics",
     },
     {
       id: 2,
       name: "Designer Watch",
       description: "Luxury timepiece with original packaging",
-      images: ["/luxury-watch.jpg"],
+      images: ["/rolex.jpg"],
       category: "fashion",
     },
   ])
@@ -59,7 +59,7 @@ export default function AuctionsPage() {
       endTimeMinutes: 3000,
       startDate: "Jan 2, 2025, 10:00 AM",
       endDate: "Jan 14, 2025, 4:00 PM",
-      image: "/macbook-pro.png",
+      image: "/macbook.jpg",
       status: "active",
     },
     {
@@ -72,7 +72,7 @@ export default function AuctionsPage() {
       endTimeMinutes: 2520,
       startDate: "Jan 3, 2025, 2:00 PM",
       endDate: "Jan 13, 2025, 8:00 PM",
-      image: "/playstation-5-console.png",
+      image: "/ps5.jpg",
       status: "active",
     },
     {
@@ -85,7 +85,7 @@ export default function AuctionsPage() {
       endTimeMinutes: 1080,
       startDate: "Jan 1, 2025, 9:00 AM",
       endDate: "Jan 12, 2025, 3:00 AM",
-      image: "/luxury-watch.jpg",
+      image: "/rolex.jpg",
       status: "ending-soon",
     },
     {
@@ -98,7 +98,7 @@ export default function AuctionsPage() {
       endTimeMinutes: 4320,
       startDate: "Jan 4, 2025, 11:00 AM",
       endDate: "Jan 15, 2025, 11:00 AM",
-      image: "/iphone-smartphone.jpg",
+      image: "/iphone.jpg",
       status: "new",
     },
     {
@@ -111,7 +111,7 @@ export default function AuctionsPage() {
       endTimeMinutes: 4320,
       startDate: "Jan 5, 2025, 8:00 AM",
       endDate: "Jan 15, 2025, 8:00 AM",
-      image: "/office-ergonomic-chair.jpg",
+      image: "/chair.jpg",
       status: "active",
     },
     {
@@ -124,7 +124,7 @@ export default function AuctionsPage() {
       endTimeMinutes: 2880,
       startDate: "Jan 3, 2025, 1:00 PM",
       endDate: "Jan 13, 2025, 1:00 PM",
-      image: "/professional-camera.png",
+      image: "/pokemon_cards.jpg",
       status: "active",
     },
   ]
