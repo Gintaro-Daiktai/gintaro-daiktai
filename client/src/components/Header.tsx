@@ -55,14 +55,14 @@ function Header() {
             </NavLink>
           </Button>
 
-          <Button className="cursor-pointer" variant="ghost" size="icon">
-            <NavLink
-              to={`/profiles/${CURRENT_USER_ID}`}
-              className="cursor-pointer"
-            >
+          <NavLink
+            to={`/profiles/${CURRENT_USER_ID}`}
+            className="cursor-pointer"
+          >
+            <Button className="cursor-pointer" variant="ghost" size="icon">
               <User className="h-5 w-5" />
-            </NavLink>
-          </Button>
+            </Button>
+          </NavLink>
         </div>
       </div>
     </header>

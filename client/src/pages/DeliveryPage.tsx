@@ -11,6 +11,7 @@ import {
   Edit2,
   AlertCircle,
   MessageSquare,
+  MessageCircleHeart,
 } from "lucide-react";
 import { useState } from "react";
 import { EditItemModal } from "@/components/ui/edit-item-modal";
@@ -235,6 +236,16 @@ export default function DeliveryDetailPage({
             </Button>
             <div className="flex gap-2">
               {/* Message Seller button */}
+              <Button
+                asChild
+                variant="outline"
+                className="gap-2 bg-transparent"
+              >
+                <NavLink to={`/review`}>
+                  <MessageCircleHeart className="h-4 w-4" />
+                  Leave a review
+                </NavLink>
+              </Button>
               <Button
                 asChild
                 variant="outline"
