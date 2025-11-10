@@ -47,7 +47,7 @@ export default function AuctionPage() {
   const handleBidConfirmed = () => {
     setConfirmBidOpen(false)
     setBidAmount("")
-    navigate("/")
+    navigate("/auctions")
   }
 
   const handleCancelClick = () => {
@@ -56,7 +56,7 @@ export default function AuctionPage() {
 
   const handleCancelConfirmed = () => {
     setConfirmCancelOpen(false)
-    navigate("/")
+    navigate("/auctions")
   }
 
   const handleDeleteClick = () => {
@@ -76,7 +76,7 @@ export default function AuctionPage() {
             <Link to="/">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Home Page
+                Back to Auctions
               </Button>
             </Link>
             <Button variant="destructive" size="sm" onClick={handleDeleteClick}>
