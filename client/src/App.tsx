@@ -24,6 +24,7 @@ import UserMessagingPage from "./pages/UserMessagingPage";
 import MyItemsPage from "./pages/ItemsPage";
 import LotteryEditPage from "./pages/LotteryEditPage";
 import ChargebackPage from "./pages/ChargebackPage";
+import AuctionsPage from "./pages/AuctionsPage";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
       <Route path="/lotterieslist" element={<LotteriesList />} />
       <Route path="/userstats" element={<UserStatisticsPage />} />
       <Route path="/browse" element={<BrowsePage />} />
+      <Route path="/auctions" element={<AuctionsPage />} />
       <Route path="/items" element={<MyItemsPage />} />
       <Route path="/lotteries" element={<LotteriesPage />} />
       <Route path="/lottery/create" element={<LotteryCreationPage />} />
