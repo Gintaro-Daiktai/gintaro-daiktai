@@ -1,5 +1,4 @@
-"use client"
-
+import { useParams, useNavigate, Link } from "react-router-dom"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -14,15 +13,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Clock, Gavel, User, ArrowLeft, Trash2 } from "lucide-react"
-import { Link, useNavigate } from "react-router-dom"
 
-
-export default function AuctionPage({ }: { params: { id: string } }) {
-  const navigate  = useNavigate()
+export default function AuctionPage() {
+  const { id } = useParams<{ id: string }>()  
+  const navigate = useNavigate()
   const [confirmBidOpen, setConfirmBidOpen] = useState(false)
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false)
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
   const [bidAmount, setBidAmount] = useState("")
+
+  console.log("Auction ID:", id)
 
   const auction = {
     id: 1,
