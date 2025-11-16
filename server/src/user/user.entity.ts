@@ -1,5 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { AddressEntity } from '../address/address.entity';
+import { ItemEntity } from '../item/item.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity {
@@ -45,4 +46,7 @@ export class UserEntity {
 
   @OneToMany(() => AddressEntity, (address) => address.user)
   addresses: AddressEntity[];
+
+  @OneToMany(() => ItemEntity, (item) => item.user)
+  items: ItemEntity[];
 }

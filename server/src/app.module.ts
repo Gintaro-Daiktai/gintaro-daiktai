@@ -6,6 +6,7 @@ import ormconfig from './ormconfig';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AddressModule } from './address/address.module';
+import { ItemModule } from './item/item.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AddressModule } from './address/address.module';
     ConfigModule,
     UserModule,
     AddressModule,
+    ItemModule,
   ],
   controllers: [AppController],
   providers: [AppService],
