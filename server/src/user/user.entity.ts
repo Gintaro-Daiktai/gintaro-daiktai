@@ -1,6 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { AddressEntity } from '../address/address.entity';
 import { ItemEntity } from '../item/item.entity';
+import { LotteryBidEntity } from '../lottery_bid/lottery_bid.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity {
@@ -53,4 +54,7 @@ export class UserEntity {
 
   @OneToMany(() => ItemEntity, (item) => item.user)
   items: ItemEntity[];
+
+  @OneToMany(() => LotteryBidEntity, (lotteryBid) => lotteryBid.user)
+  lotteryBids: LotteryBidEntity[];
 }

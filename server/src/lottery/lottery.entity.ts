@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { LotteryBidEntity } from '../lottery_bid/lottery_bid.entity';
 
 @Entity({ name: 'lottery' })
 export class LotteryEntity {
@@ -20,4 +21,7 @@ export class LotteryEntity {
     nullable: false,
   })
   lottery_status: 'created' | 'started' | 'sold out' | 'cancelled';
+
+  @OneToMany(() => LotteryBidEntity, (lotteryBid) => lotteryBid.lottery)
+  lotteryBids: LotteryBidEntity[];
 }
