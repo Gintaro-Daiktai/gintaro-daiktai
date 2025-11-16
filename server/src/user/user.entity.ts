@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { AddressEntity } from '../address/address.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity {
@@ -41,4 +42,7 @@ export class UserEntity {
 
   @Column({ type: 'varchar', length: 16, nullable: false })
   role: string;
+
+  @OneToMany(() => AddressEntity, (address) => address.user)
+  addresses: AddressEntity[];
 }
