@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { UserEntity } from '../user/user.entity';
+import { ItemTagEntity } from '../item_tag/item_tag.entity';
 
 @Entity({ name: 'item' })
 export class ItemEntity {
@@ -53,4 +55,7 @@ export class ItemEntity {
   @ManyToOne(() => UserEntity, (user) => user.items, { nullable: false })
   @JoinColumn({ name: 'fk_user' })
   user: UserEntity;
+
+  @OneToMany(() => ItemTagEntity, (itemTag) => itemTag.item)
+  itemTags: ItemTagEntity[];
 }
