@@ -11,6 +11,7 @@ import { UserEntity } from '../user/user.entity';
 import { ItemTagEntity } from '../item_tag/item_tag.entity';
 import { ImageEntity } from '../image/image.entity';
 import { AuctionEntity } from '../auction/auction.entity';
+import { ReviewEntity } from '../review/review.entity';
 
 @Entity({ name: 'item' })
 export class ItemEntity {
@@ -67,4 +68,7 @@ export class ItemEntity {
 
   @OneToOne(() => AuctionEntity, (auction) => auction.item)
   auction: AuctionEntity;
+
+  @OneToMany(() => ReviewEntity, (review) => review.item)
+  reviews: ReviewEntity[];
 }

@@ -14,6 +14,7 @@ import { LotteryModule } from './lottery/lottery.module';
 import { LotteryBidModule } from './lottery_bid/lottery_bid.module';
 import { AuctionModule } from './auction/auction.module';
 import { AuctionBidModule } from './auction_bid/auction_bid.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { AuctionBidModule } from './auction_bid/auction_bid.module';
     LotteryBidModule,
     AuctionModule,
     AuctionBidModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],
