@@ -1,5 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { LotteryBidEntity } from '../lottery_bid/lottery_bid.entity';
+import { UserEntity } from '../user/user.entity';
 
 @Entity({ name: 'lottery' })
 export class LotteryEntity {
@@ -21,6 +29,10 @@ export class LotteryEntity {
     nullable: false,
   })
   lottery_status: 'created' | 'started' | 'sold out' | 'cancelled';
+
+  @ManyToOne(() => UserEntity, (user) => user.lotteries, { nullable: false })
+  @JoinColumn({ name: 'fk_user' })
+  user: UserEntity;
 
   @OneToMany(() => LotteryBidEntity, (lotteryBid) => lotteryBid.lottery)
   lotteryBids: LotteryBidEntity[];
