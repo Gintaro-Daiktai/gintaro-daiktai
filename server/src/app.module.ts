@@ -10,6 +10,7 @@ import { ItemModule } from './item/item.module';
 import { TagModule } from './tag/tag.module';
 import { ItemTagModule } from './item_tag/item_tag.module';
 import { ImageModule } from './image/image.module';
+import { LotteryModule } from './lottery/lottery.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ImageModule } from './image/image.module';
     TagModule,
     ItemTagModule,
     ImageModule,
+    LotteryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
