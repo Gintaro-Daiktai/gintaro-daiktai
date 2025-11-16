@@ -40,8 +40,12 @@ export class ItemEntity {
   @Column({ type: 'float8', nullable: true })
   height: number;
 
-  @Column({ type: 'varchar', nullable: false })
-  condition: string;
+  @Column({
+    type: 'enum',
+    enum: ['new', 'used', 'worn', 'broken'],
+    nullable: false,
+  })
+  condition: 'new' | 'used' | 'worn' | 'broken';
 
   @Column({ type: 'int', nullable: true })
   fk_lottery: number;

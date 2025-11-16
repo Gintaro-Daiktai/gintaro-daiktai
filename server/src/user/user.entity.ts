@@ -41,8 +41,12 @@ export class UserEntity {
   @Column({ type: 'bytea', nullable: false })
   avatar: Buffer;
 
-  @Column({ type: 'varchar', length: 16, nullable: false })
-  role: string;
+  @Column({
+    type: 'enum',
+    enum: ['admin', 'client'],
+    nullable: false,
+  })
+  role: 'admin' | 'client';
 
   @OneToMany(() => AddressEntity, (address) => address.user)
   addresses: AddressEntity[];
