@@ -18,6 +18,7 @@ import { ReviewModule } from './review/review.module';
 import { ReviewEmoteModule } from './review_emote/review_emote.module';
 import { DeliveryModule } from './delivery/delivery.module';
 import { MessageModule } from './message/message.module';
+import { ChargebackRequestModule } from './chargeback_request/chargeback_request.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { MessageModule } from './message/message.module';
     ReviewEmoteModule,
     DeliveryModule,
     MessageModule,
+    ChargebackRequestModule,
   ],
   controllers: [AppController],
   providers: [AppService],

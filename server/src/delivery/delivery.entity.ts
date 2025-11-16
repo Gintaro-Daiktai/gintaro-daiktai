@@ -9,6 +9,7 @@ import {
 import { UserEntity } from '../user/user.entity';
 import { ItemEntity } from '../item/item.entity';
 import { MessageEntity } from '../message/message.entity';
+import { ChargebackRequestEntity } from '../chargeback_request/chargeback_request.entity';
 
 @Entity({ name: 'delivery' })
 export class DeliveryEntity {
@@ -47,4 +48,10 @@ export class DeliveryEntity {
 
   @OneToMany(() => MessageEntity, (message) => message.delivery)
   messages: MessageEntity[];
+
+  @OneToMany(
+    () => ChargebackRequestEntity,
+    (chargebackRequest) => chargebackRequest.delivery,
+  )
+  chargebackRequests: ChargebackRequestEntity[];
 }
