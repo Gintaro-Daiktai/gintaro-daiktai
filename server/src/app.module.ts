@@ -12,6 +12,7 @@ import { ItemTagModule } from './item_tag/item_tag.module';
 import { ImageModule } from './image/image.module';
 import { LotteryModule } from './lottery/lottery.module';
 import { LotteryBidModule } from './lottery_bid/lottery_bid.module';
+import { AuctionModule } from './auction/auction.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { LotteryBidModule } from './lottery_bid/lottery_bid.module';
     ImageModule,
     LotteryModule,
     LotteryBidModule,
+    AuctionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

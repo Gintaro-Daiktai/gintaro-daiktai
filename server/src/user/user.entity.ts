@@ -3,6 +3,7 @@ import { AddressEntity } from '../address/address.entity';
 import { ItemEntity } from '../item/item.entity';
 import { LotteryBidEntity } from '../lottery_bid/lottery_bid.entity';
 import { LotteryEntity } from '../lottery/lottery.entity';
+import { AuctionEntity } from '../auction/auction.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity {
@@ -61,4 +62,7 @@ export class UserEntity {
 
   @OneToMany(() => LotteryEntity, (lottery) => lottery.user)
   lotteries: LotteryEntity[];
+
+  @OneToMany(() => AuctionEntity, (auction) => auction.user)
+  auctions: AuctionEntity[];
 }
