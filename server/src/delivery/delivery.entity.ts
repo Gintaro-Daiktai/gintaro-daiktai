@@ -4,9 +4,11 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { UserEntity } from '../user/user.entity';
 import { ItemEntity } from '../item/item.entity';
+import { MessageEntity } from '../message/message.entity';
 
 @Entity({ name: 'delivery' })
 export class DeliveryEntity {
@@ -42,4 +44,7 @@ export class DeliveryEntity {
   })
   @JoinColumn({ name: 'fk_receiver' })
   receiver: UserEntity;
+
+  @OneToMany(() => MessageEntity, (message) => message.delivery)
+  messages: MessageEntity[];
 }

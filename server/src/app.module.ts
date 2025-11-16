@@ -17,6 +17,7 @@ import { AuctionBidModule } from './auction_bid/auction_bid.module';
 import { ReviewModule } from './review/review.module';
 import { ReviewEmoteModule } from './review_emote/review_emote.module';
 import { DeliveryModule } from './delivery/delivery.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { DeliveryModule } from './delivery/delivery.module';
     ReviewModule,
     ReviewEmoteModule,
     DeliveryModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
