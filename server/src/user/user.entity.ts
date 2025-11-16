@@ -7,6 +7,7 @@ import { AuctionEntity } from '../auction/auction.entity';
 import { AuctionBidEntity } from '../auction_bid/auction_bid.entity';
 import { ReviewEntity } from '../review/review.entity';
 import { ReviewEmoteEntity } from '../review_emote/review_emote.entity';
+import { DeliveryEntity } from '../delivery/delivery.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity {
@@ -80,4 +81,10 @@ export class UserEntity {
 
   @OneToMany(() => ReviewEmoteEntity, (reviewEmote) => reviewEmote.user)
   reviewEmotes: ReviewEmoteEntity[];
+
+  @OneToMany(() => DeliveryEntity, (delivery) => delivery.sender)
+  deliveriesSent: DeliveryEntity[];
+
+  @OneToMany(() => DeliveryEntity, (delivery) => delivery.receiver)
+  deliveriesReceived: DeliveryEntity[];
 }

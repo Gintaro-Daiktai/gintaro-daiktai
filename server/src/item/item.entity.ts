@@ -12,6 +12,7 @@ import { ItemTagEntity } from '../item_tag/item_tag.entity';
 import { ImageEntity } from '../image/image.entity';
 import { AuctionEntity } from '../auction/auction.entity';
 import { ReviewEntity } from '../review/review.entity';
+import { DeliveryEntity } from '../delivery/delivery.entity';
 
 @Entity({ name: 'item' })
 export class ItemEntity {
@@ -71,4 +72,7 @@ export class ItemEntity {
 
   @OneToMany(() => ReviewEntity, (review) => review.item)
   reviews: ReviewEntity[];
+
+  @OneToMany(() => DeliveryEntity, (delivery) => delivery.item)
+  deliveries: DeliveryEntity[];
 }
