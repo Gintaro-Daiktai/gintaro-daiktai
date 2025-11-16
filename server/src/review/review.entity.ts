@@ -4,9 +4,11 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { UserEntity } from '../user/user.entity';
 import { ItemEntity } from '../item/item.entity';
+import { ReviewEmoteEntity } from '../review_emote/review_emote.entity';
 
 @Entity({ name: 'review' })
 export class ReviewEntity {
@@ -44,4 +46,7 @@ export class ReviewEntity {
   })
   @JoinColumn({ name: 'fk_reviewee' })
   reviewee: UserEntity;
+
+  @OneToMany(() => ReviewEmoteEntity, (reviewEmote) => reviewEmote.review)
+  reviewEmotes: ReviewEmoteEntity[];
 }

@@ -15,6 +15,7 @@ import { LotteryBidModule } from './lottery_bid/lottery_bid.module';
 import { AuctionModule } from './auction/auction.module';
 import { AuctionBidModule } from './auction_bid/auction_bid.module';
 import { ReviewModule } from './review/review.module';
+import { ReviewEmoteModule } from './review_emote/review_emote.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ReviewModule } from './review/review.module';
     AuctionModule,
     AuctionBidModule,
     ReviewModule,
+    ReviewEmoteModule,
   ],
   controllers: [AppController],
   providers: [AppService],
