@@ -4,9 +4,11 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { UserEntity } from '../user/user.entity';
 import { ItemEntity } from '../item/item.entity';
+import { AuctionBidEntity } from '../auction_bid/auction_bid.entity';
 
 @Entity({ name: 'auction' })
 export class AuctionEntity {
@@ -39,4 +41,7 @@ export class AuctionEntity {
   @ManyToOne(() => ItemEntity, (item) => item.auction, { nullable: false })
   @JoinColumn({ name: 'fk_item' })
   item: ItemEntity;
+
+  @OneToMany(() => AuctionBidEntity, (auctionBid) => auctionBid.auction)
+  auctionBids: AuctionBidEntity[];
 }

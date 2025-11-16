@@ -4,6 +4,7 @@ import { ItemEntity } from '../item/item.entity';
 import { LotteryBidEntity } from '../lottery_bid/lottery_bid.entity';
 import { LotteryEntity } from '../lottery/lottery.entity';
 import { AuctionEntity } from '../auction/auction.entity';
+import { AuctionBidEntity } from '../auction_bid/auction_bid.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity {
@@ -65,4 +66,7 @@ export class UserEntity {
 
   @OneToMany(() => AuctionEntity, (auction) => auction.user)
   auctions: AuctionEntity[];
+
+  @OneToMany(() => AuctionBidEntity, (auctionBid) => auctionBid.user)
+  auctionBids: AuctionBidEntity[];
 }
