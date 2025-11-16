@@ -9,6 +9,7 @@ import { AddressModule } from './address/address.module';
 import { ItemModule } from './item/item.module';
 import { TagModule } from './tag/tag.module';
 import { ItemTagModule } from './item_tag/item_tag.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ItemTagModule } from './item_tag/item_tag.module';
     ItemModule,
     TagModule,
     ItemTagModule,
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
