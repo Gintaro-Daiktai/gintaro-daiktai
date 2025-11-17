@@ -10,7 +10,7 @@ import { ReviewEmoteEntity } from '../review_emote/review_emote.entity';
 import { DeliveryEntity } from '../delivery/delivery.entity';
 import { MessageEntity } from '../message/message.entity';
 
-@Entity({ name: 'user' })
+@Entity({ name: 'users' })
 export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -46,7 +46,7 @@ export class UserEntity {
   @Column({ type: 'timestamp', nullable: false })
   birth_date: Date;
 
-  @Column({ type: 'bytea', nullable: false })
+  @Column({ type: 'bytea', nullable: true })
   avatar: Buffer;
 
   @Column({
