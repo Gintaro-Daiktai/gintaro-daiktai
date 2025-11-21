@@ -24,8 +24,20 @@ export class UserService {
 
     return await this.userRepository.save(newUser);
   }
-  s;
+
   async findUserByEmail(email: string): Promise<UserEntity | null> {
     return await this.userRepository.findOne({ where: { email } });
+  }
+
+  async findUserById(id: number): Promise<UserEntity | null> {
+    return await this.userRepository.findOne({ where: { id } });
+  }
+
+  async findAllUsers(): Promise<UserEntity[]> {
+    return await this.userRepository.find();
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    await this.userRepository.delete({ id });
   }
 }

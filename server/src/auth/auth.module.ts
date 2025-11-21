@@ -7,11 +7,13 @@ import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { VerificationModule } from '../verification/verification.module';
 
 @Module({
   imports: [
     PassportModule,
     UserModule,
+    VerificationModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),

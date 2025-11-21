@@ -21,6 +21,8 @@ import { MessageModule } from './message/message.module';
 import { ChargebackRequestModule } from './chargeback_request/chargeback_request.module';
 import { AuthModule } from './auth/auth.module';
 import { SeederModule } from './database/seeder.module';
+import { VerificationModule } from './verification/verification.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { SeederModule } from './database/seeder.module';
       isGlobal: true,
     }),
     SeederModule,
+    VerificationModule,
+    EmailModule,
     UserModule,
     AddressModule,
     ItemModule,

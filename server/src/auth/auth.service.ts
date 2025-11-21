@@ -11,14 +11,21 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(authPayloadDto: AuthPayloadDto): Promise<string | null> {
+  async validateUser(
+    authPayloadDto: AuthPayloadDto,
+  ): Promise<{ token: string; confirmed: boolean } | null> {
     const user = await this.usersService.findUserByEmail(authPayloadDto.email);
     if (user && (await compare(authPayloadDto.password, user.password))) {
-      return this.jwtService.sign({
+      const token = this.jwtService.sign({
         email: user.email,
         sub: user.id,
         role: user.role,
+        confirmed: user.confirmed,
       });
+      return {
+        token,
+        confirmed: user.confirmed,
+      };
     }
     return null;
   }
