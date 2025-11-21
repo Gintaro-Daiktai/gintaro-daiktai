@@ -20,6 +20,7 @@ import { DeliveryModule } from './delivery/delivery.module';
 import { MessageModule } from './message/message.module';
 import { ChargebackRequestModule } from './chargeback_request/chargeback_request.module';
 import { AuthModule } from './auth/auth.module';
+import { SeederModule } from './database/seeder.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    SeederModule,
     UserModule,
     AddressModule,
     ItemModule,

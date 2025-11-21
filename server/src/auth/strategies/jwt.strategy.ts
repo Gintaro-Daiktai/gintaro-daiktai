@@ -13,7 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: { sub: number; email: string }) {
-    return payload;
+  validate(payload: { sub: number; email: string; role: 'admin' | 'client' }) {
+    return { userId: payload.sub, email: payload.email, role: payload.role };
   }
 }

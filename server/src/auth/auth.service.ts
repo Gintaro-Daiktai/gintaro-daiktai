@@ -14,7 +14,11 @@ export class AuthService {
   async validateUser(authPayloadDto: AuthPayloadDto): Promise<string | null> {
     const user = await this.usersService.findUserByEmail(authPayloadDto.email);
     if (user && (await compare(authPayloadDto.password, user.password))) {
-      return this.jwtService.sign({ email: user.email, sub: user.id });
+      return this.jwtService.sign({
+        email: user.email,
+        sub: user.id,
+        role: user.role,
+      });
     }
     return null;
   }
