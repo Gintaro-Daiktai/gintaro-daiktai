@@ -19,11 +19,14 @@ import { ReviewEmoteModule } from './review_emote/review_emote.module';
 import { DeliveryModule } from './delivery/delivery.module';
 import { MessageModule } from './message/message.module';
 import { ChargebackRequestModule } from './chargeback_request/chargeback_request.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(ormconfig),
-    ConfigModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     UserModule,
     AddressModule,
     ItemModule,
@@ -39,6 +42,7 @@ import { ChargebackRequestModule } from './chargeback_request/chargeback_request
     DeliveryModule,
     MessageModule,
     ChargebackRequestModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
