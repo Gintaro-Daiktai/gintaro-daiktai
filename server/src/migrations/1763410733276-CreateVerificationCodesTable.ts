@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateVerificationCodesTable1732233000000
+export class CreateVerificationCodesTable1763410733276
   implements MigrationInterface
 {
-  name = 'CreateVerificationCodesTable1732233000000';
+  name = 'CreateVerificationCodesTable1763410733276';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
