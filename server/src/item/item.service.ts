@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateItemDto } from './dto/createItem.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItemEntity } from './item.entity';
@@ -7,6 +7,7 @@ import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class ItemService {
+  private readonly logger = new Logger(ItemService.name);
   constructor(
     @InjectRepository(ItemEntity)
     private readonly itemRepository: Repository<ItemEntity>,
@@ -29,6 +30,14 @@ export class ItemService {
 
   async findAllItems(): Promise<ItemEntity[]> {
     return await this.itemRepository.find();
+  }
+
+  async findItemById(id: number): Promise<ItemEntity | null> {
+    this.logger.log(id);
+    return await this.itemRepository.findOne({
+      where: { id },
+      relations: { user: true },
+    });
   }
 
   async deleteItem(id: number): Promise<void> {
