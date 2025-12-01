@@ -6,7 +6,7 @@ export class TagEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
   name: string;
 
   @OneToMany(() => ItemTagEntity, (itemTag) => itemTag.tag)

@@ -7,7 +7,7 @@ export class CreateTagAndItemTagTables1763327239219
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "tag" ("id" SERIAL NOT NULL, "name" character varying(255) NOT NULL, CONSTRAINT "PK_8e4052373c579afc1471f526760" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "tag" ("id" SERIAL NOT NULL, "name" character varying(255) NOT NULL, CONSTRAINT "PK_8e4052373c579afc1471f526760" PRIMARY KEY ("id"), CONSTRAINT "UQ_tag_name" UNIQUE ("name"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "item_tag" ("fk_tag" integer NOT NULL, "fk_item" integer NOT NULL, CONSTRAINT "PK_67a789a9e51d67b4afa43cc7487" PRIMARY KEY ("fk_tag", "fk_item"))`,
