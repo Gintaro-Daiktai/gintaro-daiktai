@@ -6,7 +6,7 @@ import {
   Get,
   Param,
   UseGuards,
-  UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { User } from '../common/decorators/user.decorator';
 import type { UserPayload } from 'src/common/interfaces/user_payload.interface';
@@ -15,7 +15,6 @@ import { CreateUserDto } from './dto/createUser.dto';
 import { VerificationService } from '../verification/verification.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
-import { ConfirmedGuard } from 'src/auth/guards/confirmed.guard';
 import { UserResponseDto } from './dto/userResponse.dto';
 import { plainToInstance } from 'class-transformer';
 
@@ -62,20 +61,13 @@ export class UserController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, ConfirmedGuard)
   async getUserById(
     @User() user: UserPayload,
     @Param('id') id: string,
   ): Promise<UserResponseDto> {
-    const userId = user.userId;
-    if (user.role !== 'admin' && userId !== parseInt(id, 10)) {
-      throw new UnauthorizedException(
-        'User is unauthorized to do this action.',
-      );
-    }
     const userData = await this.userService.findUserById(parseInt(id, 10));
     if (!userData) {
-      throw new UnauthorizedException('User not found.');
+      throw new NotFoundException('User not found.');
     }
     return plainToInstance(UserResponseDto, userData);
   }

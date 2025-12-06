@@ -47,20 +47,30 @@ export const apiClient = async <T>(
       headers,
     });
 
-    // Handle 401 - Unauthorized (token expired or invalid)
-    if (response.status === 401) {
-      removeToken();
-      window.dispatchEvent(new Event("auth:logout"));
-      throw new ApiError(401, "Unauthorized - please log in again");
-    }
-
-    // Parse response
     let data: unknown;
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
       data = await response.json();
     } else {
       data = await response.text();
+    }
+
+    if (response.status === 401) {
+      const errorMessage =
+        data && typeof data === "object" && "message" in data
+          ? String(data.message)
+          : "";
+
+      const isTokenIssue =
+        errorMessage.toLowerCase().includes("token") ||
+        (errorMessage.toLowerCase().includes("unauthorized") && requiresAuth);
+
+      if (isTokenIssue && requiresAuth) {
+        removeToken();
+        window.dispatchEvent(new Event("auth:logout"));
+      }
+
+      throw new ApiError(401, errorMessage || "Unauthorized", data);
     }
 
     // Handle non-2xx responses

@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useParams } from "react-router";
 import { NavLink } from "react-router";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserProfile } from "@/api/auth";
 import type { Review, UserProfile, Auction, Lottery } from "@/types/profile";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { BalanceCard } from "@/components/profile/BalanceCard";
@@ -11,13 +13,21 @@ import { AuctionCard } from "@/components/profile/AuctionCard";
 import { LotteryCard } from "@/components/profile/LotteryCard";
 import { ReviewCard } from "@/components/profile/ReviewCard";
 
-//placeholder, real one will come from auth
-const CURRENT_USER_ID = "1";
-
 export default function ProfilePage() {
   const params = useParams();
-  const isOwnProfile = params.userId === CURRENT_USER_ID;
-  const [balance, setBalance] = useState(2000.2); // MOCK BALANCE
+  const { user: currentUser } = useAuth();
+  const profileUserId = params.userId
+    ? parseInt(params.userId)
+    : currentUser?.id || null;
+  const isOwnProfile = currentUser?.id === profileUserId;
+
+  const {
+    data: profileData,
+    isLoading,
+    isError,
+  } = useUserProfile(profileUserId);
+
+  const [balance, setBalance] = useState(profileData?.balance || 0);
   const [reviews, setReviews] = useState<Review[]>(mockReviews);
 
   const handleProfileUpdate = (name: string) => {
@@ -70,6 +80,50 @@ export default function ProfilePage() {
     setReviews((prevReviews) =>
       prevReviews.filter((review) => review.id !== reviewId),
     );
+  };
+
+  if (profileData && balance !== profileData.balance) {
+    setBalance(profileData.balance);
+  }
+
+  if (isLoading) {
+    return (
+      <main className="flex-1 flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading profile...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (isError || !profileData) {
+    return (
+      <main className="flex-1 flex items-center justify-center min-h-screen">
+        <Card className="max-w-md mx-auto">
+          <CardContent className="p-12 text-center">
+            <p className="text-red-500 mb-4">Failed to load profile</p>
+            <Button onClick={() => window.location.reload()}>Try Again</Button>
+          </CardContent>
+        </Card>
+      </main>
+    );
+  }
+
+  const userProfile: UserProfile = {
+    id: profileData.id.toString(),
+    name: `${profileData.name} ${profileData.last_name}`,
+    avatar: profileData.avatar || "/diverse-user-avatars.png",
+    rating: 4.8, // TODO: Calculate from reviews
+    positiveFeadback: "98.5%", // TODO: Calculate from reviews
+    totalSales: 234, // TODO: Get from backend
+    memberSince: new Date(profileData.registration_date).toLocaleDateString(
+      "en-US",
+      { month: "long", year: "numeric" },
+    ),
+    verified: profileData.confirmed,
+    description:
+      "Professional vintage watch dealer with over 15 years of experience.", // TODO: Add to backend
   };
 
   return (
@@ -171,20 +225,7 @@ export default function ProfilePage() {
   );
 }
 
-// Mock data
-const userProfile: UserProfile = {
-  id: "1",
-  name: "John Doe",
-  avatar: "/diverse-user-avatars.png",
-  rating: 4.8,
-  positiveFeadback: "98.5%",
-  totalSales: 234,
-  memberSince: "January 2020",
-  verified: true,
-  description:
-    "Professional vintage watch dealer with over 15 years of experience.",
-};
-
+// Mock data for auctions and lotteries
 const userAuctions: Auction[] = [
   {
     id: 1,

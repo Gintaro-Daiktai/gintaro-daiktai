@@ -74,7 +74,12 @@ export const authApi = {
       method: "GET",
       requiresAuth: true,
     });
-    return response;
+
+    return {
+      ...response,
+      registration_date: new Date(response.registration_date),
+      birth_date: new Date(response.birth_date),
+    };
   },
 };
 
