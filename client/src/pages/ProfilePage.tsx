@@ -6,6 +6,7 @@ import { useParams } from "react-router";
 import { NavLink } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile, useUpdateUserProfile } from "@/api/auth";
+import { createSafeAvatarDataUri } from "@/utils/imageValidation";
 import type { Review, UserProfile, Auction, Lottery } from "@/types/profile";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { BalanceCard } from "@/components/profile/BalanceCard";
@@ -129,9 +130,7 @@ export default function ProfilePage() {
   const userProfile: UserProfile = {
     id: profileData.id.toString(),
     name: `${profileData.name} ${profileData.last_name}`,
-    avatar: profileData.avatar
-      ? `data:image/jpeg;base64,${profileData.avatar}`
-      : "",
+    avatar: createSafeAvatarDataUri(profileData.avatar, "image/jpeg"),
     rating: 4.8, // TODO: Calculate from reviews
     positiveFeadback: "98.5%", // TODO: Calculate from reviews
     totalSales: 234, // TODO: Get from backend

@@ -3,6 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import {
+  validateImageFile,
+  sanitizeAvatarBase64,
+  createSafeAvatarDataUri,
+} from "@/utils/imageValidation";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -65,6 +70,7 @@ export function EditProfileDialog({
     currentAvatar,
   );
   const [avatarBase64, setAvatarBase64] = useState<string | undefined>();
+  const [avatarError, setAvatarError] = useState<string | undefined>();
 
   const {
     register,
@@ -83,22 +89,55 @@ export function EditProfileDialog({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      alert("File size must be less than 2MB");
-      return;
-    }
+    // Reset error
+    setAvatarError(undefined);
 
-    if (!file.type.startsWith("image/")) {
-      alert("File must be an image");
+    // Validate file
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      setAvatarError(validation.error);
+      e.target.value = ""; // Reset input
       return;
     }
 
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64 = reader.result as string;
-      setAvatarPreview(base64);
       const base64Data = base64.split(",")[1];
-      setAvatarBase64(base64Data);
+
+      // Sanitize and validate the base64 data
+      const sanitized = sanitizeAvatarBase64(base64Data);
+      if (!sanitized) {
+        setAvatarError(
+          "Invalid or potentially dangerous image format detected",
+        );
+        e.target.value = ""; // Reset input
+        return;
+      }
+
+      // Create safe preview URI
+      // Map file type to allowed MIME types
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+      ] as const;
+      const mimeType =
+        allowedTypes.find((type) => type === file.type) || "image/jpeg";
+      const safePreview = createSafeAvatarDataUri(sanitized, mimeType);
+      if (!safePreview) {
+        setAvatarError("Failed to create image preview");
+        e.target.value = ""; // Reset input
+        return;
+      }
+
+      setAvatarPreview(safePreview);
+      setAvatarBase64(sanitized);
+    };
+    reader.onerror = () => {
+      setAvatarError("Failed to read file");
+      e.target.value = ""; // Reset input
     };
     reader.readAsDataURL(file);
   };
@@ -144,13 +183,16 @@ export function EditProfileDialog({
                 <Input
                   id="avatar"
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                   onChange={handleAvatarChange}
                   className="cursor-pointer"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Max file size: 2MB
+                  Max file size: 2MB. Allowed: JPEG, PNG, GIF, WebP
                 </p>
+                {avatarError && (
+                  <p className="text-xs text-red-500 mt-1">{avatarError}</p>
+                )}
               </div>
             </div>
           </div>

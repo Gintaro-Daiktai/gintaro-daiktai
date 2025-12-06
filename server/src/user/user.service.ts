@@ -1,10 +1,18 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
 import { hash } from 'bcrypt';
+import {
+  validateAndDecodeImage,
+  ImageValidationError,
+} from '../common/utils/imageValidation';
 
 @Injectable()
 export class UserService {
@@ -24,6 +32,18 @@ export class UserService {
     newUser.balance = 0;
     newUser.confirmed = false;
     newUser.registration_date = new Date();
+
+    // Validate avatar if provided
+    if (createUserDto.avatar) {
+      try {
+        newUser.avatar = validateAndDecodeImage(createUserDto.avatar);
+      } catch (error) {
+        if (error instanceof ImageValidationError) {
+          throw new BadRequestException(error.message);
+        }
+        throw new BadRequestException('Failed to process avatar image');
+      }
+    }
 
     const saltRounds = 10;
     newUser.password = await hash(createUserDto.password, saltRounds);
@@ -69,7 +89,15 @@ export class UserService {
     }
     if (updateUserDto.avatar !== undefined) {
       if (updateUserDto.avatar) {
-        user.avatar = Buffer.from(updateUserDto.avatar, 'base64');
+        try {
+          // Validate and decode the image
+          user.avatar = validateAndDecodeImage(updateUserDto.avatar);
+        } catch (error) {
+          if (error instanceof ImageValidationError) {
+            throw new BadRequestException(error.message);
+          }
+          throw new BadRequestException('Failed to process avatar image');
+        }
       }
     }
 
