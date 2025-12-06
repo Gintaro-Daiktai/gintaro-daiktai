@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
-import { useSignupMutation } from "@/api/queries";
+import { useSignupMutation } from "@/api/auth";
 import { VerifyEmailDialog } from "@/components/VerifyEmailDialog";
 import { Loader2 } from "lucide-react";
 import type { SignupData } from "@/types/auth";

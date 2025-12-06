@@ -9,7 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useVerifyEmailMutation, useResendCodeMutation } from "@/api/queries";
+import { useVerifyEmailMutation, useResendCodeMutation } from "@/api/auth";
 import { Loader2 } from "lucide-react";
 
 interface VerifyEmailDialogProps {

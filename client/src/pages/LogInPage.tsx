@@ -2,7 +2,7 @@ import { z } from "zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { useLoginMutation } from "@/api/queries";
+import { useLoginMutation } from "@/api/auth";
 import { useAuth } from "@/hooks/useAuth";
 import { decodeToken } from "@/utils/token";
 import { VerifyEmailDialog } from "@/components/VerifyEmailDialog";

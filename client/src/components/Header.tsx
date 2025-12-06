@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { User, Warehouse, LogOut } from "lucide-react";
 import { NavLink } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
-import { useLogout } from "@/api/queries";
+import { useLogout } from "@/api/auth";
 
 function Header() {
   const { isAuthenticated, user } = useAuth();
