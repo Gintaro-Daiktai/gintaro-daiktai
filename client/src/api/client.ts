@@ -4,6 +4,13 @@ const API_BASE_URL =
   import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const API_PREFIX = "/api";
 
+// Callback for handling unauthorized errors
+let onUnauthorizedCallback: (() => void) | null = null;
+
+export const setUnauthorizedCallback = (callback: () => void) => {
+  onUnauthorizedCallback = callback;
+};
+
 export class ApiError extends Error {
   status: number;
   data?: unknown;
@@ -67,7 +74,9 @@ export const apiClient = async <T>(
 
       if (isTokenIssue && requiresAuth) {
         removeToken();
-        window.dispatchEvent(new Event("auth:logout"));
+        if (onUnauthorizedCallback) {
+          onUnauthorizedCallback();
+        }
       }
 
       throw new ApiError(401, errorMessage || "Unauthorized", data);

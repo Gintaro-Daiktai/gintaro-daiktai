@@ -6,6 +6,7 @@ import {
   decodeToken,
   isTokenValid,
 } from "@/utils/token";
+import { setUnauthorizedCallback } from "@/api/client";
 import type { AuthState, User } from "@/types/auth";
 
 interface AuthContextType extends AuthState {
@@ -72,8 +73,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     initAuth();
 
-    // Listen for logout events from apiClient
-    const handleLogout = () => {
+    // Register callback for unauthorized errors from apiClient
+    const handleUnauthorized = () => {
       setState({
         user: null,
         token: null,
@@ -82,8 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
     };
 
-    window.addEventListener("auth:logout", handleLogout);
-    return () => window.removeEventListener("auth:logout", handleLogout);
+    setUnauthorizedCallback(handleUnauthorized);
   }, []);
 
   const setAuth = (token: string, user: User) => {
