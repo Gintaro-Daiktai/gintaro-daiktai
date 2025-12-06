@@ -28,7 +28,9 @@ import { Label } from "@/components/ui/label";
 import { Trash2 } from "lucide-react";
 
 const editProfileSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  name: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
 });
 
 type EditProfileForm = z.infer<typeof editProfileSchema>;
@@ -36,18 +38,33 @@ type EditProfileForm = z.infer<typeof editProfileSchema>;
 type EditProfileDialogProps = {
   children: ReactNode;
   currentName: string;
-  onSave: (name: string) => void;
+  currentLastName: string;
+  currentPhoneNumber: string;
+  currentAvatar?: string;
+  onSave: (data: {
+    name: string;
+    lastName: string;
+    phoneNumber: string;
+    avatar?: string;
+  }) => void;
   onDelete: () => void;
 };
 
 export function EditProfileDialog({
   children,
   currentName,
+  currentLastName,
+  currentPhoneNumber,
+  currentAvatar,
   onSave,
   onDelete,
 }: EditProfileDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | undefined>(
+    currentAvatar,
+  );
+  const [avatarBase64, setAvatarBase64] = useState<string | undefined>();
 
   const {
     register,
@@ -57,11 +74,42 @@ export function EditProfileDialog({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
       name: currentName,
+      lastName: currentLastName,
+      phoneNumber: currentPhoneNumber,
     },
   });
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("File size must be less than 2MB");
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      alert("File must be an image");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      setAvatarPreview(base64);
+      const base64Data = base64.split(",")[1];
+      setAvatarBase64(base64Data);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const onSubmit = async (data: EditProfileForm) => {
-    await onSave(data.name);
+    await onSave({
+      name: data.name,
+      lastName: data.lastName,
+      phoneNumber: data.phoneNumber,
+      avatar: avatarBase64,
+    });
     setIsOpen(false);
   };
 
@@ -83,10 +131,55 @@ export function EditProfileDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="avatar">Profile Picture</Label>
+            <div className="flex items-center gap-4">
+              {avatarPreview && (
+                <img
+                  src={avatarPreview}
+                  alt="Avatar preview"
+                  className="h-20 w-20 rounded-full object-cover"
+                />
+              )}
+              <div className="flex-1">
+                <Input
+                  id="avatar"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="cursor-pointer"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Max file size: 2MB
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="name">First Name</Label>
             <Input id="name" {...register("name")} />
             {errors.name && (
               <p className="text-sm text-destructive">{errors.name.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="lastName">Last Name</Label>
+            <Input id="lastName" {...register("lastName")} />
+            {errors.lastName && (
+              <p className="text-sm text-destructive">
+                {errors.lastName.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phoneNumber">Phone Number</Label>
+            <Input id="phoneNumber" {...register("phoneNumber")} />
+            {errors.phoneNumber && (
+              <p className="text-sm text-destructive">
+                {errors.phoneNumber.message}
+              </p>
             )}
           </div>
 

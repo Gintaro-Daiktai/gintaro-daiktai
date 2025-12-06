@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useParams } from "react-router";
 import { NavLink } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
-import { useUserProfile } from "@/api/auth";
+import { useUserProfile, useUpdateUserProfile } from "@/api/auth";
 import type { Review, UserProfile, Auction, Lottery } from "@/types/profile";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { BalanceCard } from "@/components/profile/BalanceCard";
@@ -30,9 +30,25 @@ export default function ProfilePage() {
   const [balance, setBalance] = useState(profileData?.balance || 0);
   const [reviews, setReviews] = useState<Review[]>(mockReviews);
 
-  const handleProfileUpdate = (name: string) => {
-    console.log("Profile updated:", name);
-    // Handle profile update logic here
+  const updateMutation = useUpdateUserProfile();
+
+  const handleProfileUpdate = async (data: {
+    name: string;
+    lastName: string;
+    phoneNumber: string;
+    avatar?: string;
+  }) => {
+    if (!profileData) return;
+
+    await updateMutation.mutateAsync({
+      userId: profileData.id,
+      data: {
+        name: data.name,
+        last_name: data.lastName,
+        phone_number: data.phoneNumber,
+        avatar: data.avatar,
+      },
+    });
   };
 
   const handleAccountDelete = async () => {
@@ -113,7 +129,9 @@ export default function ProfilePage() {
   const userProfile: UserProfile = {
     id: profileData.id.toString(),
     name: `${profileData.name} ${profileData.last_name}`,
-    avatar: profileData.avatar || "/diverse-user-avatars.png",
+    avatar: profileData.avatar
+      ? `data:image/jpeg;base64,${profileData.avatar}`
+      : "",
     rating: 4.8, // TODO: Calculate from reviews
     positiveFeadback: "98.5%", // TODO: Calculate from reviews
     totalSales: 234, // TODO: Get from backend
@@ -130,6 +148,7 @@ export default function ProfilePage() {
     <main className="flex-1">
       <ProfileHeader
         profile={userProfile}
+        profileData={profileData}
         isOwnProfile={isOwnProfile}
         onProfileUpdate={handleProfileUpdate}
         onAccountDelete={handleAccountDelete}

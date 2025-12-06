@@ -4,17 +4,21 @@ import {
   Post,
   Delete,
   Get,
+  Put,
   Param,
   UseGuards,
+  UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
 import { User } from '../common/decorators/user.decorator';
 import type { UserPayload } from 'src/common/interfaces/user_payload.interface';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/createUser.dto';
+import { UpdateUserDto } from './dto/updateUser.dto';
 import { VerificationService } from '../verification/verification.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { ConfirmedGuard } from '../auth/guards/confirmed.guard';
 import { UserResponseDto } from './dto/userResponse.dto';
 import { plainToInstance } from 'class-transformer';
 
@@ -70,6 +74,32 @@ export class UserController {
       throw new NotFoundException('User not found.');
     }
     return plainToInstance(UserResponseDto, userData);
+  }
+
+  @Put(':id')
+  @UseGuards(JwtAuthGuard, ConfirmedGuard)
+  async updateUser(
+    @User() user: UserPayload,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
+    const userId = parseInt(id, 10);
+
+    // Only allow users to update their own profile
+    if (user.userId !== userId) {
+      throw new UnauthorizedException('You can only update your own profile.');
+    }
+
+    const updatedUser = await this.userService.updateUser(
+      userId,
+      updateUserDto,
+    );
+
+    if (!updatedUser) {
+      throw new NotFoundException('User not found.');
+    }
+
+    return plainToInstance(UserResponseDto, updatedUser);
   }
 
   @Delete(':id')

@@ -73,3 +73,10 @@ export interface ResendCodeData {
   userId?: number;
   email?: string;
 }
+
+export interface UpdateUserData {
+  name?: string;
+  last_name?: string;
+  phone_number?: string;
+  avatar?: string; // Base64 encoded image
+}

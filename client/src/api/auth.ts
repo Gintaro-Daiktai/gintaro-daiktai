@@ -9,6 +9,7 @@ import type {
   VerifyEmailData,
   VerifyEmailResponse,
   ResendCodeData,
+  UpdateUserData,
   User,
 } from "@/types/auth";
 
@@ -81,6 +82,23 @@ export const authApi = {
       birth_date: new Date(response.birth_date),
     };
   },
+
+  updateUserProfile: async (
+    userId: number,
+    data: UpdateUserData,
+  ): Promise<User> => {
+    const response = await apiClient<User>(`/users/${userId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+      requiresAuth: true,
+    });
+
+    return {
+      ...response,
+      registration_date: new Date(response.registration_date),
+      birth_date: new Date(response.birth_date),
+    };
+  },
 };
 
 // React Query Hooks
@@ -136,6 +154,19 @@ export const useUserProfile = (userId: number | null) => {
     queryFn: () => authApi.getUserProfile(userId!),
     enabled: !!userId,
     staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+export const useUpdateUserProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, data }: { userId: number; data: UpdateUserData }) =>
+      authApi.updateUserProfile(userId, data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["user", "profile", data.id] });
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+    },
   });
 };
 

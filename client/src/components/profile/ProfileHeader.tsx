@@ -11,17 +11,25 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router";
 import type { UserProfile } from "@/types/profile";
+import type { User } from "@/types/auth";
 import { EditProfileDialog } from "@/components/profile/EditProfileDialog";
 
 type ProfileHeaderProps = {
   profile: UserProfile;
+  profileData: User;
   isOwnProfile: boolean;
-  onProfileUpdate: (name: string) => void;
+  onProfileUpdate: (data: {
+    name: string;
+    lastName: string;
+    phoneNumber: string;
+    avatar?: string;
+  }) => void;
   onAccountDelete: () => void;
 };
 
 export function ProfileHeader({
   profile,
+  profileData,
   isOwnProfile,
   onProfileUpdate,
   onAccountDelete,
@@ -91,7 +99,10 @@ export function ProfileHeader({
                     </Button>
                   </NavLink>
                   <EditProfileDialog
-                    currentName={profile.name}
+                    currentName={profileData.name}
+                    currentLastName={profileData.last_name}
+                    currentPhoneNumber={profileData.phone_number}
+                    currentAvatar={profile.avatar}
                     onSave={onProfileUpdate}
                     onDelete={onAccountDelete}
                   >
