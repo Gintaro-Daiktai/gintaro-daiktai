@@ -70,8 +70,6 @@ export const authApi = {
   },
 
   getUserProfile: async (userId: number): Promise<User> => {
-    // TODO: Replace with actual endpoint when backend implements it
-    // For now, we'll use auth/status and fetch additional data if needed
     const response = await apiClient<User>(`/users/${userId}`, {
       method: "GET",
       requiresAuth: true,
