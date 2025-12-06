@@ -1,5 +1,6 @@
 import "./App.css";
 import { Route, Routes } from "react-router";
+import { useAuth } from "@/hooks/useAuth";
 import HomePage from "./pages/HomePage";
 import LogInPage from "./pages/LogInPage";
 import SignUpPage from "./pages/SignUpPage";
@@ -28,6 +29,19 @@ import AuctionsPage from "./pages/AuctionsPage";
 import AuctionPage from "./pages/AuctionPage";
 
 function App() {
+  const { isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
