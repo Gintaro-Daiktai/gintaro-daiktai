@@ -20,5 +20,6 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(2097152)
   avatar?: string; // Base64 encoded image
 }
