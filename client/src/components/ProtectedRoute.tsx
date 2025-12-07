@@ -1,4 +1,7 @@
 import React from "react";
+import { Navigate } from "react-router";
+import { useAuth } from "@/hooks/useAuth";
+
 function ProtectedRoute({
   children,
   allowedRoles,
@@ -6,13 +9,26 @@ function ProtectedRoute({
   children: React.ReactNode;
   allowedRoles: string[];
 }) {
-  //TODO: change after implementing custom auth hook
-  const role = "admin";
-  //TODO: add checking if user is authenticated
-  if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-    return <p>Access Denied</p>;
+  const { isAuthenticated, user } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
-  return children;
+
+  if (allowedRoles.length > 0 && user && !allowedRoles.includes(user.role)) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
+          <p className="text-muted-foreground">
+            You don't have permission to access this page.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
 }
 
 export default ProtectedRoute;
