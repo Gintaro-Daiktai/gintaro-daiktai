@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -31,12 +30,6 @@ const signupSchema = z
     birthDate: z.string().min(1, "Birth date is required"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
-    terms: z
-      .boolean()
-      .refine(
-        (val) => val === true,
-        "You must accept the terms and conditions",
-      ),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -56,12 +49,9 @@ function SignUpPage() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
   });
-  const termsAccepted = watch("terms");
 
   const onSubmit = async (data: SignupFormData) => {
     const signupData: SignupData = {
@@ -213,42 +203,6 @@ function SignUpPage() {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="terms"
-                      checked={termsAccepted}
-                      onCheckedChange={(checked) =>
-                        setValue("terms", checked as boolean)
-                      }
-                    />
-                    <label
-                      htmlFor="terms"
-                      className="text-sm text-muted-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      I agree to the{" "}
-                      <NavLink
-                        to="/terms"
-                        className="text-primary hover:underline"
-                      >
-                        Terms of Service
-                      </NavLink>{" "}
-                      and{" "}
-                      <NavLink
-                        to="/privacy"
-                        className="text-primary hover:underline"
-                      >
-                        Privacy Policy
-                      </NavLink>
-                    </label>
-                  </div>
-                  {errors.terms && (
-                    <p className="text-sm text-red-500">
-                      {errors.terms.message}
-                    </p>
-                  )}
-                </div>
-
                 <Button
                   type="submit"
                   className="w-full"
@@ -284,7 +238,7 @@ function SignUpPage() {
           onOpenChange={setShowVerifyDialog}
           userId={newUserId}
           email={newUserEmail}
-          onSuccess={() => navigate("/")}
+          onSuccess={() => navigate("/login")}
         />
       )}
     </main>
