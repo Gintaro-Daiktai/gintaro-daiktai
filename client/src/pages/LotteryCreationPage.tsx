@@ -1,5 +1,3 @@
-import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -65,6 +63,8 @@ export default function CreateLotteryPage() {
 
   const [items, setItems] = useState<LotteryItem[]>([]);
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [isItemSelectionModalOpen, setIsItemSelectionModalOpen] =
+    useState(false);
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
@@ -81,6 +81,50 @@ export default function CreateLotteryPage() {
   const [itemWeight, setItemWeight] = useState("");
 
   const maxItems = 6;
+
+  const existingItems = [
+    {
+      id: "existing-1",
+      name: "Macbook",
+      description: "Classic mechanical typewriter in excellent condition",
+      estimatedValue: 450,
+      images: ["/macbook.jpg"],
+      condition: "used",
+      category: "Collectibles",
+    },
+    {
+      id: "existing-2",
+      name: "Chair",
+      description: "Luxury handbag from limited collection",
+      estimatedValue: 2500,
+      images: ["/chair.jpeg"],
+      condition: "new",
+      category: "Fashion",
+    },
+  ];
+
+  const openItemSelectionModal = () => {
+    setIsItemSelectionModalOpen(true);
+  };
+
+  const handleSelectExistingItem = (existingItem: LotteryItem) => {
+    const newItem: LotteryItem = {
+      id: Date.now().toString(),
+      name: existingItem.name,
+      description: existingItem.description,
+      estimatedValue: existingItem.estimatedValue,
+      images: existingItem.images,
+      condition: existingItem.condition,
+      category: existingItem.category,
+    };
+    setItems([...items, newItem]);
+    setIsItemSelectionModalOpen(false);
+  };
+
+  const handleCreateNewItem = () => {
+    setIsItemSelectionModalOpen(false);
+    setIsItemModalOpen(true);
+  };
 
   const openItemModal = (itemId?: string) => {
     if (itemId) {
@@ -157,8 +201,6 @@ export default function CreateLotteryPage() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      // In a real app, you would upload these to a server
-      // For now, we'll create object URLs
       const newImages = Array.from(files).map((file) =>
         URL.createObjectURL(file),
       );
@@ -171,7 +213,6 @@ export default function CreateLotteryPage() {
   };
 
   const confirmPublish = () => {
-    // Handle actual publishing logic here
     console.log("[v0] Publishing lottery:", {
       title: lotteryTitle,
       description: lotteryDescription,
@@ -182,7 +223,6 @@ export default function CreateLotteryPage() {
       items,
     });
     setIsPublishDialogOpen(false);
-    // Redirect to lottery page or show success message
   };
 
   return (
@@ -221,20 +261,7 @@ export default function CreateLotteryPage() {
                       onChange={(e) => setLotteryTitle(e.target.value)}
                     />
                   </div>
-                  <Select
-                    value={itemCondition}
-                    onValueChange={setItemCondition}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select condition" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="new">New</SelectItem>
-                      <SelectItem value="used">Used</SelectItem>
-                      <SelectItem value="worn">Worn</SelectItem>
-                      <SelectItem value="broken">Broken</SelectItem>
-                    </SelectContent>
-                  </Select>
+
                   <div className="space-y-2">
                     <Label htmlFor="description">Description</Label>
                     <Textarea
@@ -354,7 +381,7 @@ export default function CreateLotteryPage() {
                       (_, index) => (
                         <button
                           key={`empty-${index}`}
-                          onClick={() => openItemModal()}
+                          onClick={openItemSelectionModal}
                           className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 h-48 flex flex-col items-center justify-center hover:border-primary hover:bg-muted/50 transition-colors group"
                         >
                           <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
@@ -451,6 +478,95 @@ export default function CreateLotteryPage() {
         </div>
       </main>
 
+      <Dialog
+        open={isItemSelectionModalOpen}
+        onOpenChange={setIsItemSelectionModalOpen}
+      >
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add Item to Lottery</DialogTitle>
+            <DialogDescription>
+              Choose an existing item from your inventory or create a new one
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* Create New Item Option */}
+            <button
+              onClick={handleCreateNewItem}
+              className="w-full border-2 border-dashed border-primary/50 rounded-lg p-6 hover:border-primary hover:bg-primary/5 transition-colors group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <Plus className="h-7 w-7 text-primary" />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-semibold text-lg">Create New Item</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Add a brand new item with all details
+                  </p>
+                </div>
+              </div>
+            </button>
+
+            {/* Existing Items */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                Or Choose from Existing Items
+              </h3>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {existingItems.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    No existing items available
+                  </p>
+                ) : (
+                  existingItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => handleSelectExistingItem(item)}
+                      className="w-full border rounded-lg p-4 hover:border-primary hover:bg-muted/50 transition-colors text-left group"
+                    >
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={item.images[0] || "/placeholder.svg"}
+                          alt={item.name}
+                          className="h-16 w-16 object-cover rounded-md"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold truncate group-hover:text-primary transition-colors">
+                            {item.name}
+                          </h4>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {item.description}
+                          </p>
+                          <div className="flex items-center gap-3 mt-1">
+                            <span className="text-sm font-semibold text-primary">
+                              ${item.estimatedValue.toLocaleString()}
+                            </span>
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground capitalize">
+                              {item.condition}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsItemSelectionModalOpen(false)}
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Item Creation/Edit Modal */}
       <Dialog open={isItemModalOpen} onOpenChange={setIsItemModalOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -524,7 +640,7 @@ export default function CreateLotteryPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Dimensions (cms)</Label>
+              <Label>Dimensions (inches)</Label>
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
                   <Input
@@ -554,7 +670,7 @@ export default function CreateLotteryPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="itemWeight">Weight (kgs)</Label>
+              <Label htmlFor="itemWeight">Weight (lbs)</Label>
               <Input
                 id="itemWeight"
                 type="number"

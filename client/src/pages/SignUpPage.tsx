@@ -8,33 +8,28 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
+import { useSignupMutation } from "@/api/auth";
+import { VerifyEmailDialog } from "@/components/VerifyEmailDialog";
+import { Loader2 } from "lucide-react";
+import type { SignupData } from "@/types/auth";
 
 const signupSchema = z
   .object({
     firstName: z.string().min(2, "First name must be at least 2 characters"),
     lastName: z.string().min(2, "Last name must be at least 2 characters"),
     email: z.string().email("Invalid email address"),
-    username: z
+    phoneNumber: z
       .string()
-      .min(3, "Username must be at least 3 characters")
-      .regex(
-        /^[a-zA-Z0-9_]+$/,
-        "Username can only contain letters, numbers, and underscores",
-      ),
+      .min(10, "Phone number must be at least 10 digits")
+      .regex(/^[0-9+\-\s()]+$/, "Invalid phone number format"),
+    birthDate: z.string().min(1, "Birth date is required"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
-    terms: z
-      .boolean()
-      .refine(
-        (val) => val === true,
-        "You must accept the terms and conditions",
-      ),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -44,24 +39,38 @@ const signupSchema = z
 type SignupFormData = z.infer<typeof signupSchema>;
 
 function SignUpPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const signupMutation = useSignupMutation();
+  const [showVerifyDialog, setShowVerifyDialog] = useState(false);
+  const [newUserId, setNewUserId] = useState<number | null>(null);
+  const [newUserEmail, setNewUserEmail] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
   });
-  const termsAccepted = watch("terms");
 
   const onSubmit = async (data: SignupFormData) => {
-    setIsSubmitting(true);
-    //Sign up logic here
-    console.log(data);
-    setIsSubmitting(false);
+    const signupData: SignupData = {
+      name: data.firstName,
+      last_name: data.lastName,
+      email: data.email,
+      password: data.password,
+      phone_number: data.phoneNumber,
+      birth_date: data.birthDate,
+    };
+
+    try {
+      const response = await signupMutation.mutateAsync(signupData);
+      setNewUserId(response.userId);
+      setNewUserEmail(response.email);
+      setShowVerifyDialog(true);
+    } catch {
+      // Error handled by mutation
+    }
   };
   return (
     <main className="flex flex-1 items-center">
@@ -76,6 +85,14 @@ function SignUpPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                {signupMutation.isError && (
+                  <p className="text-sm text-red-500">
+                    {signupMutation.error instanceof Error
+                      ? signupMutation.error.message
+                      : "Signup failed. Please try again."}
+                  </p>
+                )}
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First name</Label>
@@ -124,16 +141,32 @@ function SignUpPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
                   <Input
-                    id="username"
-                    placeholder="johndoe"
-                    {...register("username")}
-                    className={errors.username ? "border-red-500" : ""}
+                    id="phoneNumber"
+                    type="tel"
+                    placeholder="+370 600 12345"
+                    {...register("phoneNumber")}
+                    className={errors.phoneNumber ? "border-red-500" : ""}
                   />
-                  {errors.username && (
+                  {errors.phoneNumber && (
                     <p className="text-sm text-red-500">
-                      {errors.username.message}
+                      {errors.phoneNumber.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="birthDate">Birth Date</Label>
+                  <Input
+                    id="birthDate"
+                    type="date"
+                    {...register("birthDate")}
+                    className={errors.birthDate ? "border-red-500" : ""}
+                  />
+                  {errors.birthDate && (
+                    <p className="text-sm text-red-500">
+                      {errors.birthDate.message}
                     </p>
                   )}
                 </div>
@@ -170,49 +203,18 @@ function SignUpPage() {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="terms"
-                      checked={termsAccepted}
-                      onCheckedChange={(checked) =>
-                        setValue("terms", checked as boolean)
-                      }
-                    />
-                    <label
-                      htmlFor="terms"
-                      className="text-sm text-muted-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      I agree to the{" "}
-                      <NavLink
-                        to="/terms"
-                        className="text-primary hover:underline"
-                      >
-                        Terms of Service
-                      </NavLink>{" "}
-                      and{" "}
-                      <NavLink
-                        to="/privacy"
-                        className="text-primary hover:underline"
-                      >
-                        Privacy Policy
-                      </NavLink>
-                    </label>
-                  </div>
-                  {errors.terms && (
-                    <p className="text-sm text-red-500">
-                      {errors.terms.message}
-                    </p>
-                  )}
-                </div>
-
                 <Button
                   type="submit"
                   className="w-full"
                   size="lg"
-                  disabled={isSubmitting}
+                  disabled={signupMutation.isPending}
                 >
-                  {isSubmitting ? "Creating account..." : "Create account"}
+                  {signupMutation.isPending && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  {signupMutation.isPending
+                    ? "Creating account..."
+                    : "Create account"}
                 </Button>
 
                 <p className="text-center text-sm text-muted-foreground">
@@ -229,6 +231,16 @@ function SignUpPage() {
           </Card>
         </div>
       </div>
+
+      {newUserId && (
+        <VerifyEmailDialog
+          open={showVerifyDialog}
+          onOpenChange={setShowVerifyDialog}
+          userId={newUserId}
+          email={newUserEmail}
+          onSuccess={() => navigate("/login")}
+        />
+      )}
     </main>
   );
 }

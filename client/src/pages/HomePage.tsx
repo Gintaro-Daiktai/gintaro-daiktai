@@ -82,41 +82,7 @@ function HomePage() {
   ];
 
   return (
-    <div className="flex min-h-screen flex-col gap-8">
-      <div className="flex flex-row gap-8">
-        <div className="relative rounded-xl bg-gradient-to-br from-primary/20 via-background to-accent/20 p-12 border border-primary/20">
-          <div className="mx-auto max-w-3xl text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-balance">
-              Discover Unique Items at Unbeatable Prices
-            </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed text-pretty">
-              Join thousands of buyers and sellers in the most trusted online
-              auction marketplace.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button size="lg" asChild>
-                <NavLink to={"/browse"}>Start Bidding</NavLink>
-              </Button>
-            </div>
-          </div>
-        </div>
-        <div className="relative rounded-xl bg-gradient-to-br from-primary/20 via-background to-accent/20 p-12 border border-primary/20">
-          <div className="mx-auto max-w-3xl text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-balance">
-              Discover Unique Items at Unbeatable Prices
-            </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed text-pretty">
-              Join thousands of buyers and sellers in the most trusted online
-              auction marketplace.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button size="lg" asChild>
-                <NavLink to={"/browse"}>Buy Tickets</NavLink>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="flex min-h-screen flex-col gap-8 p-4">
       <div>
         <div className="flex items-center justify-between mb-6">
           <div>

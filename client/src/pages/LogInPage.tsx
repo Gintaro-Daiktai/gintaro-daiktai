@@ -1,6 +1,13 @@
 import { z } from "zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
+import { useLoginMutation } from "@/api/auth";
+import { useAuth } from "@/hooks/useAuth";
+import { decodeToken } from "@/utils/token";
+import { VerifyEmailDialog } from "@/components/VerifyEmailDialog";
+import { Loader2 } from "lucide-react";
+import type { User } from "@/types/auth";
 import {
   Card,
   CardHeader,
@@ -22,7 +29,13 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 function LogInPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const { setAuth } = useAuth();
+  const loginMutation = useLoginMutation();
+  const [showVerifyDialog, setShowVerifyDialog] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
+  const [unverifiedUserId, setUnverifiedUserId] = useState<number | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -32,10 +45,39 @@ function LogInPage() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsSubmitting(true);
-    console.log(data);
-    //Login logic here
-    setIsSubmitting(false);
+    try {
+      const response = await loginMutation.mutateAsync(data);
+
+      const decoded = decodeToken(response.token);
+      if (!decoded) {
+        throw new Error("Invalid token");
+      }
+
+      const user: User = {
+        id: decoded.sub,
+        email: decoded.email,
+        role: decoded.role,
+        confirmed: decoded.confirmed,
+        name: "",
+        last_name: "",
+        phone_number: "",
+        balance: 0,
+        registration_date: new Date(),
+        birth_date: new Date(),
+      };
+
+      setAuth(response.token, user);
+
+      if (!response.confirmed) {
+        setUnverifiedEmail(decoded.email);
+        setUnverifiedUserId(decoded.sub);
+        setShowVerifyDialog(true);
+      } else {
+        navigate("/");
+      }
+    } catch {
+      // Error handled by mutation
+    }
   };
   return (
     <div className="flex flex-col min-h-0">
@@ -53,6 +95,14 @@ function LogInPage() {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  {loginMutation.isError && (
+                    <p className="text-sm text-red-500">
+                      {loginMutation.error instanceof Error
+                        ? loginMutation.error.message
+                        : "Login failed. Please try again."}
+                    </p>
+                  )}
+
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
@@ -88,9 +138,12 @@ function LogInPage() {
                     type="submit"
                     className="w-full cursor-pointer"
                     size="lg"
-                    disabled={isSubmitting}
+                    disabled={loginMutation.isPending}
                   >
-                    {isSubmitting ? "Signing in..." : "Sign in"}
+                    {loginMutation.isPending && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    {loginMutation.isPending ? "Signing in..." : "Sign in"}
                   </Button>
 
                   <p className="text-center text-sm text-muted-foreground">
@@ -108,6 +161,16 @@ function LogInPage() {
           </div>
         </div>
       </main>
+
+      {unverifiedUserId && (
+        <VerifyEmailDialog
+          open={showVerifyDialog}
+          onOpenChange={setShowVerifyDialog}
+          userId={unverifiedUserId}
+          email={unverifiedEmail}
+          onSuccess={() => navigate("/")}
+        />
+      )}
     </div>
   );
 }

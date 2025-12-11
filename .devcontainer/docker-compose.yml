@@ -40,6 +40,17 @@ services:
       timeout: 10s
       retries: 5
 
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - db
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+
 networks:
   db:
     driver: bridge

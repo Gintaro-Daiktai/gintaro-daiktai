@@ -73,63 +73,8 @@ export default function LotteriesPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-accent/10 via-background to-primary/10 py-16 md:py-24">
-          <div className="container">
-            <div className="mx-auto max-w-3xl text-center space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent mb-4">
-                <Ticket className="h-4 w-4" />
-                <span className="text-sm font-medium">Win Amazing Prizes</span>
-              </div>
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-balance">
-                Try Your Luck in Our Lotteries
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed text-pretty">
-                Buy tickets for a chance to win incredible prizes at a fraction
-                of their value. Fair draws, verified winners, and instant
-                notifications.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-                <Button size="lg">
-                  <Ticket className="mr-2 h-5 w-5" />
-                  Browse Lotteries
-                </Button>
-                <Button size="lg" variant="outline">
-                  How It Works
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Stats Section */}
-        <section className="py-12 border-b bg-muted/30">
-          <div className="container">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              <div>
-                <p className="text-3xl md:text-4xl font-bold text-primary">
-                  $2.4M+
-                </p>
-                <p className="text-muted-foreground mt-2">Total Prize Value</p>
-              </div>
-              <div>
-                <p className="text-3xl md:text-4xl font-bold text-accent">
-                  1,247
-                </p>
-                <p className="text-muted-foreground mt-2">Happy Winners</p>
-              </div>
-              <div>
-                <p className="text-3xl md:text-4xl font-bold text-primary">
-                  98%
-                </p>
-                <p className="text-muted-foreground mt-2">Satisfaction Rate</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Lotteries Grid */}
-        <section className="py-16">
+        <section className="py-4">
           <div className="container">
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8">
               <div>
