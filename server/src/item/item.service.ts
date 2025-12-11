@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateItemDto } from './dto/createItem.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItemEntity } from './item.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
 import { UserPayload } from 'src/common/interfaces/user_payload.interface';
 
@@ -37,11 +37,30 @@ export class ItemService {
   }
 
   async findItemById(id: number): Promise<ItemEntity | null> {
-    this.logger.log(id);
     return await this.itemRepository.findOne({
       where: { id },
       relations: { user: true },
     });
+  }
+
+  async findItemsById(
+    ids: number[],
+    relations: Record<string, boolean> = {},
+  ): Promise<ItemEntity[]> {
+    if (!ids || ids.length === 0) return [];
+
+    const items = await this.itemRepository.find({
+      where: { id: In(ids) },
+      relations,
+    });
+
+    if (items.length !== ids.length) {
+      const foundIds = items.map((i) => i.id);
+      const missingIds = ids.filter((id) => !foundIds.includes(id));
+      throw new NotFoundException(`Items not found: ${missingIds.join(', ')}`);
+    }
+
+    return items;
   }
 
   async deleteItem(id: number): Promise<void> {
