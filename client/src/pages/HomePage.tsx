@@ -162,7 +162,7 @@ function HomePage() {
             </p>
           </div>
           <Button variant="ghost" asChild>
-            <NavLink to={"/lottery"}>View All</NavLink>
+            <NavLink to={"/browse"}>View All</NavLink>
           </Button>
         </div>
 

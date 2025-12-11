@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\""
-  },
+  },d
   "prettier": {},
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
