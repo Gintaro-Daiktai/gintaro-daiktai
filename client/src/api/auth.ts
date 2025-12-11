@@ -99,6 +99,14 @@ export const authApi = {
       birth_date: new Date(response.birth_date),
     };
   },
+
+  deleteUser: async (userId: number): Promise<{ message: string }> => {
+    const response = await apiClient<{ message: string }>(`/users/${userId}`, {
+      method: "DELETE",
+      requiresAuth: true,
+    });
+    return response;
+  },
 };
 
 // React Query Hooks
@@ -166,6 +174,18 @@ export const useUpdateUserProfile = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["user", "profile", data.id] });
       queryClient.invalidateQueries({ queryKey: ["auth"] });
+    },
+  });
+};
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userId: number) => authApi.deleteUser(userId),
+    onSuccess: () => {
+      removeToken();
+      queryClient.clear();
     },
   });
 };

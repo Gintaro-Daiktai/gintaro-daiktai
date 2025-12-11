@@ -103,9 +103,18 @@ export class UserController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  async deleteUser(@Param('id') id: string): Promise<any> {
-    await this.userService.deleteUser(parseInt(id, 10));
+  @UseGuards(JwtAuthGuard, ConfirmedGuard)
+  async deleteUser(
+    @User() user: UserPayload,
+    @Param('id') id: string,
+  ): Promise<any> {
+    const userId = parseInt(id, 10);
+
+    if (user.userId !== userId && user.role !== 'admin') {
+      throw new UnauthorizedException('You can only delete your own account.');
+    }
+
+    await this.userService.deleteUser(userId);
     return {
       message: 'User deleted successfully',
     };

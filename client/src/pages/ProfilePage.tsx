@@ -5,7 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useParams } from "react-router";
 import { NavLink } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
-import { useUserProfile, useUpdateUserProfile } from "@/api/auth";
+import {
+  useUserProfile,
+  useUpdateUserProfile,
+  useDeleteUser,
+} from "@/api/auth";
 import { createSafeAvatarDataUri } from "@/utils/imageValidation";
 import type { Review, UserProfile, Auction, Lottery } from "@/types/profile";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
@@ -16,7 +20,7 @@ import { ReviewCard } from "@/components/profile/ReviewCard";
 
 export default function ProfilePage() {
   const params = useParams();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, clearAuth } = useAuth();
   const profileUserId = params.userId
     ? parseInt(params.userId)
     : currentUser?.id || null;
@@ -32,6 +36,7 @@ export default function ProfilePage() {
   const [reviews, setReviews] = useState<Review[]>(mockReviews);
 
   const updateMutation = useUpdateUserProfile();
+  const deleteMutation = useDeleteUser();
 
   const handleProfileUpdate = async (data: {
     name: string;
@@ -53,8 +58,15 @@ export default function ProfilePage() {
   };
 
   const handleAccountDelete = async () => {
-    console.log("Account deleted for user:", params.userId);
-    window.location.href = "/";
+    if (!profileData) return;
+
+    try {
+      await deleteMutation.mutateAsync(profileData.id);
+      clearAuth();
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+    }
   };
   const toggleReaction = (reviewId: number, emoji: string) => {
     setReviews((prevReviews) =>
