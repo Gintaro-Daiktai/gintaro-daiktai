@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -32,17 +33,21 @@ export class DeliveryController {
   async getDeliveryById(
     @Param('id') id: number,
     @User() user: UserPayload,
-  ): Promise<DeliveryEntity | undefined> {
+  ): Promise<DeliveryEntity> {
     const delivery = await this.deliveryService.getDeliveryById(id);
     if (!delivery) {
       throw new NotFoundException('Delivery not found');
     }
+
     if (
-      user.userId != delivery.sender.id &&
-      user.userId != delivery.receiver.id &&
-      user.role != 'admin'
-    )
-      return delivery;
+      user.userId !== delivery.sender.id &&
+      user.userId !== delivery.receiver.id &&
+      user.role !== 'admin'
+    ) {
+      throw new ForbiddenException('You do not have access to this delivery');
+    }
+
+    return delivery;
   }
   @Get('my-deliveries')
   @UseGuards(JwtAuthGuard)

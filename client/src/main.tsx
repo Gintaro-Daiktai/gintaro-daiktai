@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SocketProvider } from "@/contexts/SocketProvider";
 import "./index.css";
 import App from "./App.tsx";
 import Layout from "./Layout.tsx";
@@ -33,10 +34,12 @@ root.render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <Layout>
-            <App />
-          </Layout>
-          <Toaster position="top-right" richColors />
+          <SocketProvider>
+            <Layout>
+              <App />
+            </Layout>
+            <Toaster position="top-right" richColors />
+          </SocketProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
