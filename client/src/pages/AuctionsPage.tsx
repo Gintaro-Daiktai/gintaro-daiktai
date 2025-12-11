@@ -337,8 +337,6 @@ export default function AuctionsPage() {
                       <img
                         src={
                           userItems.find((item) => item.id.toString() === selectedItemId)?.images[0] ||
-                          "/placeholder.svg" ||
-                          "/placeholder.svg" ||
                           "/placeholder.svg"
                         }
                         alt="Selected item"
