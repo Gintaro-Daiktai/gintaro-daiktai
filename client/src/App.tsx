@@ -88,12 +88,7 @@ function App() {
         path="/deliveries/:id/dispute"
         element={<DisputeFormPage params={{ id: "1" }} />}
       />
-      <Route
-        path="/messages"
-        element={
-          <UserMessagingPage searchParams={{ userId: "current-user" }} />
-        }
-      />
+      <Route path="/messages" element={<UserMessagingPage />} />
       <Route
         path="/admin/chargebacks"
         element={
