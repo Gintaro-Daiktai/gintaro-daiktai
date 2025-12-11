@@ -187,6 +187,13 @@ export function BalanceCard({ balance, onBalanceChange }: BalanceCardProps) {
                     Enter the amount you want to withdraw from your balance.
                   </DialogDescription>
                 </DialogHeader>
+                <div className="rounded-md bg-muted/50 border border-border p-3 mb-4">
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-medium text-foreground">Note:</span>{" "}
+                    Withdrawals are simulated for demonstration purposes. In
+                    production, funds would be transferred via Stripe Connect.
+                  </p>
+                </div>
                 <form
                   onSubmit={handleWithdrawalSubmit(onWithdrawalSubmit)}
                   className="space-y-4"

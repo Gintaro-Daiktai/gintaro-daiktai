@@ -1,5 +1,3 @@
-//THE CURRENT STRIPE SETUP IS VERY BAD AND EXPOSES PRIVATE STRIPE KEY TO CLEINT, ONLY FOR DEMO PURPOSES. DO NOT USE THIS IN PRODUCTION
-
 import { useCallback } from "react";
 import {
   EmbeddedCheckout,
@@ -8,7 +6,7 @@ import {
 import { createDepositSession } from "@/lib/balance";
 import { loadStripe } from "@stripe/stripe-js";
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
 
 export default function Checkout({ amountInCents }: { amountInCents: number }) {
   const startSession = useCallback(async () => {
@@ -22,7 +20,7 @@ export default function Checkout({ amountInCents }: { amountInCents: number }) {
   }, [amountInCents]);
 
   return (
-    <div id="checkout">
+    <div id="checkout" className="w-full">
       <EmbeddedCheckoutProvider
         stripe={stripePromise}
         options={{

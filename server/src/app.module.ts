@@ -23,6 +23,7 @@ import { AuthModule } from './auth/auth.module';
 import { SeederModule } from './database/seeder.module';
 import { VerificationModule } from './verification/verification.module';
 import { EmailModule } from './email/email.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { EmailModule } from './email/email.module';
     SeederModule,
     VerificationModule,
     EmailModule,
+    StripeModule,
     UserModule,
     AddressModule,
     ItemModule,
