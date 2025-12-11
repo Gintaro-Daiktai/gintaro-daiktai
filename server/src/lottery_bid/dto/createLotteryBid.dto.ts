@@ -7,9 +7,5 @@ export class CreateLotteryBidDto {
 
   @IsNumber()
   @IsNotEmpty()
-  user_id: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  lottery_id: number;
+  lottery: number;
 }

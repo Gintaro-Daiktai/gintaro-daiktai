@@ -1,0 +1,58 @@
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { LotteryBidEntity } from './lottery_bid.entity';
+import { Repository } from 'typeorm';
+import { CreateLotteryBidDto } from './dto/createLotteryBid.dto';
+import { LotteryEntity } from 'src/lottery/lottery.entity';
+import { UserPayload } from 'src/common/interfaces/user_payload.interface';
+import { UserService } from 'src/user/user.service';
+import { LotteryService } from 'src/lottery/lottery.service';
+
+@Injectable()
+export class LotteryBidService {
+  private readonly logger = new Logger(LotteryBidService.name);
+
+  constructor(
+    @InjectRepository(LotteryBidEntity)
+    private readonly lotteryBidRepository: Repository<LotteryBidEntity>,
+    private readonly userService: UserService,
+    private readonly lotteryService: LotteryService,
+  ) {}
+
+  async createLotteryBid(
+    createLotteryBidDto: CreateLotteryBidDto,
+    userPayload: UserPayload,
+  ): Promise<LotteryBidEntity> {
+    const user = await this.userService.findUserById(userPayload.userId);
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    const lottery = await this.lotteryService.findLotteryById(
+      createLotteryBidDto.lottery,
+    );
+    if (!lottery) {
+      throw new NotFoundException('Lottery not found.');
+    }
+
+    // TODO: add logic for verifying wallet and holding money.
+
+    const newLotteryBid = this.lotteryBidRepository.create({
+      ...createLotteryBidDto,
+      lottery,
+      bid_date: new Date(),
+      user,
+    });
+
+    return this.lotteryBidRepository.save(newLotteryBid);
+  }
+
+  async findLotteryBidsByLottery(
+    lottery: LotteryEntity,
+  ): Promise<LotteryBidEntity[]> {
+    return await this.lotteryBidRepository.find({
+      where: { lottery: lottery },
+      relations: { user: true },
+    });
+  }
+}
