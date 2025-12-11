@@ -25,6 +25,7 @@ export class ReviewEmoteEntity {
       'joy',
       'heart',
       'six_seven',
+      'mantas',
     ],
     nullable: false,
   })
@@ -37,7 +38,8 @@ export class ReviewEmoteEntity {
     | 'fire'
     | 'joy'
     | 'heart'
-    | 'six_seven';
+    | 'six_seven'
+    | 'mantas';
 
   @ManyToOne(() => ReviewEntity, (review) => review.reviewEmotes, {
     nullable: false,
