@@ -36,8 +36,4 @@ export class CreateItemDto {
 
   @IsEnum(['new', 'used', 'worn', 'broken'])
   condition?: 'new' | 'used' | 'worn' | 'broken';
-
-  @IsNumber()
-  @IsNotEmpty()
-  user_id: number;
 }
