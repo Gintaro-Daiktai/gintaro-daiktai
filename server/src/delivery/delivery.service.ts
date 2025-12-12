@@ -4,6 +4,8 @@ import { DeliveryEntity } from './delivery.entity';
 import { Repository } from 'typeorm';
 import { CreateDeliveryDto } from './dto/createDelivery.dto';
 import { UpdateDeliveryDto } from './dto/updateDelivery.dto';
+import { DeliveryResponseDto } from './dto/DeliveryResponseDto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class DeliveryService {
@@ -12,39 +14,58 @@ export class DeliveryService {
     private readonly deliveryRepository: Repository<DeliveryEntity>,
   ) {}
 
-  async getAllDeliveries(): Promise<DeliveryEntity[]> {
-    return await this.deliveryRepository.find();
+  private transformToDto(delivery: DeliveryEntity): DeliveryResponseDto {
+    return plainToInstance(DeliveryResponseDto, delivery, {
+      excludeExtraneousValues: false,
+    });
   }
-  async getDeliveryById(id: number): Promise<DeliveryEntity | null> {
-    return await this.deliveryRepository.findOne({
+
+  async getAllDeliveries(): Promise<DeliveryResponseDto[]> {
+    const deliveries = await this.deliveryRepository.find({
+      relations: ['sender', 'receiver', 'item'],
+    });
+    return deliveries.map((delivery) => this.transformToDto(delivery));
+  }
+
+  async getDeliveryById(id: number): Promise<DeliveryResponseDto | null> {
+    const delivery = await this.deliveryRepository.findOne({
       where: { id },
       relations: ['sender', 'receiver', 'item'],
     });
+    return delivery ? this.transformToDto(delivery) : null;
   }
+
   async createDelivery(
     deliveryData: CreateDeliveryDto,
-  ): Promise<DeliveryEntity> {
+  ): Promise<DeliveryResponseDto> {
     const newDelivery = new DeliveryEntity();
     Object.assign(newDelivery, deliveryData);
-    return await this.deliveryRepository.save(newDelivery);
+    const savedDelivery = await this.deliveryRepository.save(newDelivery);
+    return this.transformToDto(savedDelivery);
   }
+
   async updateDelivery(
     id: number,
     updateData: UpdateDeliveryDto,
-  ): Promise<DeliveryEntity | null> {
-    const delivery = await this.getDeliveryById(id);
+  ): Promise<DeliveryResponseDto | null> {
+    const delivery = await this.deliveryRepository.findOne({
+      where: { id },
+      relations: ['sender', 'receiver', 'item'],
+    });
     if (!delivery) {
       throw new NotFoundException('Delivery not found');
     }
     Object.assign(delivery, updateData);
-    return await this.deliveryRepository.save(delivery);
+    const updatedDelivery = await this.deliveryRepository.save(delivery);
+    return this.transformToDto(updatedDelivery);
   }
 
-  async getUserDeliveries(userId: number): Promise<DeliveryEntity[]> {
-    return await this.deliveryRepository.find({
+  async getUserDeliveries(userId: number): Promise<DeliveryResponseDto[]> {
+    const deliveries = await this.deliveryRepository.find({
       where: [{ sender: { id: userId } }, { receiver: { id: userId } }],
-      relations: ['sender', 'receiver'],
+      relations: ['sender', 'receiver', 'item'],
     });
+    return deliveries.map((delivery) => this.transformToDto(delivery));
   }
 
   async isUserPartOfDelivery(

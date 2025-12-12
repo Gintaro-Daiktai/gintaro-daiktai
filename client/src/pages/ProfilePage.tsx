@@ -1,22 +1,19 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useParams } from "react-router";
-import { NavLink } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
 import {
   useUserProfile,
   useUpdateUserProfile,
   useDeleteUser,
 } from "@/api/auth";
+import { useProfileReviews } from "@/hooks/useProfileReviews";
 import { createSafeAvatarDataUri } from "@/utils/imageValidation";
-import type { Review, UserProfile, Auction, Lottery } from "@/types/profile";
+import type { UserProfile, Auction, Lottery } from "@/types/profile";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { BalanceCard } from "@/components/profile/BalanceCard";
-import { AuctionCard } from "@/components/profile/AuctionCard";
-import { LotteryCard } from "@/components/profile/LotteryCard";
-import { ReviewCard } from "@/components/profile/ReviewCard";
+import { ProfileTabs } from "@/components/profile/ProfileTabs";
 
 export default function ProfilePage() {
   const params = useParams();
@@ -31,12 +28,14 @@ export default function ProfilePage() {
     isLoading,
     isError,
   } = useUserProfile(profileUserId);
-
   const [balance, setBalance] = useState(profileData?.balance || 0);
-  const [reviews, setReviews] = useState<Review[]>(mockReviews);
-
   const updateMutation = useUpdateUserProfile();
   const deleteMutation = useDeleteUser();
+
+  const { reviews, toggleReaction, deleteReview } = useProfileReviews(
+    profileUserId,
+    currentUser?.id,
+  );
 
   const handleProfileUpdate = async (data: {
     name: string;
@@ -67,48 +66,6 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Failed to delete account:", error);
     }
-  };
-  const toggleReaction = (reviewId: number, emoji: string) => {
-    setReviews((prevReviews) =>
-      prevReviews.map((review) => {
-        if (review.id !== reviewId) return review;
-
-        const existingReaction = review.reactions.find(
-          (r) => r.emoji === emoji,
-        );
-
-        if (existingReaction) {
-          return {
-            ...review,
-            reactions: review.reactions
-              .map((r) =>
-                r.emoji === emoji
-                  ? {
-                      ...r,
-                      count: r.userReacted ? r.count - 1 : r.count + 1,
-                      userReacted: !r.userReacted,
-                    }
-                  : r,
-              )
-              .filter((r) => r.count > 0),
-          };
-        } else {
-          return {
-            ...review,
-            reactions: [
-              ...review.reactions,
-              { emoji, count: 1, userReacted: true },
-            ],
-          };
-        }
-      }),
-    );
-  };
-
-  const deleteReview = (reviewId: number) => {
-    setReviews((prevReviews) =>
-      prevReviews.filter((review) => review.id !== reviewId),
-    );
   };
 
   if (profileData && balance !== profileData.balance) {
@@ -169,88 +126,14 @@ export default function ProfilePage() {
         <BalanceCard balance={balance} onBalanceChange={setBalance} />
       )}
 
-      <Tabs defaultValue="auctions" className="space-y-6 mt-6">
-        <div className="flex flex-row">
-          <TabsList>
-            <TabsTrigger value="auctions" className="cursor-pointer">
-              Auctions ({userAuctions.length})
-            </TabsTrigger>
-            <TabsTrigger value="lotteries" className="cursor-pointer">
-              Lotteries ({userLotteries.length})
-            </TabsTrigger>
-            <TabsTrigger value="reviews" className="cursor-pointer">
-              Reviews ({reviews.length})
-            </TabsTrigger>
-          </TabsList>
-
-          <div className="ml-auto">
-            <NavLink to="/auctionslist">
-              <Button variant="link" className="cursor-pointer">
-                View Past Auctions (9)
-              </Button>
-            </NavLink>
-            <NavLink to="/lotterieslist">
-              <Button variant="link" className="cursor-pointer">
-                View Past Lotteries (5)
-              </Button>
-            </NavLink>
-          </div>
-        </div>
-
-        <TabsContent value="auctions" className="space-y-6">
-          {userAuctions.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userAuctions.map((auction) => (
-                <AuctionCard key={auction.id} auction={auction} />
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <p className="text-muted-foreground">No active auctions</p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="lotteries" className="space-y-6">
-          {userLotteries.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userLotteries.map((lottery) => (
-                <LotteryCard key={lottery.id} lottery={lottery} />
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <p className="text-muted-foreground">No active lotteries</p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="reviews" className="space-y-6">
-          {reviews.length > 0 ? (
-            <div className="space-y-4">
-              {reviews.map((review) => (
-                <ReviewCard
-                  key={review.id}
-                  review={review}
-                  availableEmojis={availableEmojis}
-                  onToggleReaction={toggleReaction}
-                  onDelete={deleteReview}
-                />
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <p className="text-muted-foreground">No reviews yet</p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
+      <ProfileTabs
+        auctions={userAuctions}
+        lotteries={userLotteries}
+        reviews={reviews}
+        availableEmojis={availableEmojis}
+        onToggleReaction={toggleReaction}
+        onDeleteReview={deleteReview}
+      />
     </main>
   );
 }
@@ -290,45 +173,15 @@ const userLotteries: Lottery[] = [
   },
 ];
 
-const mockReviews: Review[] = [
-  {
-    id: 1,
-    reviewer: "Sarah M.",
-    rating: 5,
-    comment: "Excellent seller! Item exactly as described and shipped quickly.",
-    date: "2 weeks ago",
-    item: "Vintage Camera",
-    reactions: [
-      { emoji: "👍", count: 5, userReacted: false },
-      { emoji: "❤️", count: 3, userReacted: false },
-      { emoji: "😊", count: 2, userReacted: false },
-    ],
-  },
-  {
-    id: 2,
-    reviewer: "Mike R.",
-    rating: 5,
-    comment: "Great communication and fast shipping. Highly recommend!",
-    date: "1 month ago",
-    item: "Collectible Watch",
-    reactions: [
-      { emoji: "👍", count: 8, userReacted: true },
-      { emoji: "❤️", count: 1, userReacted: false },
-      { emoji: "🔥", count: 4, userReacted: false },
-    ],
-  },
-  {
-    id: 3,
-    reviewer: "Emily K.",
-    rating: 4,
-    comment: "Good seller, item was as described. Packaging could be better.",
-    date: "2 months ago",
-    item: "Vintage Typewriter",
-    reactions: [
-      { emoji: "👍", count: 2, userReacted: false },
-      { emoji: "😊", count: 1, userReacted: false },
-    ],
-  },
+const availableEmojis = [
+  "👍",
+  "👎",
+  "😊",
+  "😢",
+  "😠",
+  "🔥",
+  "😂",
+  "❤️",
+  "🎲",
+  "🐟",
 ];
-
-const availableEmojis = ["👍", "❤️", "😊", "🔥", "👏"];
