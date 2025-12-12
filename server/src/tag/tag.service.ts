@@ -12,7 +12,7 @@ export class TagService {
     private readonly tagRepository: Repository<TagEntity>,
   ) {}
 
-  async createItem(createTagDto: CreateTagDto): Promise<TagEntity> {
+  async createTag(createTagDto: CreateTagDto): Promise<TagEntity> {
     const newItem = new TagEntity();
 
     Object.assign(newItem, createTagDto);
@@ -21,10 +21,14 @@ export class TagService {
   }
 
   async findAllTags(): Promise<TagEntity[]> {
-    return await this.tagRepository.find();
+    return this.tagRepository.find();
   }
 
-  async findOneByName(name: string): Promise<TagEntity | null> {
-    return await this.tagRepository.findOne({ where: { name } });
+  async findTagById(id: number): Promise<TagEntity | null> {
+    return this.tagRepository.findOne({ where: { id } });
+  }
+
+  async findTagByName(name: string): Promise<TagEntity | null> {
+    return this.tagRepository.findOne({ where: { name } });
   }
 }

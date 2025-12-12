@@ -13,7 +13,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { AdminGuard } from 'src/auth/guards/admin.guard';
 import { TagEntity } from './tag.entity';
 
-@Controller('tag')
+@Controller('tags')
 export class TagController {
   private readonly logger = new Logger(TagController.name);
 
@@ -23,7 +23,7 @@ export class TagController {
   @UseGuards(JwtAuthGuard, AdminGuard)
   async createTag(@Body('tag') createTagDto: CreateTagDto): Promise<TagEntity> {
     const tagAlreadyExists =
-      (await this.tagService.findOneByName(createTagDto.name)) != null;
+      (await this.tagService.findTagByName(createTagDto.name)) != null;
 
     if (tagAlreadyExists) {
       throw new ConflictException(
@@ -31,9 +31,7 @@ export class TagController {
       );
     }
 
-    const newTag = await this.tagService.createItem(createTagDto);
-
-    return newTag;
+    return this.tagService.createTag(createTagDto);
   }
 
   @Get()

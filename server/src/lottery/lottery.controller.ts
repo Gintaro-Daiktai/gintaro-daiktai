@@ -18,11 +18,6 @@ export class LotteryController {
     @Body('lottery') createLotteryDto: CreateLotteryDto,
     @User() user: UserPayload,
   ): Promise<LotteryEntity> {
-    const newLottery = await this.lotteryService.createLottery(
-      createLotteryDto,
-      user,
-    );
-
-    return newLottery;
+    return this.lotteryService.createLottery(createLotteryDto, user);
   }
 }
