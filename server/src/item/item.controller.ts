@@ -9,6 +9,7 @@ import {
   UnauthorizedException,
   NotFoundException,
   Logger,
+  Patch,
 } from '@nestjs/common';
 import { ItemService } from './item.service';
 import { CreateItemDto } from './dto/createItem.dto';
@@ -16,6 +17,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import type { UserPayload } from 'src/common/interfaces/user_payload.interface';
 import { ItemEntity } from './item.entity';
+import { UpdateItemDto } from './dto/editItem.dto';
 
 @Controller('items')
 export class ItemController {
@@ -35,6 +37,14 @@ export class ItemController {
     );
 
     return newItem;
+  }
+
+  @Patch()
+  @UseGuards(JwtAuthGuard)
+  async updateItem(
+    @Body('item') updateItemDto: UpdateItemDto,
+  ): Promise<ItemEntity> {
+    return this.itemService.updateItem(updateItemDto);
   }
 
   @Get()

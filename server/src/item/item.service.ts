@@ -5,6 +5,7 @@ import { ItemEntity } from './item.entity';
 import { In, Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
 import { UserPayload } from 'src/common/interfaces/user_payload.interface';
+import { UpdateItemDto } from './dto/editItem.dto';
 
 @Injectable()
 export class ItemService {
@@ -30,6 +31,18 @@ export class ItemService {
     });
 
     return this.itemRepository.save(newItem);
+  }
+
+  async updateItem(updateItemDto: UpdateItemDto): Promise<ItemEntity> {
+    const item = await this.itemRepository.preload({
+      ...updateItemDto,
+    });
+
+    if (!item) {
+      throw new NotFoundException(`Item with ID ${updateItemDto.id} not found`);
+    }
+
+    return this.itemRepository.save(item);
   }
 
   async findAllItems(): Promise<ItemEntity[]> {
