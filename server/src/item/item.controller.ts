@@ -6,10 +6,9 @@ import {
   Get,
   Param,
   UseGuards,
-  UnauthorizedException,
-  NotFoundException,
   Logger,
   Patch,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ItemService } from './item.service';
 import { CreateItemDto } from './dto/createItem.dto';
@@ -58,21 +57,9 @@ export class ItemController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   async deleteItem(
-    @Param('id') id: string,
-    @User() user: UserPayload,
-  ): Promise<any> {
-    const itemToRemove = await this.itemService.findItemById(parseInt(id, 10));
-    if (!itemToRemove) {
-      throw new NotFoundException('Item not found.');
-    }
-    if (user.userId != itemToRemove?.user?.id && user.role != 'admin') {
-      throw new UnauthorizedException(
-        'User is unauthorized to do this action.',
-      );
-    }
-    await this.itemService.deleteItem(parseInt(id, 10));
-    return {
-      message: 'Item deleted successfully',
-    };
+    @Param('id', ParseIntPipe) id: number,
+    @User() userPayload: UserPayload,
+  ): Promise<void> {
+    return this.itemService.deleteItem(id, userPayload);
   }
 }

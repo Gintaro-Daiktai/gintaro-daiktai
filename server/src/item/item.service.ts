@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateItemDto } from './dto/createItem.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItemEntity } from './item.entity';
@@ -76,7 +81,20 @@ export class ItemService {
     return items;
   }
 
-  async deleteItem(id: number): Promise<void> {
+  async deleteItem(id: number, userPayload: UserPayload): Promise<void> {
+    const itemToRemove = await this.findItemById(id);
+    if (!itemToRemove) {
+      throw new NotFoundException('Item not found.');
+    }
+
+    const isOwner = itemToRemove.user?.id === userPayload.userId;
+    const isAdmin = userPayload.role === 'admin';
+    if (!isOwner && !isAdmin) {
+      throw new ForbiddenException(
+        'You do not have permission to delete this item.',
+      );
+    }
+
     await this.itemRepository.delete({ id });
   }
 }
