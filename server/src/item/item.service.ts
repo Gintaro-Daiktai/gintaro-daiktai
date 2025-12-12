@@ -82,12 +82,12 @@ export class ItemService {
   }
 
   async deleteItem(id: number, userPayload: UserPayload): Promise<void> {
-    const itemToRemove = await this.findItemById(id);
-    if (!itemToRemove) {
+    const item = await this.findItemById(id);
+    if (!item) {
       throw new NotFoundException('Item not found.');
     }
 
-    const isOwner = itemToRemove.user?.id === userPayload.userId;
+    const isOwner = item.user?.id === userPayload.userId;
     const isAdmin = userPayload.role === 'admin';
     if (!isOwner && !isAdmin) {
       throw new ForbiddenException(
@@ -95,6 +95,6 @@ export class ItemService {
       );
     }
 
-    await this.itemRepository.delete({ id });
+    await this.itemRepository.remove(item);
   }
 }

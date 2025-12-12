@@ -30,12 +30,7 @@ export class ItemController {
     @Body('item') createItemDto: CreateItemDto,
     @User() userPayload: UserPayload,
   ): Promise<ItemEntity> {
-    const newItem = await this.itemService.createItem(
-      createItemDto,
-      userPayload,
-    );
-
-    return newItem;
+    return this.itemService.createItem(createItemDto, userPayload);
   }
 
   @Patch()
@@ -49,9 +44,7 @@ export class ItemController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async getAllItems(): Promise<ItemEntity[]> {
-    const items = await this.itemService.findAllItems();
-
-    return items;
+    return this.itemService.findAllItems();
   }
 
   @Delete(':id')
