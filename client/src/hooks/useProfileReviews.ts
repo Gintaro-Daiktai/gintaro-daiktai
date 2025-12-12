@@ -12,7 +12,7 @@ const EMOJI_MAP: Record<ReviewEmote, string> = {
   fire: "🔥",
   joy: "😂",
   heart: "❤️",
-  six_seven: "🎲",
+  six_seven: "67",
   mantas: "🐟",
 };
 
@@ -25,7 +25,7 @@ const EMOTE_MAP: Record<string, ReviewEmote> = {
   "🔥": "fire",
   "😂": "joy",
   "❤️": "heart",
-  "🎲": "six_seven",
+  "67": "six_seven",
   "🐟": "mantas",
 };
 
