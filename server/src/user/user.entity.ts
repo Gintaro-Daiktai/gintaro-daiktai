@@ -33,6 +33,9 @@ export class UserEntity {
   @Column({ type: 'float', nullable: false })
   balance: number;
 
+  @Column('simple-array', { nullable: true })
+  processedPaymentIds: string[];
+
   @Column({ type: 'boolean', nullable: false, default: false })
   confirmed: boolean;
 

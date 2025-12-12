@@ -1,127 +1,201 @@
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { ArrowLeft, Send, Search } from "lucide-react"
-import { NavLink } from "react-router"
+import { useState, useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Send, Loader2, Reply, X } from "lucide-react";
+import { NavLink } from "react-router";
+import { useSocket } from "@/hooks/useSocket";
+import { messagesApi } from "@/api/messages";
+import { deliveryApi } from "@/api/delivery";
+import type { Message, MessageReceivedPayload } from "@/types/message";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
+export default function MessagesPage() {
+  const { socket, isConnected } = useSocket();
+  const { user } = useAuth();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [messageInput, setMessageInput] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSending, setIsSending] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-interface Message {
-  id: string
-  senderId: string
-  senderName: string
-  content: string
-  timestamp: Date
-}
+  const deliveryId = 1;
+  const [otherUser, setOtherUser] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
 
-interface Conversation {
-  id: string
-  userId: string
-  userName: string
-  userAvatar?: string
-  itemName: string
-  itemId: string
-  lastMessage?: string
-  lastMessageTime?: Date
-  unreadCount: number
-  messages: Message[]
-}
+  const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: behavior,
+      });
+    }
+  };
 
-export default function MessagesPage({
-  searchParams,
-}: {
-  searchParams: { userId: string }
-}) {
-  const [conversations, setConversations] = useState<Conversation[]>([])
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(searchParams.userId || null)
-  const [messageInput, setMessageInput] = useState("")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-
-  // TODO: Replace with your actual data fetching logic
   useEffect(() => {
-    const fetchConversations = async () => {
-      setIsLoading(true)
+    const fetchData = async () => {
+      if (!user) return;
+
       try {
-        // Mock data - replace with actual API call
-        const mockConversations: Conversation[] = [
-          {
-            id: "1",
-            userId: "seller-1",
-            userName: "John Collector",
-            itemName: "Vintage Rolex Watch",
-            itemId: "1",
-            lastMessage: "When can you ship?",
-            lastMessageTime: new Date(Date.now() - 3600000),
-            unreadCount: 2,
-            messages: [
-              {
-                id: "m1",
-                senderId: "seller-1",
-                senderName: "Džonas Collectoru",
-                content: "Hi, I won your auction!",
-                timestamp: new Date(Date.now() - 7200000),
-              },
-              {
-                id: "m2",
-                senderId: "current-user",
-                senderName: "You",
-                content: "Great! Thanks for winning. When can you pay?",
-                timestamp: new Date(Date.now() - 5400000),
-              },
-              {
-                id: "m3",
-                senderId: "seller-1",
-                senderName: "John Collector",
-                content: "When can you ship?",
-                timestamp: new Date(Date.now() - 3600000),
-              },
-            ],
-          },
-          {
-            id: "2",
-            userId: "seller-2",
-            userName: "Sarah Gaming",
-            itemName: "PlayStation 5 Bundle",
-            itemId: "2",
-            lastMessage: "Perfect, see you soon!",
-            lastMessageTime: new Date(Date.now() - 86400000),
-            unreadCount: 0,
-            messages: [],
-          },
-        ]
-        setConversations(mockConversations)
+        setIsLoading(true);
+
+        // Fetch delivery to get sender/receiver info
+        const delivery = await deliveryApi.getDeliveryById(deliveryId);
+
+        // Determine the other user (if current user is sender, other is receiver, and vice versa)
+        const otherUserId =
+          delivery.sender.id === user.id
+            ? delivery.receiver.id
+            : delivery.sender.id;
+
+        const otherUserData =
+          delivery.sender.id === user.id ? delivery.receiver : delivery.sender;
+
+        setOtherUser({
+          id: otherUserId,
+          name: `${otherUserData.name} ${otherUserData.last_name}`,
+        });
+
+        // Fetch messages
+        const fetchedMessages =
+          await messagesApi.getMessagesByDeliveryId(deliveryId);
+        setMessages(fetchedMessages);
       } catch (error) {
-        console.error("Error fetching conversations:", error)
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load delivery information");
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
+    };
+
+    fetchData().then(() => {
+      // Scroll to bottom after initial messages load (instant, no animation)
+      setTimeout(() => scrollToBottom("auto"), 100);
+    });
+  }, [deliveryId, user]);
+
+  // Setup WebSocket listeners
+  useEffect(() => {
+    if (!socket || !isConnected) {
+      return;
     }
 
-    fetchConversations()
-  }, [])
+    socket.emit("joinDelivery", { deliveryId });
 
-  const selectedConversation = conversations.find((c) => c.id === selectedConversationId)
+    // Listen for new messages
+    socket.on("messageReceived", (payload: MessageReceivedPayload) => {
+      // Convert the payload to our Message format
+      const newMessage: Message = {
+        id: payload.id,
+        text: payload.text,
+        send_date: payload.sendDate,
+        sender: {
+          id: payload.sender.id,
+          name: payload.sender.name,
+          last_name: payload.sender.lastName,
+        },
+        receiver: {
+          id: payload.receiver.id,
+          name: payload.receiver.name,
+          last_name: payload.receiver.lastName,
+        },
+        parentMessage: payload.parentMessage,
+      };
 
-  const filteredConversations = conversations.filter(
-    (conv) =>
-      conv.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      conv.itemName.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+      setMessages((prev) => [...prev, newMessage]);
 
-  const handleSendMessage = async () => {
-    if (!messageInput.trim() || !selectedConversation) return
+      setTimeout(() => scrollToBottom(), 100);
+    });
 
-    // TODO: Replace with your actual message sending logic
-    try {
-      console.log("Sending message:", messageInput)
-      console.log("To conversation:", selectedConversation.id)
+    // Listen for message sent confirmation
+    socket.on("messageSent", (data) => {
+      console.log("Message sent successfully:", data);
+      setIsSending(false);
+    });
 
-      // Reset input after sending
-      setMessageInput("")
-    } catch (error) {
-      console.error("Error sending message:", error)
+    // Listen for errors
+    socket.on("error", (error) => {
+      console.error("Socket error:", error);
+      toast.error(error.message || "An error occurred");
+      setIsSending(false);
+    });
+
+    return () => {
+      socket.off("joinedDelivery");
+      socket.off("messageReceived");
+      socket.off("messageSent");
+      socket.off("error");
+    };
+  }, [socket, isConnected, deliveryId, otherUser, user]);
+
+  const handleSendMessage = () => {
+    if (
+      !messageInput.trim() ||
+      !socket ||
+      !isConnected ||
+      !otherUser ||
+      !user
+    ) {
+      if (!isConnected) {
+        toast.error("Not connected to server");
+      } else if (!otherUser) {
+        toast.error("Cannot determine recipient");
+      }
+      return;
     }
+
+    setIsSending(true);
+
+    const messageData: {
+      text: string;
+      deliveryId: number;
+      receiverId: number;
+      parentMessageId?: number;
+    } = {
+      text: messageInput.trim(),
+      deliveryId: deliveryId,
+      receiverId: otherUser.id,
+    };
+
+    // Add parent message ID if replying
+    if (replyingTo) {
+      messageData.parentMessageId = replyingTo.id;
+    }
+
+    console.log("Sending message:", messageData);
+    socket.emit("sendMessage", messageData);
+
+    // Clear input and reply state immediately for better UX
+    setMessageInput("");
+    setReplyingTo(null);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <main className="flex-1 container py-12">
+          <div className="text-center space-y-4">
+            <h1 className="text-2xl font-bold">
+              Please log in to view messages
+            </h1>
+            <Button asChild>
+              <NavLink to="/login">Log In</NavLink>
+            </Button>
+          </div>
+        </main>
+      </div>
+    );
   }
 
   return (
@@ -135,128 +209,167 @@ export default function MessagesPage({
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </NavLink>
-            <h1 className="text-3xl font-bold">Messages</h1>
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold">Messages</h1>
+              <p className="text-sm text-muted-foreground">
+                Delivery #{deliveryId}{" "}
+                {isConnected ? "• Connected" : "• Disconnected"}
+              </p>
+            </div>
           </div>
 
-          {/* Main Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Conversations List */}
-            <Card className="lg:col-span-1">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg">Conversations</CardTitle>
-                <div className="relative mt-4">
-                  <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Search conversations..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8"
-                  />
+          {/* Chat Card */}
+          <Card className="flex flex-col h-[calc(100vh-200px)]">
+            {/* Header */}
+            <CardHeader className="pb-4 border-b">
+              <div>
+                <CardTitle className="text-lg">
+                  {otherUser ? otherUser.name : "Loading..."}
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Delivery #{deliveryId}
+                </p>
+              </div>
+            </CardHeader>
+
+            {/* Messages */}
+            <CardContent
+              ref={messagesContainerRef}
+              className="flex-1 overflow-y-auto space-y-4 py-4"
+            >
+              {isLoading ? (
+                <div className="text-center text-muted-foreground py-8">
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
+                  Loading messages...
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {isLoading ? (
-                  <div className="text-center text-muted-foreground py-8">Loading...</div>
-                ) : filteredConversations.length === 0 ? (
-                  <div className="text-center text-muted-foreground py-8">No conversations found</div>
-                ) : (
-                  filteredConversations.map((conversation) => (
-                    <button
-                      key={conversation.id}
-                      onClick={() => setSelectedConversationId(conversation.id)}
-                      className={`w-full text-left p-3 rounded-lg transition-colors ${
-                        selectedConversationId === conversation.id
-                          ? "bg-primary/10 border border-primary/30"
-                          : "hover:bg-muted"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm truncate">{conversation.userName}</p>
-                          <p className="text-xs text-muted-foreground truncate">{conversation.itemName}</p>
-                          {conversation.lastMessage && (
-                            <p className="text-xs text-muted-foreground truncate mt-1">{conversation.lastMessage}</p>
-                          )}
-                        </div>
-                        {conversation.unreadCount > 0 && (
-                          <div className="bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold flex-shrink-0">
-                            {conversation.unreadCount}
-                          </div>
-                        )}
-                      </div>
-                    </button>
-                  ))
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Chat Area */}
-            {selectedConversation ? (
-              <Card className="lg:col-span-2 flex flex-col">
-                {/* Header */}
-                <CardHeader className="pb-4 border-b">
-                  <div>
-                    <CardTitle className="text-lg">{selectedConversation.userName}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{selectedConversation.itemName}</p>
-                  </div>
-                </CardHeader>
-
-                {/* Messages */}
-                <CardContent className="flex-1 overflow-y-auto space-y-4 py-4">
-                  {selectedConversation.messages.length === 0 ? (
-                    <div className="text-center text-muted-foreground py-8">
-                      No messages yet. Start the conversation!
-                    </div>
-                  ) : (
-                    selectedConversation.messages.map((message) => (
+              ) : messages.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8">
+                  No messages yet. Start the conversation!
+                </div>
+              ) : (
+                <>
+                  {messages.map((message) => {
+                    const isCurrentUser = message.sender.id === user.id;
+                    return (
                       <div
                         key={message.id}
-                        className={`flex ${message.senderId === "current-user" ? "justify-end" : "justify-start"}`}
+                        className={`flex ${isCurrentUser ? "justify-end" : "justify-start"} group`}
                       >
-                        <div
-                          className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                            message.senderId === "current-user"
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted text-muted-foreground"
-                          }`}
-                        >
-                          <p className="text-sm">{message.content}</p>
-                          <p className="text-xs mt-1 opacity-70">{message.timestamp.toLocaleTimeString()}</p>
+                        <div className="flex items-end gap-2">
+                          {!isCurrentUser && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => setReplyingTo(message)}
+                              title="Reply"
+                            >
+                              <Reply className="h-3 w-3" />
+                            </Button>
+                          )}
+                          <div
+                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                              isCurrentUser
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {message.parentMessage && (
+                              <div className="text-xs opacity-70 border-l-2 pl-2 mb-2">
+                                <p className="font-semibold">
+                                  {message.parentMessage.sender.name}
+                                </p>
+                                <p>{message.parentMessage.text}</p>
+                              </div>
+                            )}
+                            <p className="text-sm break-words">
+                              {message.text}
+                            </p>
+                            <p className="text-xs mt-1 opacity-70">
+                              {new Date(message.send_date).toLocaleTimeString(
+                                [],
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )}
+                            </p>
+                          </div>
+                          {isCurrentUser && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => setReplyingTo(message)}
+                              title="Reply"
+                            >
+                              <Reply className="h-3 w-3" />
+                            </Button>
+                          )}
                         </div>
                       </div>
-                    ))
-                  )}
-                </CardContent>
+                    );
+                  })}
+                </>
+              )}
+            </CardContent>
 
-                {/* Input */}
-                <div className="border-t p-4">
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Type a message..."
-                      value={messageInput}
-                      onChange={(e) => setMessageInput(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter") {
-                          handleSendMessage()
-                        }
-                      }}
-                    />
-                    <Button size="icon" onClick={handleSendMessage} disabled={!messageInput.trim()}>
-                      <Send className="h-4 w-4" />
-                    </Button>
+            {/* Input */}
+            <div className="border-t p-4">
+              {replyingTo && (
+                <div className="mb-2 p-2 bg-muted rounded-lg flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Reply className="h-3 w-3" />
+                      <p className="text-xs font-semibold">
+                        Replying to{" "}
+                        {replyingTo.sender.id === user.id
+                          ? "yourself"
+                          : `${replyingTo.sender.name} ${replyingTo.sender.last_name}`}
+                      </p>
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {replyingTo.text}
+                    </p>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 flex-shrink-0"
+                    onClick={() => setReplyingTo(null)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
                 </div>
-              </Card>
-            ) : (
-              <Card className="lg:col-span-2 flex items-center justify-center">
-                <CardContent className="text-center text-muted-foreground py-16">
-                  <p>Select a conversation to start messaging</p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+              )}
+              <div className="flex gap-2">
+                <Input
+                  placeholder={
+                    isConnected
+                      ? "Type a message..."
+                      : "Connecting to server..."
+                  }
+                  value={messageInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  disabled={!isConnected || isSending}
+                />
+                <Button
+                  size="icon"
+                  onClick={handleSendMessage}
+                  disabled={!messageInput.trim() || !isConnected || isSending}
+                >
+                  {isSending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </Card>
         </div>
       </main>
     </div>
-  )
+  );
 }

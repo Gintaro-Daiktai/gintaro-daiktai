@@ -3,11 +3,30 @@ import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SeederService } from './database/seeder.service';
+import { json, urlencoded } from 'express';
+import { Request, Response } from 'express';
+interface RawBodyRequest extends Request {
+  rawBody?: Buffer;
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe());
+
+  app.use(
+    json({
+      limit: '3mb',
+      verify: (req: Request, res: Response, buf: Buffer) => {
+        // Store raw body for Stripe webhook verification
+        if (req.originalUrl === '/api/stripe/webhook') {
+          (req as RawBodyRequest).rawBody = buf;
+        }
+      },
+    }),
+  );
+  app.use(urlencoded({ extended: true, limit: '3mb' }));
+
   const configService = app.get(ConfigService);
 
   const seeder = app.get(SeederService);
