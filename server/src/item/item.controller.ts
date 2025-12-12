@@ -9,6 +9,7 @@ import {
   Logger,
   Patch,
   ParseIntPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { ItemService } from './item.service';
 import { CreateItemDto } from './dto/createItem.dto';
@@ -45,6 +46,18 @@ export class ItemController {
   @UseGuards(JwtAuthGuard)
   async getAllItems(): Promise<ItemEntity[]> {
     return this.itemService.findAllItems();
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  async getItem(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ItemEntity | null> {
+    const item = await this.itemService.findItemById(id);
+
+    if (!item) throw new NotFoundException(`Item with id '${id}' not found`);
+
+    return item;
   }
 
   @Delete(':id')
