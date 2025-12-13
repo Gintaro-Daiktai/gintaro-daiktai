@@ -22,7 +22,6 @@ export type UserProfile = {
   totalSales: number;
   memberSince: string;
   verified: boolean;
-  description: string;
 };
 
 export type Auction = {

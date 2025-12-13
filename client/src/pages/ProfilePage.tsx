@@ -120,8 +120,6 @@ export default function ProfilePage() {
       { month: "long", year: "numeric" },
     ),
     verified: profileData.confirmed,
-    description:
-      "Professional vintage watch dealer with over 15 years of experience.", // TODO: Add to backend
   };
 
   return (

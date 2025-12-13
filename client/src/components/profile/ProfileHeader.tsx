@@ -126,12 +126,6 @@ export function ProfileHeader({
             </div>
           </div>
         </div>
-
-        {profile.description && (
-          <p className="text-muted-foreground mt-4 max-w-2xl">
-            {profile.description}
-          </p>
-        )}
       </div>
     </div>
   );
