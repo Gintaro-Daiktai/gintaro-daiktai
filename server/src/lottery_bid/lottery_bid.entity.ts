@@ -13,8 +13,8 @@ export class LotteryBidEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'float8', nullable: false })
-  sum: number;
+  @Column({ type: 'int', nullable: false })
+  ticket_count: number;
 
   @Column({ type: 'timestamp', nullable: false })
   bid_date: Date;

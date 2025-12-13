@@ -32,7 +32,7 @@ export class ItemEntity {
   })
   creation_date: Date;
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'int', default: 0, nullable: false })
   view_count: number;
 
   @Column({ type: 'float8', nullable: true })
