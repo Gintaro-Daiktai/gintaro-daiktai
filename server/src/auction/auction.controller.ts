@@ -16,7 +16,7 @@ import { ConfirmedGuard } from 'src/auth/guards/confirmed.guard';
 import { CreateAuctionDto } from './dto/createAuction.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import type { UserPayload } from 'src/common/interfaces/user_payload.interface';
-import { AuctionEntity } from './auction.entity';
+import { AuctionResponseDto } from './dto/AuctionResponseDto';
 
 @Controller('auctions')
 export class AuctionController {
@@ -29,12 +29,12 @@ export class AuctionController {
   async createAuction(
     @Body('auction') createAuctionDto: CreateAuctionDto,
     @User() user: UserPayload,
-  ): Promise<AuctionEntity> {
+  ): Promise<AuctionResponseDto> {
     return this.auctionService.createAuction(createAuctionDto, user);
   }
 
   @Get()
-  async getAllAuctions(): Promise<AuctionEntity[]> {
+  async getAllAuctions(): Promise<AuctionResponseDto[]> {
     return this.auctionService.findAllAuctions({
       user: true,
       item: true,
@@ -44,7 +44,7 @@ export class AuctionController {
   @Get(':id')
   async getAuction(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<AuctionEntity> {
+  ): Promise<AuctionResponseDto> {
     const auction = await this.auctionService.findAuctionById(id, {
       user: true,
       item: true,
@@ -63,7 +63,7 @@ export class AuctionController {
   async cancelAuction(
     @Param('id', ParseIntPipe) id: number,
     @User() user: UserPayload,
-  ): Promise<AuctionEntity> {
+  ): Promise<AuctionResponseDto> {
     return this.auctionService.cancelAuction(id, user);
   }
 }

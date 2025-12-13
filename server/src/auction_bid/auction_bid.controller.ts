@@ -5,7 +5,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { ConfirmedGuard } from 'src/auth/guards/confirmed.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import type { UserPayload } from 'src/common/interfaces/user_payload.interface';
-import { AuctionBidEntity } from './auction_bid.entity';
+import { AuctionBidResponseDto } from './dto/AuctionBidResponseDto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('auction-bids')
 export class AuctionBidController {
@@ -18,10 +19,13 @@ export class AuctionBidController {
   async createAuctionBid(
     @Body('auction_bid') createAuctionBidDto: CreateAuctionBidDto,
     @User() userPayload: UserPayload,
-  ): Promise<AuctionBidEntity> {
-    return this.auctionBidService.createAuctionBid(
+  ): Promise<AuctionBidResponseDto> {
+    const bid = await this.auctionBidService.createAuctionBid(
       createAuctionBidDto,
       userPayload,
     );
+    return plainToInstance(AuctionBidResponseDto, bid, {
+      excludeExtraneousValues: true,
+    });
   }
 }

@@ -4,14 +4,9 @@ import { AuctionBidService } from './auction_bid.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuctionBidEntity } from './auction_bid.entity';
 import { UserModule } from 'src/user/user.module';
-import { AuctionModule } from 'src/auction/auction.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([AuctionBidEntity]),
-    UserModule,
-    AuctionModule,
-  ],
+  imports: [TypeOrmModule.forFeature([AuctionBidEntity]), UserModule],
   controllers: [AuctionBidController],
   providers: [AuctionBidService],
   exports: [AuctionBidService],

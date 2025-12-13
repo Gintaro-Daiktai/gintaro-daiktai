@@ -13,6 +13,9 @@ import { CreateAuctionDto } from './dto/createAuction.dto';
 import { UserPayload } from 'src/common/interfaces/user_payload.interface';
 import { UserService } from 'src/user/user.service';
 import { ItemService } from 'src/item/item.service';
+import { AuctionSchedulerService } from 'src/auction-scheduler/auction-scheduler.service';
+import { AuctionResponseDto } from './dto/AuctionResponseDto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class AuctionService {
@@ -25,12 +28,19 @@ export class AuctionService {
     private readonly auctionRepository: Repository<AuctionEntity>,
     private readonly userService: UserService,
     private readonly itemService: ItemService,
+    private readonly schedulerService: AuctionSchedulerService,
   ) {}
+
+  private transformToDto(auction: AuctionEntity): AuctionResponseDto {
+    return plainToInstance(AuctionResponseDto, auction, {
+      excludeExtraneousValues: false,
+    });
+  }
 
   async createAuction(
     createAuctionDto: CreateAuctionDto,
     userPayload: UserPayload,
-  ): Promise<AuctionEntity> {
+  ): Promise<AuctionResponseDto> {
     const user = await this.userService.findUserById(userPayload.userId);
     if (!user) {
       throw new NotFoundException('User not found.');
@@ -63,9 +73,9 @@ export class AuctionService {
       relations: { item: true },
     });
 
-    if (existingAuction) {
+    if (existingAuction && existingAuction.auction_status !== 'cancelled') {
       throw new ConflictException(
-        `Item already has an auction (ID: ${existingAuction.id}).`,
+        `Item already has an active auction (ID: ${existingAuction.id}, status: ${existingAuction.auction_status}).`,
       );
     }
 
@@ -78,33 +88,42 @@ export class AuctionService {
       item,
     });
 
-    return this.auctionRepository.save(auction);
+    const savedAuction = await this.auctionRepository.save(auction);
+
+    this.schedulerService.scheduleAuctionJobs(savedAuction);
+
+    return this.transformToDto(savedAuction);
   }
 
   async findAllAuctions(
     relations: Record<string, boolean> = {},
-  ): Promise<AuctionEntity[]> {
-    return await this.auctionRepository.find({
+  ): Promise<AuctionResponseDto[]> {
+    const auctions = await this.auctionRepository.find({
       relations,
       order: { start_date: 'DESC' },
     });
+    return auctions.map((auction) => this.transformToDto(auction));
   }
 
   async findAuctionById(
     id: number,
     relations: Record<string, boolean> = {},
-  ): Promise<AuctionEntity | null> {
-    return await this.auctionRepository.findOne({
+  ): Promise<AuctionResponseDto | null> {
+    const auction = await this.auctionRepository.findOne({
       where: { id },
       relations,
     });
+    return auction ? this.transformToDto(auction) : null;
   }
 
   async cancelAuction(
     id: number,
     userPayload: UserPayload,
-  ): Promise<AuctionEntity> {
-    const auction = await this.findAuctionById(id, { user: true, item: true });
+  ): Promise<AuctionResponseDto> {
+    const auction = await this.auctionRepository.findOne({
+      where: { id },
+      relations: { user: true, item: true },
+    });
 
     if (!auction) {
       throw new NotFoundException(`Auction with id ${id} not found.`);
@@ -115,6 +134,7 @@ export class AuctionService {
         'You do not have permission to cancel this auction.',
       );
     }
+
     if (auction.auction_status === 'cancelled') {
       throw new ConflictException('Auction is already cancelled.');
     }
@@ -124,6 +144,10 @@ export class AuctionService {
     }
 
     auction.auction_status = 'cancelled';
-    return this.auctionRepository.save(auction);
+    const cancelledAuction = await this.auctionRepository.save(auction);
+
+    this.schedulerService.cancelAuctionJobs(id);
+
+    return this.transformToDto(cancelledAuction);
   }
 }

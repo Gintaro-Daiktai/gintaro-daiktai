@@ -8,11 +8,11 @@ import {
 } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { AuctionBidEntity } from './auction_bid.entity';
+import { AuctionEntity } from 'src/auction/auction.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreateAuctionBidDto } from './dto/createAuctionBid.dto';
 import { UserPayload } from 'src/common/interfaces/user_payload.interface';
 import { UserService } from 'src/user/user.service';
-import { AuctionService } from 'src/auction/auction.service';
 
 @Injectable()
 export class AuctionBidService {
@@ -24,7 +24,6 @@ export class AuctionBidService {
     @InjectRepository(AuctionBidEntity)
     private readonly auctionBidRepository: Repository<AuctionBidEntity>,
     private readonly userService: UserService,
-    private readonly auctionService: AuctionService,
   ) {}
 
   async createAuctionBid(
@@ -37,10 +36,10 @@ export class AuctionBidService {
         throw new NotFoundException('User not found.');
       }
 
-      const auction = await this.auctionService.findAuctionById(
-        createAuctionBidDto.auction,
-        { user: true, item: true, auctionBids: true },
-      );
+      const auction = await manager.findOne(AuctionEntity, {
+        where: { id: createAuctionBidDto.auction },
+        relations: { user: true, item: true, auctionBids: true },
+      });
 
       if (!auction) {
         throw new NotFoundException('Auction not found.');
