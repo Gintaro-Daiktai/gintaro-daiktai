@@ -67,15 +67,6 @@ export function ProfileHeader({
                   <span className="text-muted-foreground">rating</span>
                 </div>
                 <div>
-                  <span className="font-semibold">
-                    {profile.positiveFeadback}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {" "}
-                    positive feedback
-                  </span>
-                </div>
-                <div>
                   <span className="font-semibold">{profile.totalSales}</span>
                   <span className="text-muted-foreground"> sales</span>
                 </div>
@@ -135,12 +126,6 @@ export function ProfileHeader({
             </div>
           </div>
         </div>
-
-        {profile.description && (
-          <p className="text-muted-foreground mt-4 max-w-2xl">
-            {profile.description}
-          </p>
-        )}
       </div>
     </div>
   );
