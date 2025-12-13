@@ -5,7 +5,7 @@ export class CreateReviewEmoteTable1763331202302 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TYPE "public"."review_emote_emote_enum" AS ENUM('like', 'dislike', 'smile', 'sad', 'angry', 'fire', 'joy', 'heart', 'six_seven')`,
+      `CREATE TYPE "public"."review_emote_emote_enum" AS ENUM('like', 'dislike', 'smile', 'sad', 'angry', 'fire', 'joy', 'heart', 'six_seven', 'mantas')`,
     );
     await queryRunner.query(
       `CREATE TABLE "review_emote" ("id" SERIAL NOT NULL, "emote" "public"."review_emote_emote_enum" NOT NULL, "fk_review" integer NOT NULL, "fk_user" integer NOT NULL, CONSTRAINT "PK_6bf8a6aa5f7e6e4d323aad3125d" PRIMARY KEY ("id"))`,
