@@ -4,12 +4,15 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Clock, Ticket, Users, Loader2, Filter } from "lucide-react"
-import { NavLink } from "react-router"
+import { NavLink, useSearchParams } from "react-router"
 import { useEffect, useState, useCallback } from "react"
 import { statisticsApi } from "@/api/statistics"
 import type { BrowseStatisticsDto, PopularTagDto } from "@/types/statistics"
 
 export default function BrowsePage() {
+  const [searchParams] = useSearchParams();
+  const categoryFromUrl = searchParams.get("category") || "";
+  
   const [data, setData] = useState<BrowseStatisticsDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +22,7 @@ export default function BrowsePage() {
   const [maxPrice, setMaxPrice] = useState<string>("");
   const [selectedCondition, setSelectedCondition] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>(categoryFromUrl);
   const [activeTab, setActiveTab] = useState<string>("auctions");
 
   const fetchData = useCallback(async (filterValues?: {
@@ -71,6 +74,12 @@ export default function BrowsePage() {
       console.error("Failed to fetch popular tags:", err);
     }
   }, []);
+
+  useEffect(() => {
+    if (categoryFromUrl && categoryFromUrl !== selectedCategory) {
+      setSelectedCategory(categoryFromUrl);
+    }
+  }, [categoryFromUrl, selectedCategory]);
 
   useEffect(() => {
     fetchData();
@@ -317,7 +326,7 @@ export default function BrowsePage() {
                                 )}
                               </div>
                               <CardContent className="p-4 space-y-3">
-                                <h3 className="font-semibold line-clamp-2 leading-snug">{lottery.title}</h3>
+                                <h3 className="font-semibold line-clamp-2 leading-snug">Lottery #{lottery.id}</h3>
 
                                 <div className="space-y-2">
                                   <div className="flex items-center justify-between text-sm">
