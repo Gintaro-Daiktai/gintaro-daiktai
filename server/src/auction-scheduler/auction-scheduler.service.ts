@@ -46,11 +46,25 @@ export class AuctionSchedulerService implements OnModuleInit {
   scheduleAuctionJobs(auction: AuctionEntity) {
     const jobTimeouts: NodeJS.Timeout[] = [];
     const now = Date.now();
+    const startTime = new Date(auction.start_date).getTime();
     const endTime = new Date(auction.end_date).getTime();
 
     this.logger.log(
-      `Scheduling jobs for auction ${auction.id}, ends at ${new Date(auction.end_date).toISOString()}`,
+      `Scheduling jobs for auction ${auction.id}, starts at ${new Date(auction.start_date).toISOString()}, ends at ${new Date(auction.end_date).toISOString()}`,
     );
+
+    if (auction.auction_status === 'created' && startTime > now) {
+      const delay = startTime - now;
+      const timeout = setTimeout(() => {
+        this.startAuction(auction.id).catch((err) =>
+          this.logger.error(`Failed to start auction ${auction.id}:`, err),
+        );
+      }, delay);
+      jobTimeouts.push(timeout);
+      this.logger.log(
+        `Scheduled auction start for auction ${auction.id} in ${Math.round(delay / 1000)}s`,
+      );
+    }
 
     // Schedule 60-minute reminder
     const time60 = endTime - 60 * 60 * 1000;
@@ -139,6 +153,31 @@ export class AuctionSchedulerService implements OnModuleInit {
     }
 
     this.scheduledJobs.set(auction.id, jobTimeouts);
+  }
+
+  private async startAuction(auctionId: number): Promise<void> {
+    this.logger.log(`Starting auction ${auctionId}`);
+
+    const auction = await this.dataSource.getRepository(AuctionEntity).findOne({
+      where: { id: auctionId },
+    });
+
+    if (!auction) {
+      this.logger.warn(`Auction ${auctionId} not found`);
+      return;
+    }
+
+    if (auction.auction_status !== 'created') {
+      this.logger.log(
+        `Auction ${auctionId} cannot be started - current status: ${auction.auction_status}`,
+      );
+      return;
+    }
+
+    auction.auction_status = 'started';
+    await this.dataSource.getRepository(AuctionEntity).save(auction);
+
+    this.logger.log(`Auction ${auctionId} status changed to 'started'`);
   }
 
   cancelAuctionJobs(auctionId: number) {
