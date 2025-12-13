@@ -44,13 +44,13 @@ export class ItemController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getAllItems(): Promise<ItemEntity[]> {
-    return this.itemService.findAllItems();
+  async getItems(@User() userPayload: UserPayload): Promise<ItemEntity[]> {
+    return this.itemService.findItemsByUser(userPayload);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  async getItem(
+  async getItemById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ItemEntity | null> {
     const item = await this.itemService.findItemById(id);

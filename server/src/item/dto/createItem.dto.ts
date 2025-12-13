@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
@@ -5,6 +6,9 @@ import {
   IsEnum,
   IsOptional,
   IsNumber,
+  IsArray,
+  ArrayUnique,
+  IsInt,
 } from 'class-validator';
 
 export class CreateItemDto {
@@ -36,4 +40,11 @@ export class CreateItemDto {
 
   @IsEnum(['new', 'used', 'worn', 'broken'])
   condition?: 'new' | 'used' | 'worn' | 'broken';
+
+  @IsArray()
+  @IsNotEmpty()
+  @ArrayUnique()
+  @IsInt({ each: true })
+  @Type(() => Number)
+  tagIds: number[];
 }

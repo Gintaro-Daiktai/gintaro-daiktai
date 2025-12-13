@@ -1,5 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { ItemTagEntity } from '../item_tag/item_tag.entity';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ItemEntity } from '../item/item.entity';
 
 @Entity({ name: 'tag' })
 export class TagEntity {
@@ -9,6 +9,6 @@ export class TagEntity {
   @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
   name: string;
 
-  @OneToMany(() => ItemTagEntity, (itemTag) => itemTag.tag)
-  itemTags: ItemTagEntity[];
+  @ManyToMany(() => ItemEntity, (item) => item.tags)
+  items: ItemEntity[];
 }

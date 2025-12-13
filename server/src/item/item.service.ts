@@ -11,6 +11,7 @@ import { In, Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
 import { UserPayload } from 'src/common/interfaces/user_payload.interface';
 import { UpdateItemDto } from './dto/editItem.dto';
+import { TagService } from 'src/tag/tag.service';
 
 @Injectable()
 export class ItemService {
@@ -19,28 +20,49 @@ export class ItemService {
     @InjectRepository(ItemEntity)
     private readonly itemRepository: Repository<ItemEntity>,
     private readonly userService: UserService,
+    private readonly tagService: TagService,
   ) {}
 
   async createItem(
     createItemDto: CreateItemDto,
     userPayload: UserPayload,
   ): Promise<ItemEntity> {
+    const { tagIds, ...itemData } = createItemDto;
+
     const user = await this.userService.findUserById(userPayload.userId);
     if (!user) {
       throw new NotFoundException('User not found.');
     }
 
+    let tagData = {};
+
+    if (tagIds !== undefined) {
+      const tags = await this.tagService.findTagsByIds(tagIds);
+      tagData = { tags };
+    }
+
     const newItem = this.itemRepository.create({
-      ...createItemDto,
+      ...itemData,
       user,
+      ...tagData,
     });
 
     return this.itemRepository.save(newItem);
   }
 
   async updateItem(updateItemDto: UpdateItemDto): Promise<ItemEntity> {
+    const { tagIds, ...itemData } = updateItemDto;
+
+    let tagData = {};
+
+    if (tagIds !== undefined) {
+      const tags = await this.tagService.findTagsByIds(tagIds);
+      tagData = { tags };
+    }
+
     const item = await this.itemRepository.preload({
-      ...updateItemDto,
+      ...itemData,
+      ...tagData,
     });
 
     if (!item) {
@@ -50,8 +72,19 @@ export class ItemService {
     return this.itemRepository.save(item);
   }
 
-  async findAllItems(): Promise<ItemEntity[]> {
-    return await this.itemRepository.find();
+  async findItemsByUser(userPayload: UserPayload): Promise<ItemEntity[]> {
+    const user = await this.userService.findUserById(userPayload.userId);
+
+    if (!user) {
+      throw new NotFoundException(
+        `User with ID ${userPayload.userId} not found`,
+      );
+    }
+
+    return this.itemRepository.find({
+      where: { user },
+      relations: { tags: true },
+    });
   }
 
   async findItemById(id: number): Promise<ItemEntity | null> {

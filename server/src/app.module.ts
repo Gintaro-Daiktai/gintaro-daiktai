@@ -8,7 +8,6 @@ import { UserModule } from './user/user.module';
 import { AddressModule } from './address/address.module';
 import { ItemModule } from './item/item.module';
 import { TagModule } from './tag/tag.module';
-import { ItemTagModule } from './item_tag/item_tag.module';
 import { ImageModule } from './image/image.module';
 import { LotteryModule } from './lottery/lottery.module';
 import { LotteryBidModule } from './lottery_bid/lottery_bid.module';
@@ -39,7 +38,6 @@ import { StripeModule } from './stripe/stripe.module';
     AddressModule,
     ItemModule,
     TagModule,
-    ItemTagModule,
     ImageModule,
     LotteryModule,
     LotteryBidModule,
