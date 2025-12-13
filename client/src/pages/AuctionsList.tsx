@@ -1,114 +1,52 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Clock, Eye } from "lucide-react"
+import { Clock, Loader2 } from "lucide-react"
 import { NavLink } from "react-router"
+import { useEffect, useState } from "react"
+import { statisticsApi } from "@/api/statistics"
+import type { AuctionListItemDto } from "@/types/statistics"
 
 export default function AuctionsList() {
-  const pastAuctions = [
-    {
-      id: 1,
-      title: "Vintage Record Player",
-      finalBid: 850,
-      startingBid: 400,
-      bids: 23,
-      views: 892,
-      endDate: "2 days ago",
-      status: "sold",
-      image: "/chair.jpeg",
-      category: "Electronics",
-      profit: 450,
-    },
-    {
-      id: 2,
-      title: "Signed Baseball Collection",
-      finalBid: 950,
-      startingBid: 600,
-      bids: 18,
-      views: 445,
-      endDate: "5 days ago",
-      status: "sold",
-      image: "/designer_watches.jpg",
-      category: "Sports",
-      profit: 350,
-    },
-    {
-      id: 3,
-      title: "Antique Pocket Watch",
-      finalBid: 1250,
-      startingBid: 700,
-      bids: 31,
-      views: 1205,
-      endDate: "1 week ago",
-      status: "sold",
-      image: "/iphone.jpg",
-      category: "Jewelry",
-      profit: 550,
-    },
-    {
-      id: 4,
-      title: "Leica M6 Film Camera",
-      finalBid: 2100,
-      startingBid: 1500,
-      bids: 34,
-      views: 1458,
-      endDate: "2 weeks ago",
-      status: "sold",
-      image: "/macbook.jpg",
-      category: "Electronics",
-      profit: 600,
-    },
-    {
-      id: 5,
-      title: "Designer Leather Jacket",
-      finalBid: 780,
-      startingBid: 500,
-      bids: 18,
-      views: 567,
-      endDate: "3 weeks ago",
-      status: "sold",
-      image: "/pokemon_cards.jpg",
-      category: "Fashion",
-      profit: 280,
-    },
-    {
-      id: 6,
-      title: "Rare Pokemon Card Set",
-      finalBid: 1850,
-      startingBid: 1200,
-      bids: 45,
-      views: 2103,
-      endDate: "1 month ago",
-      status: "sold",
-      image: "/ps5.jpg",
-      category: "Collectibles",
-      profit: 650,
-    },
-    {
-      id: 7,
-      title: "Vintage Camera Lens",
-      startingBid: 200,
-      bids: 0,
-      views: 89,
-      endDate: "1 week ago",
-      status: "unsold",
-      image: "/rolex.jpg",
-      category: "Electronics",
-      profit: 0,
-    },
-    {
-      id: 8,
-      title: "Art Deco Table Lamp",
-      finalBid: 425,
-      startingBid: 250,
-      bids: 12,
-      views: 334,
-      endDate: "3 days ago",
-      status: "sold",
-      image: "/iphone.jpg",
-      category: "Home & Garden",
-      profit: 175,
-    },
-  ]
+  const [auctions, setAuctions] = useState<AuctionListItemDto[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAuctions = async () => {
+      try {
+        setIsLoading(true);
+        const data = await statisticsApi.getAuctionsList();
+        setAuctions(data);
+      } catch (err) {
+        console.error("Failed to fetch auctions:", err);
+        setError("Failed to load auctions");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAuctions();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <main className="flex-1 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </main>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <main className="flex-1 flex items-center justify-center">
+          <p className="text-muted-foreground">{error}</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -121,8 +59,11 @@ export default function AuctionsList() {
         </div>
 
         <div className="container py-8">
-          <div className="grid gap-4">
-            {pastAuctions.map((auction) => (
+          {auctions.length === 0 ? (
+            <p className="text-center text-muted-foreground">No past auctions found</p>
+          ) : (
+            <div className="grid gap-4">
+              {auctions.map((auction) => (
               <NavLink key={auction.id} to={`/auctionstats/${auction.id}`}>
                 <Card className="hover:shadow-lg transition-all hover:scale-[1.01] cursor-pointer">
                   <CardContent className="p-6">
@@ -170,7 +111,7 @@ export default function AuctionsList() {
                               <p className="text-xs text-muted-foreground mb-1">Ended</p>
                               <p className="text-sm font-semibold flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
-                                {auction.endDate}
+                                {new Date(auction.endDate).toLocaleDateString()}
                               </p>
                             </div>
                           </div>
@@ -185,17 +126,10 @@ export default function AuctionsList() {
                               <p className="text-sm font-semibold">{auction.bids}</p>
                             </div>
                             <div>
-                              <p className="text-xs text-muted-foreground mb-1">Views</p>
-                              <p className="text-sm font-semibold flex items-center gap-1">
-                                <Eye className="h-3 w-3" />
-                                {auction.views}
-                              </p>
-                            </div>
-                            <div>
                               <p className="text-xs text-muted-foreground mb-1">Ended</p>
                               <p className="text-sm font-semibold flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
-                                {auction.endDate}
+                                {new Date(auction.endDate).toLocaleDateString()}
                               </p>
                             </div>
                           </div>
@@ -206,7 +140,8 @@ export default function AuctionsList() {
                 </Card>
               </NavLink>
             ))}
-          </div>
+            </div>
+          )}
         </div>
       </main>
     </div>

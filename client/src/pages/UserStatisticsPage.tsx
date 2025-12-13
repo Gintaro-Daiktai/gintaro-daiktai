@@ -6,6 +6,7 @@ import {
   Trophy,
   Target,
   Percent,
+  Loader2,
 } from "lucide-react"
 import {
   BarChart,
@@ -19,26 +20,53 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts"
+import { useEffect, useState } from "react"
+import { statisticsApi } from "@/api/statistics"
+import type { UserStatisticsDto } from "@/types/statistics"
+import { useAuth } from "@/hooks/useAuth"
 
 export default function UserStatisticsPage() {
-  const biddingTrends = [
-    { month: "Jan", bids: 12, wins: 3, amount: 2400 },
-    { month: "Feb", bids: 19, wins: 5, amount: 4200 },
-    { month: "Mar", bids: 15, wins: 4, amount: 3100 },
-    { month: "Apr", bids: 22, wins: 7, amount: 5800 },
-    { month: "May", bids: 28, wins: 9, amount: 7200 },
-    { month: "Jun", bids: 25, wins: 8, amount: 6500 },
-  ]
+  const { user } = useAuth();
+  const [statistics, setStatistics] = useState<UserStatisticsDto | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const categoryData = [
-    { name: "Electronics", value: 35, count: 28 },
-    { name: "Collectibles", value: 25, count: 20 },
-    { name: "Fashion", value: 20, count: 16 },
-    { name: "Art", value: 12, count: 10 },
-    { name: "Other", value: 8, count: 6 },
-  ]
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      if (!user) return;
+      
+      try {
+        setIsLoading(true);
+        const data = await statisticsApi.getUserStatistics(user.id);
+        setStatistics(data);
+      } catch (err) {
+        console.error("Failed to fetch statistics:", err);
+        setError("Failed to load statistics");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStatistics();
+  }, [user]);
 
   const COLORS = ["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"]
+
+  if (isLoading) {
+    return (
+      <main className="flex-1 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </main>
+    );
+  }
+
+  if (error || !statistics) {
+    return (
+      <main className="flex-1 flex items-center justify-center">
+        <p className="text-muted-foreground">{error || "No statistics available"}</p>
+      </main>
+    );
+  }
 
   return (
       <main className="flex-1">
@@ -71,7 +99,7 @@ export default function UserStatisticsPage() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Total Bids</p>
-                  <p className="text-3xl font-bold">121</p>
+                  <p className="text-3xl font-bold">{statistics.totalBids}</p>
                 </div>
               </CardContent>
             </Card>
@@ -84,9 +112,9 @@ export default function UserStatisticsPage() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Win Rate</p>
-                  <p className="text-3xl font-bold">29.8%</p>
-                  <p className="text-xs text-muted-foreground mt-1">36 of 121 bids won</p>
+                  <p className="text-sm text-muted-foreground mb-1">Auction Win Rate</p>
+                  <p className="text-3xl font-bold">{statistics.winRate.toFixed(1)}%</p>
+                  <p className="text-xs text-muted-foreground mt-1">{statistics.auctionsWon} of {statistics.totalAuctionBids} bids won</p>
                 </div>
               </CardContent>
             </Card>
@@ -100,8 +128,8 @@ export default function UserStatisticsPage() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Total Spent</p>
-                  <p className="text-3xl font-bold">$29.2K</p>
-                  <p className="text-xs text-muted-foreground mt-1">Across 36 items</p>
+                  <p className="text-3xl font-bold">${statistics.totalSpent >= 1000 ? `${(statistics.totalSpent / 1000).toFixed(1)}K` : statistics.totalSpent.toFixed(2)}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Across {statistics.totalWins} items</p>
                 </div>
               </CardContent>
             </Card>
@@ -115,68 +143,72 @@ export default function UserStatisticsPage() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Avg Bid Amount</p>
-                  <p className="text-3xl font-bold">$811</p>
+                  <p className="text-3xl font-bold">${statistics.averageBidAmount.toFixed(0)}</p>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          <div className="mb-8">
-            <Card>
+          {statistics.categoryBreakdown.length > 0 && (
+            <div className="mb-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Percent className="h-5 w-5 text-accent" />
+                    Category Distribution
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={statistics.categoryBreakdown.map(item => ({...item}))}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={(entry) => `${entry.name} ${entry.value}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {statistics.categoryBreakdown.map((_entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {statistics.monthlyTrends.length > 0 && (
+            <Card className="mb-8">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Percent className="h-5 w-5 text-accent" />
-                  Category Distribution
+                  <DollarSign className="h-5 w-5 text-primary" />
+                  Spending Analysis
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={categoryData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {categoryData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                  </PieChart>
+                  <BarChart data={statistics.monthlyTrends}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.25 0.02 240)" />
+                    <XAxis dataKey="month" stroke="var(--muted-foreground)" />
+                    <YAxis stroke="var(--muted-foreground)" />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "var(--popover)",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "8px",
+                      }}
+                    />
+                    <Bar dataKey="amount" fill="var(--accent)" radius={[8, 8, 0, 0]} name="Amount Spent ($)" />
+                  </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
-          </div>
-
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-primary" />
-                Spending Analysis
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={biddingTrends}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.25 0.02 240)" />
-                  <XAxis dataKey="month" stroke="var(--muted-foreground)" />
-                  <YAxis stroke="var(--muted-foreground)" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "var(--popover)",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
-                    }}
-                  />
-                  <Bar dataKey="amount" fill="var(--accent)" radius={[8, 8, 0, 0]} name="Amount Spent ($)" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>          
+          )}          
         </div>
       </main>
   )
