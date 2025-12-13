@@ -14,6 +14,7 @@ import { LotteryModule } from './lottery/lottery.module';
 import { LotteryBidModule } from './lottery_bid/lottery_bid.module';
 import { AuctionModule } from './auction/auction.module';
 import { AuctionBidModule } from './auction_bid/auction_bid.module';
+import { AuctionSchedulerModule } from './auction-scheduler/auction-scheduler.module';
 import { ReviewModule } from './review/review.module';
 import { ReviewEmoteModule } from './review_emote/review_emote.module';
 import { DeliveryModule } from './delivery/delivery.module';
@@ -45,6 +46,7 @@ import { StripeModule } from './stripe/stripe.module';
     LotteryBidModule,
     AuctionModule,
     AuctionBidModule,
+    AuctionSchedulerModule,
     ReviewModule,
     ReviewEmoteModule,
     DeliveryModule,
