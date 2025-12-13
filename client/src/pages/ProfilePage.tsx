@@ -9,8 +9,9 @@ import {
   useDeleteUser,
 } from "@/api/auth";
 import { useProfileReviews } from "@/hooks/useProfileReviews";
+import { useUserAuctions } from "@/hooks/useAuctions";
 import { createSafeAvatarDataUri } from "@/utils/imageValidation";
-import type { UserProfile, Auction, Lottery } from "@/types/profile";
+import type { UserProfile, Lottery } from "@/types/profile";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { BalanceCard } from "@/components/profile/BalanceCard";
 import { ProfileTabs } from "@/components/profile/ProfileTabs";
@@ -36,6 +37,9 @@ export default function ProfilePage() {
     profileUserId,
     currentUser?.id,
   );
+
+  const { auctions, isLoading: auctionsLoading } =
+    useUserAuctions(profileUserId);
 
   const handleProfileUpdate = async (data: {
     name: string;
@@ -96,13 +100,21 @@ export default function ProfilePage() {
     );
   }
 
+  const averageRating =
+    reviews.length > 0
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+      : 0;
+
+  const totalSales = auctions.filter(
+    (auction) => auction.auction_status === "sold",
+  ).length;
+
   const userProfile: UserProfile = {
     id: profileData.id.toString(),
     name: `${profileData.name} ${profileData.last_name}`,
     avatar: createSafeAvatarDataUri(profileData.avatar, "image/jpeg"),
-    rating: 4.8, // TODO: Calculate from reviews
-    positiveFeadback: "98.5%", // TODO: Calculate from reviews
-    totalSales: 234, // TODO: Get from backend
+    rating: Math.round(averageRating * 10) / 10,
+    totalSales,
     memberSince: new Date(profileData.registration_date).toLocaleDateString(
       "en-US",
       { month: "long", year: "numeric" },
@@ -127,7 +139,7 @@ export default function ProfilePage() {
       )}
 
       <ProfileTabs
-        auctions={userAuctions}
+        auctions={auctionsLoading ? [] : auctions}
         lotteries={userLotteries}
         reviews={reviews}
         availableEmojis={availableEmojis}
@@ -137,28 +149,6 @@ export default function ProfilePage() {
     </main>
   );
 }
-
-// Mock data for auctions and lotteries
-const userAuctions: Auction[] = [
-  {
-    id: 1,
-    title: "Vintage Typewriter 1940s",
-    currentBid: 425,
-    bids: 9,
-    endTime: "4h 28m",
-    status: "active",
-    image: "/vintage-typewriter.jpg",
-  },
-  {
-    id: 2,
-    title: "Antique Pocket Watch",
-    currentBid: 1250,
-    bids: 23,
-    endTime: "2h 15m",
-    status: "active",
-    image: "/vintage-rolex-watch.jpg",
-  },
-];
 
 const userLotteries: Lottery[] = [
   {

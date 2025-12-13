@@ -67,15 +67,6 @@ export function ProfileHeader({
                   <span className="text-muted-foreground">rating</span>
                 </div>
                 <div>
-                  <span className="font-semibold">
-                    {profile.positiveFeadback}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {" "}
-                    positive feedback
-                  </span>
-                </div>
-                <div>
                   <span className="font-semibold">{profile.totalSales}</span>
                   <span className="text-muted-foreground"> sales</span>
                 </div>

@@ -48,4 +48,12 @@ export const auctionApi = {
     });
     return bid;
   },
+
+  getUserAuctions: async (userId: number): Promise<Auction[]> => {
+    const allAuctions = await apiClient<Auction[]>("/auctions", {
+      method: "GET",
+      requiresAuth: false,
+    });
+    return allAuctions.filter((auction) => auction.user?.id === userId);
+  },
 };

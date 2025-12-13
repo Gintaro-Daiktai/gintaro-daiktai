@@ -68,3 +68,39 @@ export function useAuction(id: number | null) {
     refetch: loadAuction,
   };
 }
+
+export function useUserAuctions(userId: number | null) {
+  const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadUserAuctions = useCallback(async () => {
+    if (!userId) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const data = await auctionApi.getUserAuctions(userId);
+      setAuctions(data);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to load user auctions:", err);
+      setError("Failed to load user auctions");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    loadUserAuctions();
+  }, [loadUserAuctions]);
+
+  return {
+    auctions,
+    isLoading,
+    error,
+    refetch: loadUserAuctions,
+  };
+}

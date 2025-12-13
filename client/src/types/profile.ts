@@ -19,7 +19,6 @@ export type UserProfile = {
   name: string;
   avatar: string;
   rating: number;
-  positiveFeadback: string;
   totalSales: number;
   memberSince: string;
   verified: boolean;
