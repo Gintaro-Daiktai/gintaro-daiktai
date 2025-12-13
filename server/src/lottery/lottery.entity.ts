@@ -20,8 +20,20 @@ export class LotteryEntity {
   @Column({ type: 'timestamp', nullable: false })
   end_date: Date;
 
-  @Column({ type: 'float8', nullable: true })
-  min_bid: number;
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+    nullable: false,
+  })
+  ticket_price: number;
+
+  @Column({ type: 'int', nullable: false })
+  total_tickets: number;
 
   @Column({
     type: 'enum',

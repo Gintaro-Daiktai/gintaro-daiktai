@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,43 +9,103 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { StarRating } from "@/components/star-rating.tsx";
 import { ArrowLeft, Package } from "lucide-react";
-import { NavLink } from "react-router";
+import { NavLink, useSearchParams } from "react-router";
+import { reviewsApi } from "@/api/reviews";
+import { deliveryApi } from "@/api/delivery";
+import type { Delivery } from "@/types/delivery";
 
 export default function ReviewPage() {
+  const [searchParams] = useSearchParams();
   const [rating, setRating] = useState(0);
+  const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [delivery, setDelivery] = useState<Delivery | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock item data - in real app this would come from URL params or API
-  const item = {
-    id: 1,
-    title: "Vintage Rolex Submariner 1960s",
-    image: "/vintage-rolex-watch.jpg",
-    purchasePrice: 12500,
-    seller: "John Smith",
-  };
+  const deliveryId = searchParams.get("deliveryId");
+  const itemId = searchParams.get("itemId");
+  const sellerId = searchParams.get("sellerId");
+
+  useEffect(() => {
+    const loadDelivery = async () => {
+      if (!deliveryId) {
+        setError("No delivery ID provided");
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const deliveryData = await deliveryApi.getDeliveryById(
+          parseInt(deliveryId),
+        );
+        setDelivery(deliveryData);
+      } catch (err) {
+        console.error("Failed to load delivery:", err);
+        setError("Failed to load delivery details");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDelivery();
+  }, [deliveryId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (rating === 0) {
-      alert("Please select a star rating before submitting.");
+      setError("Please select a star rating before submitting.");
+      return;
+    }
+
+    if (!itemId || !sellerId) {
+      setError("Missing required information. Please try again.");
       return;
     }
 
     setIsSubmitting(true);
+    setError(null);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      await reviewsApi.createReview({
+        title: title.trim() || undefined,
+        body: comment.trim() || undefined,
+        rating,
+        itemId: parseInt(itemId),
+        revieweeId: parseInt(sellerId),
+      });
 
-    console.log("[v0] Review submitted:", { rating, comment, itemId: item.id });
-
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+      setIsSubmitted(true);
+    } catch (err) {
+      console.error("Failed to submit review:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to submit review. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (isSubmitted) {
     return (
@@ -68,7 +128,7 @@ export default function ReviewPage() {
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
                   <Button asChild>
-                    <NavLink to="/dashboard">Go to Dashboard</NavLink>
+                    <NavLink to="/profile">Go to Profile</NavLink>
                   </Button>
                   <Button variant="outline" asChild>
                     <NavLink to="/browse">Browse More Items</NavLink>
@@ -107,26 +167,36 @@ export default function ReviewPage() {
             {/* Item Summary */}
             <Card>
               <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <img
-                    src={item.image || "/placeholder.svg"}
-                    alt={item.title}
-                    className="h-24 w-24 object-cover rounded-lg border"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-lg truncate">
-                      {item.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Seller: {item.seller}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Purchase Price: ${item.purchasePrice.toLocaleString()}
-                    </p>
+                {delivery && delivery.item ? (
+                  <div className="flex items-center gap-4">
+                    <div className="h-24 w-24 bg-muted rounded-lg border flex items-center justify-center">
+                      <Package className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-lg truncate">
+                        {delivery.item.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Seller: {delivery.sender.name}{" "}
+                        {delivery.sender.last_name}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <p className="text-muted-foreground">
+                    Loading item details...
+                  </p>
+                )}
               </CardContent>
             </Card>
+
+            {error && (
+              <Card className="border-destructive">
+                <CardContent className="p-4">
+                  <p className="text-destructive text-sm">{error}</p>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Review Form */}
             <Card>
@@ -164,6 +234,23 @@ export default function ReviewPage() {
                     </p>
                   </div>
 
+                  {/* Optional Title */}
+                  <div className="space-y-3">
+                    <Label htmlFor="title" className="text-base">
+                      Title{" "}
+                      <span className="text-muted-foreground text-sm">
+                        (Optional)
+                      </span>
+                    </Label>
+                    <Input
+                      id="title"
+                      placeholder="Summary of your experience"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      maxLength={255}
+                    />
+                  </div>
+
                   {/* Optional Comment */}
                   <div className="space-y-3">
                     <Label htmlFor="comment" className="text-base">
@@ -197,7 +284,7 @@ export default function ReviewPage() {
                       {isSubmitting ? "Submitting..." : "Submit Review"}
                     </Button>
                     <Button type="button" variant="outline" size="lg" asChild>
-                      <NavLink to="/dashboard">Cancel</NavLink>
+                      <NavLink to="/deliveries">Cancel</NavLink>
                     </Button>
                   </div>
                 </form>

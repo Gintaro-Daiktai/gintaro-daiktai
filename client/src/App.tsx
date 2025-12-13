@@ -72,18 +72,9 @@ function App() {
       <Route path="/lottery/:id/item/:id" element={<ItemPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/profiles/:userId" element={<ProfilePage />} />
-      <Route path="/review" element={<ReviewPage />} />
+      <Route path="/review/create" element={<ReviewPage />} />
       <Route path="/deliveries" element={<UserDeliveriesPage />} />
-      <Route
-        path="/deliveries/:id"
-        element={
-          <DeliveryPage
-            params={{
-              id: "1",
-            }}
-          />
-        }
-      />
+      <Route path="/deliveries/:id" element={<DeliveryPage />} />
       <Route
         path="/deliveries/:id/dispute"
         element={<DisputeFormPage params={{ id: "1" }} />}
