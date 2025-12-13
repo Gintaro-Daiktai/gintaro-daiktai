@@ -25,6 +25,7 @@ import { SeederModule } from './database/seeder.module';
 import { VerificationModule } from './verification/verification.module';
 import { EmailModule } from './email/email.module';
 import { StripeModule } from './stripe/stripe.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { StripeModule } from './stripe/stripe.module';
     MessageModule,
     ChargebackRequestModule,
     AuthModule,
+    StatisticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

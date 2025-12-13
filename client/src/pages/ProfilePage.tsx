@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useParams } from "react-router";
@@ -9,6 +9,7 @@ import {
   useDeleteUser,
 } from "@/api/auth";
 import { useProfileReviews } from "@/hooks/useProfileReviews";
+import { statisticsApi } from "@/api/statistics";
 import { useUserAuctions } from "@/hooks/useAuctions";
 import { createSafeAvatarDataUri } from "@/utils/imageValidation";
 import type { UserProfile, Lottery } from "@/types/profile";
@@ -30,6 +31,8 @@ export default function ProfilePage() {
     isError,
   } = useUserProfile(profileUserId);
   const [balance, setBalance] = useState(profileData?.balance || 0);
+  const [pastAuctionsCount, setPastAuctionsCount] = useState<number>(0);
+  const [pastLotteriesCount, setPastLotteriesCount] = useState<number>(0);
   const updateMutation = useUpdateUserProfile();
   const deleteMutation = useDeleteUser();
 
@@ -38,6 +41,24 @@ export default function ProfilePage() {
     currentUser?.id,
   );
 
+  useEffect(() => {
+    const fetchPastCounts = async () => {
+      if (!isOwnProfile) return;
+      
+      try {
+        const [auctions, lotteries] = await Promise.all([
+          statisticsApi.getAuctionsList(),
+          statisticsApi.getLotteriesList(),
+        ]);
+        setPastAuctionsCount(auctions.length);
+        setPastLotteriesCount(lotteries.length);
+      } catch (error) {
+        console.error('Failed to fetch past auctions/lotteries:', error);
+      }
+    };
+
+    fetchPastCounts();
+  }, [isOwnProfile]);
   const { auctions, isLoading: auctionsLoading } =
     useUserAuctions(profileUserId);
 
@@ -143,6 +164,9 @@ export default function ProfilePage() {
         availableEmojis={availableEmojis}
         onToggleReaction={toggleReaction}
         onDeleteReview={deleteReview}
+        pastAuctionsCount={pastAuctionsCount}
+        pastLotteriesCount={pastLotteriesCount}
+        isOwnProfile={isOwnProfile}
       />
     </main>
   );

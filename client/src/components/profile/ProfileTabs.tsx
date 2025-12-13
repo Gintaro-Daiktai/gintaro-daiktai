@@ -15,6 +15,9 @@ interface ProfileTabsProps {
   availableEmojis: string[];
   onToggleReaction: (reviewId: number, emoji: string) => void;
   onDeleteReview: (reviewId: number) => void;
+  pastAuctionsCount?: number;
+  pastLotteriesCount?: number;
+  isOwnProfile?: boolean;
 }
 
 export function ProfileTabs({
@@ -24,6 +27,9 @@ export function ProfileTabs({
   availableEmojis,
   onToggleReaction,
   onDeleteReview,
+  pastAuctionsCount = 0,
+  pastLotteriesCount = 0,
+  isOwnProfile = false,
 }: ProfileTabsProps) {
   return (
     <Tabs defaultValue="auctions" className="space-y-6 mt-6">
@@ -40,18 +46,20 @@ export function ProfileTabs({
           </TabsTrigger>
         </TabsList>
 
-        <div className="ml-auto">
-          <NavLink to="/auctionslist">
-            <Button variant="link" className="cursor-pointer">
-              View Past Auctions (9)
-            </Button>
-          </NavLink>
-          <NavLink to="/lotterieslist">
-            <Button variant="link" className="cursor-pointer">
-              View Past Lotteries (5)
-            </Button>
-          </NavLink>
-        </div>
+        {isOwnProfile && (
+          <div className="ml-auto">
+            <NavLink to="/auctionslist">
+              <Button variant="link" className="cursor-pointer">
+                View Past Auctions ({pastAuctionsCount})
+              </Button>
+            </NavLink>
+            <NavLink to="/lotterieslist">
+              <Button variant="link" className="cursor-pointer">
+                View Past Lotteries ({pastLotteriesCount})
+              </Button>
+            </NavLink>
+          </div>
+        )}
       </div>
 
       <TabsContent value="auctions" className="space-y-6">

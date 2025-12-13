@@ -55,10 +55,10 @@ function App() {
       ></Route>
       <Route path="/login" element={<LogInPage />} />
       <Route path="/signup" element={<SignUpPage />} />
-      <Route path="/auctionstats" element={<AuctionStatisticsPage />} />
+      <Route path="/auctionstats/:id" element={<AuctionStatisticsPage />} />
       <Route path="/auctionslist" element={<AuctionsList />} />
-      <Route path="/deliverystats" element={<DeliveryStatisticsPage />} />
-      <Route path="/lotterystats" element={<LotteryStatisticsPage />} />
+      <Route path="/deliverystats/" element={<DeliveryStatisticsPage />} />
+      <Route path="/lotterystats/:id" element={<LotteryStatisticsPage />} />
       <Route path="/lotterieslist" element={<LotteriesList />} />
       <Route path="/userstats" element={<UserStatisticsPage />} />
       <Route path="/browse" element={<BrowsePage />} />
