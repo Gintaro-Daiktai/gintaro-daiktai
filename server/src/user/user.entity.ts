@@ -1,5 +1,4 @@
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { AddressEntity } from '../address/address.entity';
 import { ItemEntity } from '../item/item.entity';
 import { LotteryBidEntity } from '../lottery_bid/lottery_bid.entity';
 import { LotteryEntity } from '../lottery/lottery.entity';
@@ -58,9 +57,6 @@ export class UserEntity {
     nullable: false,
   })
   role: 'admin' | 'client';
-
-  @OneToMany(() => AddressEntity, (address) => address.user)
-  addresses: AddressEntity[];
 
   @OneToMany(() => ItemEntity, (item) => item.user)
   items: ItemEntity[];

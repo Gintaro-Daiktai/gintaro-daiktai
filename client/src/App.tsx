@@ -27,6 +27,7 @@ import LotteryEditPage from "./pages/LotteryEditPage";
 import ChargebackPage from "./pages/ChargebackPage";
 import AuctionsPage from "./pages/AuctionsPage";
 import AuctionPage from "./pages/AuctionPage";
+import SellersPage from "./pages/SellersPage";
 
 function App() {
   const { isLoading } = useAuth();
@@ -55,13 +56,14 @@ function App() {
       ></Route>
       <Route path="/login" element={<LogInPage />} />
       <Route path="/signup" element={<SignUpPage />} />
-      <Route path="/auctionstats" element={<AuctionStatisticsPage />} />
+      <Route path="/auctionstats/:id" element={<AuctionStatisticsPage />} />
       <Route path="/auctionslist" element={<AuctionsList />} />
-      <Route path="/deliverystats" element={<DeliveryStatisticsPage />} />
-      <Route path="/lotterystats" element={<LotteryStatisticsPage />} />
+      <Route path="/deliverystats/" element={<DeliveryStatisticsPage />} />
+      <Route path="/lotterystats/:id" element={<LotteryStatisticsPage />} />
       <Route path="/lotterieslist" element={<LotteriesList />} />
       <Route path="/userstats" element={<UserStatisticsPage />} />
       <Route path="/browse" element={<BrowsePage />} />
+      <Route path="/sellers" element={<SellersPage />} />
       <Route path="/auctions" element={<AuctionsPage />} />
       <Route path="/auction/:id" element={<AuctionPage />} />
       <Route path="/items" element={<MyItemsPage />} />
@@ -72,23 +74,11 @@ function App() {
       <Route path="/lottery/:id/item/:id" element={<ItemPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/profiles/:userId" element={<ProfilePage />} />
-      <Route path="/review" element={<ReviewPage />} />
+      <Route path="/review/create" element={<ReviewPage />} />
       <Route path="/deliveries" element={<UserDeliveriesPage />} />
-      <Route
-        path="/deliveries/:id"
-        element={
-          <DeliveryPage
-            params={{
-              id: "1",
-            }}
-          />
-        }
-      />
-      <Route
-        path="/deliveries/:id/dispute"
-        element={<DisputeFormPage params={{ id: "1" }} />}
-      />
-      <Route path="/messages" element={<UserMessagingPage />} />
+      <Route path="/deliveries/:id" element={<DeliveryPage />} />
+      <Route path="/deliveries/:id/messages" element={<UserMessagingPage />} />
+      <Route path="/deliveries/:id/dispute" element={<DisputeFormPage />} />
       <Route
         path="/admin/chargebacks"
         element={

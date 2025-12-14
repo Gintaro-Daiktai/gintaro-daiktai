@@ -29,7 +29,10 @@ export class AuctionBidEntity {
   @JoinColumn({ name: 'fk_auction' })
   auction: AuctionEntity;
 
-  @ManyToOne(() => UserEntity, (user) => user.auctionBids, { nullable: false })
+  @ManyToOne(() => UserEntity, (user) => user.auctionBids, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'fk_user' })
   user: UserEntity;
 }

@@ -36,12 +36,14 @@ export class DeliveryEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.deliveriesSent, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'fk_sender' })
   sender: UserEntity;
 
   @ManyToOne(() => UserEntity, (user) => user.deliveriesReceived, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'fk_receiver' })
   receiver: UserEntity;

@@ -1,7 +1,11 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
 
 export class UpdateDeliveryDto {
-  @IsEnum(['processing', 'delivering', 'delivered', 'canceled'])
+  @IsEnum(['processing', 'delivering', 'delivered', 'cancelled'])
   @IsNotEmpty()
-  readonly order_status: 'processing' | 'delivering' | 'delivered' | 'canceled';
+  readonly order_status:
+    | 'processing'
+    | 'delivering'
+    | 'delivered'
+    | 'cancelled';
 }

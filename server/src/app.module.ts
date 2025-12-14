@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import ormconfig from './ormconfig';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
-import { AddressModule } from './address/address.module';
 import { ItemModule } from './item/item.module';
 import { TagModule } from './tag/tag.module';
 import { ImageModule } from './image/image.module';
@@ -13,6 +12,7 @@ import { LotteryModule } from './lottery/lottery.module';
 import { LotteryBidModule } from './lottery_bid/lottery_bid.module';
 import { AuctionModule } from './auction/auction.module';
 import { AuctionBidModule } from './auction_bid/auction_bid.module';
+import { AuctionSchedulerModule } from './auction-scheduler/auction-scheduler.module';
 import { ReviewModule } from './review/review.module';
 import { ReviewEmoteModule } from './review_emote/review_emote.module';
 import { DeliveryModule } from './delivery/delivery.module';
@@ -23,6 +23,7 @@ import { SeederModule } from './database/seeder.module';
 import { VerificationModule } from './verification/verification.module';
 import { EmailModule } from './email/email.module';
 import { StripeModule } from './stripe/stripe.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
   imports: [
@@ -35,7 +36,6 @@ import { StripeModule } from './stripe/stripe.module';
     EmailModule,
     StripeModule,
     UserModule,
-    AddressModule,
     ItemModule,
     TagModule,
     ImageModule,
@@ -43,12 +43,14 @@ import { StripeModule } from './stripe/stripe.module';
     LotteryBidModule,
     AuctionModule,
     AuctionBidModule,
+    AuctionSchedulerModule,
     ReviewModule,
     ReviewEmoteModule,
     DeliveryModule,
     MessageModule,
     ChargebackRequestModule,
     AuthModule,
+    StatisticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

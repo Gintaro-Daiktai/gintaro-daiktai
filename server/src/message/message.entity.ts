@@ -26,12 +26,14 @@ export class MessageEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.messagesSent, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'fk_sender' })
   sender: UserEntity;
 
   @ManyToOne(() => UserEntity, (user) => user.messagesReceived, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'fk_receiver' })
   receiver: UserEntity;

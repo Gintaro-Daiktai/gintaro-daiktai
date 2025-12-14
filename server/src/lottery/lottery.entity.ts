@@ -42,7 +42,10 @@ export class LotteryEntity {
   })
   lottery_status: 'created' | 'started' | 'sold out' | 'cancelled';
 
-  @ManyToOne(() => UserEntity, (user) => user.lotteries, { nullable: false })
+  @ManyToOne(() => UserEntity, (user) => user.lotteries, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'fk_user' })
   user: UserEntity;
 

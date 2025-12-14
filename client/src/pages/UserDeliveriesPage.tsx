@@ -1,71 +1,33 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Package,
-  Truck,
-  CheckCircle,
-  Clock,
-  Calendar,
-  MessageSquare,
-} from "lucide-react";
+import { Package, Truck, CheckCircle, Clock, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "react-router";
+import { deliveryApi } from "@/api/delivery";
+import type { Delivery } from "@/types/delivery";
 
 export default function UserDeliveriesPage() {
-  // Mock data for deliveries
-  const deliveries = [
-    {
-      id: 1,
-      itemName: "Vintage Rolex Submariner 1960s",
-      status: "delivered",
-      winType: "auction",
-      winDate: "2024-11-01",
-      hostedBy: "CollectorJames",
-      deliveryDate: "2024-11-05",
-      image: "/vintage-rolex-watch.jpg",
-    },
-    {
-      id: 2,
-      itemName: "MacBook Pro M3 Max",
-      status: "in-transit",
-      winType: "lottery",
-      winDate: "2024-10-28",
-      hostedBy: "LotteryAdmin",
-      deliveryDate: null,
-      image: "/macbook-pro-m3.jpg",
-    },
-    {
-      id: 3,
-      itemName: "Original iPhone 2007 Sealed",
-      status: "processing",
-      winType: "auction",
-      winDate: "2024-10-25",
-      hostedBy: "TechVintageAuctions",
-      deliveryDate: null,
-      image: "/original-iphone-sealed.jpg",
-    },
-    {
-      id: 4,
-      itemName: "Rare Pokemon Card Collection",
-      status: "delivered",
-      winType: "auction",
-      winDate: "2024-10-15",
-      hostedBy: "CardMaster2023",
-      deliveryDate: "2024-10-22",
-      image: "/rare-pokemon-cards.jpg",
-    },
-    {
-      id: 5,
-      itemName: "Designer Watch Collection",
-      status: "pending",
-      winType: "lottery",
-      winDate: "2024-10-20",
-      hostedBy: "LotteryAdmin",
-      deliveryDate: null,
-      image: "/designer-watch-collection.jpg",
-    },
-  ];
+  const [deliveries, setDeliveries] = useState<Delivery[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadDeliveries = async () => {
+      try {
+        const data = await deliveryApi.getMyDeliveries();
+        setDeliveries(data);
+      } catch (err) {
+        console.error("Failed to load deliveries:", err);
+        setError("Failed to load deliveries");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDeliveries();
+  }, []);
 
   const getStatusConfig = (status: string) => {
     switch (status) {
@@ -75,7 +37,7 @@ export default function UserDeliveriesPage() {
           color: "bg-green-500/20 text-green-300 border-green-500/30",
           icon: CheckCircle,
         };
-      case "in-transit":
+      case "delivering":
         return {
           label: "In Transit",
           color: "bg-blue-500/20 text-blue-300 border-blue-500/30",
@@ -87,10 +49,10 @@ export default function UserDeliveriesPage() {
           color: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
           icon: Package,
         };
-      case "pending":
+      case "cancelled":
         return {
-          label: "Pending",
-          color: "bg-muted text-muted-foreground border-border",
+          label: "Cancelled",
+          color: "bg-red-500/20 text-red-300 border-red-500/30",
           icon: Clock,
         };
       default:
@@ -102,32 +64,58 @@ export default function UserDeliveriesPage() {
     }
   };
 
-  const getWinTypeLabel = (winType: string) => {
-    return winType === "auction" ? "Auction Win" : "Lottery Win";
-  };
-
   const filterByStatus = (status: string) => {
-    return deliveries.filter((d) => d.status === status);
+    return deliveries.filter((d) => d.order_status === status);
   };
 
   const allDeliveries = deliveries;
   const deliveredItems = filterByStatus("delivered");
-  const inTransitItems = filterByStatus("in-transit");
+  const inTransitItems = filterByStatus("delivering");
 
-  const getDeliveryStatus = (delivery: (typeof deliveries)[0]) => {
-    if (delivery.deliveryDate) {
+  const getDeliveryStatus = (delivery: Delivery) => {
+    if (delivery.order_status === "delivered") {
       return {
         label: "Delivered On",
-        date: delivery.deliveryDate,
+        date: new Date(delivery.order_date).toLocaleDateString(),
         color: "text-green-400",
       };
     }
     return {
-      label: "Status",
-      date: "Hasn't arrived",
+      label: "Order Date",
+      date: new Date(delivery.order_date).toLocaleDateString(),
       color: "text-muted-foreground",
     };
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading deliveries...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <main className="flex-1 flex items-center justify-center">
+          <Card>
+            <CardContent className="p-12 text-center">
+              <p className="text-destructive mb-4">{error}</p>
+              <Button onClick={() => window.location.reload()}>
+                Try Again
+              </Button>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -135,19 +123,11 @@ export default function UserDeliveriesPage() {
         <div className="container py-12 space-y-8">
           {/* Page Header */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Package className="h-6 w-6 text-primary" />
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-                  My Deliveries
-                </h1>
-              </div>
-              <Button asChild className="gap-2">
-                <NavLink to="/messages">
-                  <MessageSquare className="h-4 w-4" />
-                  Messages
-                </NavLink>
-              </Button>
+            <div className="flex items-center gap-2">
+              <Package className="h-6 w-6 text-primary" />
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                My Deliveries
+              </h1>
             </div>
             <p className="text-muted-foreground">
               Track all your won items from auctions and lotteries
@@ -201,7 +181,7 @@ export default function UserDeliveriesPage() {
               {allDeliveries.length > 0 ? (
                 <div className="flex space-y-8 flex-col">
                   {allDeliveries.map((delivery) => {
-                    const statusConfig = getStatusConfig(delivery.status);
+                    const statusConfig = getStatusConfig(delivery.order_status);
                     const StatusIcon = statusConfig.icon;
                     const deliveryStatus = getDeliveryStatus(delivery);
 
@@ -215,11 +195,9 @@ export default function UserDeliveriesPage() {
                             <div className="flex flex-col md:flex-row gap-6 p-6">
                               {/* Item Image */}
                               <div className="flex-shrink-0">
-                                <img
-                                  src={delivery.image || "/placeholder.svg"}
-                                  alt={delivery.itemName}
-                                  className="w-24 h-24 object-cover rounded-lg"
-                                />
+                                <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center">
+                                  <Package className="h-8 w-8 text-muted-foreground" />
+                                </div>
                               </div>
 
                               {/* Item Details */}
@@ -227,15 +205,9 @@ export default function UserDeliveriesPage() {
                                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
                                   <div className="space-y-2">
                                     <h3 className="font-semibold text-lg leading-snug">
-                                      {delivery.itemName}
+                                      {delivery.item.name}
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
-                                      <Badge
-                                        variant="outline"
-                                        className="bg-primary/10 text-primary border-primary/20"
-                                      >
-                                        {getWinTypeLabel(delivery.winType)}
-                                      </Badge>
                                       <Badge className={statusConfig.color}>
                                         <StatusIcon className="h-3 w-3 mr-1" />
                                         {statusConfig.label}
@@ -245,19 +217,20 @@ export default function UserDeliveriesPage() {
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                  {/* Win Date and Hosted By */}
+                                  {/* Start Date and Sender */}
                                   <div className="space-y-1">
                                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                                       <Calendar className="h-3 w-3" />
-                                      Won On
+                                      Order Date
                                     </p>
                                     <p className="text-left text-sm font-semibold">
                                       {new Date(
-                                        delivery.winDate,
+                                        delivery.order_date,
                                       ).toLocaleDateString()}{" "}
                                       from{" "}
                                       <span className="text-primary">
-                                        {delivery.hostedBy}
+                                        {delivery.sender.name}{" "}
+                                        {delivery.sender.last_name}
                                       </span>
                                     </p>
                                   </div>
@@ -271,11 +244,7 @@ export default function UserDeliveriesPage() {
                                     <p
                                       className={`text-sm font-semibold text-left ${deliveryStatus.color}`}
                                     >
-                                      {deliveryStatus.date === "Hasn't arrived"
-                                        ? deliveryStatus.date
-                                        : new Date(
-                                            deliveryStatus.date,
-                                          ).toLocaleDateString()}
+                                      {deliveryStatus.date}
                                     </p>
                                   </div>
                                 </div>
@@ -305,7 +274,7 @@ export default function UserDeliveriesPage() {
               {deliveredItems.length > 0 ? (
                 <div className="flex flex-col space-y-8">
                   {deliveredItems.map((delivery) => {
-                    const statusConfig = getStatusConfig(delivery.status);
+                    const statusConfig = getStatusConfig(delivery.order_status);
                     const StatusIcon = statusConfig.icon;
                     const deliveryStatus = getDeliveryStatus(delivery);
 
@@ -319,11 +288,9 @@ export default function UserDeliveriesPage() {
                             <div className="flex flex-col md:flex-row gap-6 p-6">
                               {/* Item Image */}
                               <div className="flex-shrink-0">
-                                <img
-                                  src={delivery.image || "/placeholder.svg"}
-                                  alt={delivery.itemName}
-                                  className="w-24 h-24 object-cover rounded-lg"
-                                />
+                                <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center">
+                                  <Package className="h-8 w-8 text-muted-foreground" />
+                                </div>
                               </div>
 
                               {/* Item Details */}
@@ -331,15 +298,9 @@ export default function UserDeliveriesPage() {
                                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
                                   <div className="space-y-2">
                                     <h3 className="font-semibold text-lg leading-snug">
-                                      {delivery.itemName}
+                                      {delivery.item.name}
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
-                                      <Badge
-                                        variant="outline"
-                                        className="bg-primary/10 text-primary border-primary/20"
-                                      >
-                                        {getWinTypeLabel(delivery.winType)}
-                                      </Badge>
                                       <Badge className={statusConfig.color}>
                                         <StatusIcon className="h-3 w-3 mr-1" />
                                         {statusConfig.label}
@@ -349,19 +310,20 @@ export default function UserDeliveriesPage() {
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                  {/* Win Date and Hosted By */}
+                                  {/* Start Date and Sender */}
                                   <div className="space-y-1">
                                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                                       <Calendar className="h-3 w-3" />
-                                      Won On
+                                      Order Date
                                     </p>
                                     <p className="text-left text-sm font-semibold">
                                       {new Date(
-                                        delivery.winDate,
+                                        delivery.order_date,
                                       ).toLocaleDateString()}{" "}
                                       from{" "}
                                       <span className="text-primary">
-                                        {delivery.hostedBy}
+                                        {delivery.sender.name}{" "}
+                                        {delivery.sender.last_name}
                                       </span>
                                     </p>
                                   </div>
@@ -375,9 +337,7 @@ export default function UserDeliveriesPage() {
                                     <p
                                       className={`text-left text-sm font-semibold ${deliveryStatus.color}`}
                                     >
-                                      {new Date(
-                                        deliveryStatus.date,
-                                      ).toLocaleDateString()}
+                                      {deliveryStatus.date}
                                     </p>
                                   </div>
                                 </div>
@@ -406,7 +366,7 @@ export default function UserDeliveriesPage() {
               {inTransitItems.length > 0 ? (
                 <div className="flex flex-col space-y-8">
                   {inTransitItems.map((delivery) => {
-                    const statusConfig = getStatusConfig(delivery.status);
+                    const statusConfig = getStatusConfig(delivery.order_status);
                     const StatusIcon = statusConfig.icon;
                     const deliveryStatus = getDeliveryStatus(delivery);
 
@@ -420,11 +380,9 @@ export default function UserDeliveriesPage() {
                             <div className="flex flex-col md:flex-row gap-6 p-6">
                               {/* Item Image */}
                               <div className="flex-shrink-0">
-                                <img
-                                  src={delivery.image || "/placeholder.svg"}
-                                  alt={delivery.itemName}
-                                  className="w-24 h-24 object-cover rounded-lg"
-                                />
+                                <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center">
+                                  <Package className="h-8 w-8 text-muted-foreground" />
+                                </div>
                               </div>
 
                               {/* Item Details */}
@@ -432,15 +390,9 @@ export default function UserDeliveriesPage() {
                                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
                                   <div className="space-y-2">
                                     <h3 className="font-semibold text-lg leading-snug">
-                                      {delivery.itemName}
+                                      {delivery.item.name}
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
-                                      <Badge
-                                        variant="outline"
-                                        className="bg-primary/10 text-primary border-primary/20"
-                                      >
-                                        {getWinTypeLabel(delivery.winType)}
-                                      </Badge>
                                       <Badge className={statusConfig.color}>
                                         <StatusIcon className="h-3 w-3 mr-1" />
                                         {statusConfig.label}
@@ -450,19 +402,20 @@ export default function UserDeliveriesPage() {
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                  {/* Win Date and Hosted By */}
+                                  {/* Start Date and Sender */}
                                   <div className="space-y-1">
                                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                                       <Calendar className="h-3 w-3" />
-                                      Won On
+                                      Order Date
                                     </p>
                                     <p className="text-left text-sm font-semibold">
                                       {new Date(
-                                        delivery.winDate,
+                                        delivery.order_date,
                                       ).toLocaleDateString()}{" "}
                                       from{" "}
                                       <span className="text-primary">
-                                        {delivery.hostedBy}
+                                        {delivery.sender.name}{" "}
+                                        {delivery.sender.last_name}
                                       </span>
                                     </p>
                                   </div>

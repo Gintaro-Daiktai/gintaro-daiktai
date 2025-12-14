@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Send, Loader2, Reply, X } from "lucide-react";
-import { NavLink } from "react-router";
+import { NavLink, useParams } from "react-router";
 import { useSocket } from "@/hooks/useSocket";
 import { messagesApi } from "@/api/messages";
 import { deliveryApi } from "@/api/delivery";
@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 export default function MessagesPage() {
+  const { id } = useParams<{ id: string }>();
   const { socket, isConnected } = useSocket();
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -20,8 +21,6 @@ export default function MessagesPage() {
   const [isSending, setIsSending] = useState(false);
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-
-  const deliveryId = 1;
   const [otherUser, setOtherUser] = useState<{
     id: number;
     name: string;
@@ -38,7 +37,14 @@ export default function MessagesPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user) return;
+      if (!user || !id) return;
+
+      const deliveryId = parseInt(id);
+      if (isNaN(deliveryId)) {
+        toast.error("Invalid delivery ID");
+        setIsLoading(false);
+        return;
+      }
 
       try {
         setIsLoading(true);
@@ -76,11 +82,16 @@ export default function MessagesPage() {
       // Scroll to bottom after initial messages load (instant, no animation)
       setTimeout(() => scrollToBottom("auto"), 100);
     });
-  }, [deliveryId, user]);
+  }, [id, user]);
 
   // Setup WebSocket listeners
   useEffect(() => {
-    if (!socket || !isConnected) {
+    if (!socket || !isConnected || !id) {
+      return;
+    }
+
+    const deliveryId = parseInt(id);
+    if (isNaN(deliveryId)) {
       return;
     }
 
@@ -130,7 +141,7 @@ export default function MessagesPage() {
       socket.off("messageSent");
       socket.off("error");
     };
-  }, [socket, isConnected, deliveryId, otherUser, user]);
+  }, [socket, isConnected, id, otherUser, user]);
 
   const handleSendMessage = () => {
     if (
@@ -138,13 +149,22 @@ export default function MessagesPage() {
       !socket ||
       !isConnected ||
       !otherUser ||
-      !user
+      !user ||
+      !id
     ) {
       if (!isConnected) {
         toast.error("Not connected to server");
       } else if (!otherUser) {
         toast.error("Cannot determine recipient");
+      } else if (!id) {
+        toast.error("Invalid delivery");
       }
+      return;
+    }
+
+    const deliveryId = parseInt(id);
+    if (isNaN(deliveryId)) {
+      toast.error("Invalid delivery ID");
       return;
     }
 
@@ -197,6 +217,26 @@ export default function MessagesPage() {
       </div>
     );
   }
+
+  if (!id) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <main className="flex-1 container py-12">
+          <div className="text-center space-y-4">
+            <h1 className="text-2xl font-bold">Invalid delivery</h1>
+            <Button asChild>
+              <NavLink to="/deliveries">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Deliveries
+              </NavLink>
+            </Button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  const deliveryId = parseInt(id);
 
   return (
     <div className="flex min-h-screen flex-col">
