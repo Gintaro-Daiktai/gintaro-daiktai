@@ -18,7 +18,7 @@ export default function AuctionPage() {
   const isOwner = auction?.user?.id === user?.id;
   const isActive = auction?.auction_status === "started";
   const canBid = !isOwner && isActive;
-  const canCancel = isOwner && isActive;
+  const canCancel = isOwner;
 
   if (isLoading) {
     return (
@@ -43,7 +43,7 @@ export default function AuctionPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <main className="flex-1 py-16">
+      <main className="flex-1 py-4">
         <div className="container max-w-4xl mx-auto">
           <AuctionPageHeader
             canCancel={canCancel}
@@ -88,7 +88,7 @@ function AuctionPageHeader({
   return (
     <div className="mb-8 flex items-center justify-between">
       <Link to="/auctions">
-        <Button variant="ghost" size="sm">
+        <Button variant="ghost" size="sm" className="cursor-pointer">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Auctions
         </Button>
