@@ -36,7 +36,7 @@ export const statisticsApi = {
     auctionId: number,
   ): Promise<AuctionStatisticsDto> => {
     return await apiClient<AuctionStatisticsDto>(
-      `/statistics/auction/${auctionId}`,
+      `/statistics/auctions/${auctionId}`,
       {
         method: "GET",
         requiresAuth: true,
