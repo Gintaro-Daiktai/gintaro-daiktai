@@ -356,7 +356,7 @@ export default function BrowsePage() {
                         return (
                           <NavLink
                             key={lottery.id}
-                            to={`/lotteries/${lottery.id}`}
+                            to={`/lottery/${lottery.id}`}
                           >
                             <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
                               <div className="relative aspect-[4/3] overflow-hidden bg-muted">

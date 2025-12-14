@@ -74,6 +74,7 @@ function HomePage() {
               key={auction.id}
               className="group overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all hover:border-primary/50"
             >
+              <NavLink to={`/auction/${auction.id}`} >
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <img
                   src={auction.image || "/placeholder.svg"}
@@ -113,6 +114,7 @@ function HomePage() {
                   </p>
                 </div>
               </CardContent>
+              </NavLink>
             </Card>
           ))}
         </div>
