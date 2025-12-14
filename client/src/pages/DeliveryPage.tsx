@@ -11,17 +11,22 @@ import {
   AlertCircle,
   MessageSquare,
   MessageCircleHeart,
+  Edit,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { NavLink, useParams } from "react-router";
 import { deliveryApi } from "@/api/delivery";
 import type { Delivery } from "@/types/delivery";
+import { useAuth } from "@/hooks/useAuth";
+import { UpdateDeliveryStatusDialog } from "@/components/delivery/UpdateDeliveryStatusDialog";
 
 export default function DeliveryDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const [delivery, setDelivery] = useState<Delivery | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
 
   useEffect(() => {
     const loadDelivery = async () => {
@@ -122,6 +127,19 @@ export default function DeliveryDetailPage() {
               </NavLink>
             </Button>
             <div className="flex gap-2">
+              {/* Edit Status Button */}
+              {user &&
+                (user.id === delivery.sender.id ||
+                  user.id === delivery.receiver.id) && (
+                  <Button
+                    variant="outline"
+                    className="gap-2 bg-transparent"
+                    onClick={() => setIsUpdateDialogOpen(true)}
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit Status
+                  </Button>
+                )}
               {/* Leave Review Button */}
               {delivery.order_status === "delivered" && (
                 <Button
@@ -228,6 +246,18 @@ export default function DeliveryDetailPage() {
           </div>
         </div>
       </main>
+
+      {/* Update Delivery Status Dialog */}
+      {delivery && (
+        <UpdateDeliveryStatusDialog
+          isOpen={isUpdateDialogOpen}
+          onClose={() => setIsUpdateDialogOpen(false)}
+          delivery={delivery}
+          onUpdate={(updatedDelivery) => {
+            setDelivery(updatedDelivery);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -20,4 +20,20 @@ export const deliveryApi = {
     );
     return deliveries;
   },
+
+  updateDeliveryStatus: async (
+    id: number,
+    status: "processing" | "delivering" | "delivered" | "cancelled",
+  ): Promise<Delivery> => {
+    const delivery = await apiClient<Delivery>(`/deliveries/${id}`, {
+      method: "PUT",
+      requiresAuth: true,
+      body: JSON.stringify({
+        delivery: {
+          order_status: status,
+        },
+      }),
+    });
+    return delivery;
+  },
 };
