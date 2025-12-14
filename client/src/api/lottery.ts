@@ -2,19 +2,19 @@ import { apiClient } from "./client";
 import type {
   CreateLotteryBidDto,
   CreateLotteryDto,
-  LotteryFull,
+  Lottery,
 } from "@/types/lottery";
 
 export const lotteryApi = {
-  getAllLotteries: async (): Promise<LotteryFull[]> => {
-    return apiClient<LotteryFull[]>("/lotteries", {
+  getAllLotteries: async (): Promise<Lottery[]> => {
+    return apiClient<Lottery[]>("/lotteries", {
       method: "GET",
       requiresAuth: false,
     });
   },
 
-  getLotteryById: async (lotteryId: number): Promise<LotteryFull> => {
-    return apiClient<LotteryFull>(`/lotteries/${lotteryId}`, {
+  getLotteryById: async (lotteryId: number): Promise<Lottery> => {
+    return apiClient<Lottery>(`/lotteries/${lotteryId}`, {
       method: "GET",
       requiresAuth: false,
     });
@@ -22,8 +22,8 @@ export const lotteryApi = {
 
   createLottery: async (
     createLotteryDto: CreateLotteryDto,
-  ): Promise<LotteryFull> => {
-    const auction = await apiClient<LotteryFull>("/lotteries", {
+  ): Promise<Lottery> => {
+    const auction = await apiClient<Lottery>("/lotteries", {
       method: "POST",
       requiresAuth: true,
       body: JSON.stringify({ lottery: createLotteryDto }),
@@ -33,8 +33,8 @@ export const lotteryApi = {
 
   createLotteryBid: async (
     createLotteryBidDto: CreateLotteryBidDto,
-  ): Promise<LotteryFull> => {
-    const auction = await apiClient<LotteryFull>("/lottery-bids", {
+  ): Promise<Lottery> => {
+    const auction = await apiClient<Lottery>("/lottery-bids", {
       method: "POST",
       requiresAuth: true,
       body: JSON.stringify({ lottery_bid: createLotteryBidDto }),

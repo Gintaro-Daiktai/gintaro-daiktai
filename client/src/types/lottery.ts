@@ -14,31 +14,31 @@ export interface LotteryItem {
   imageId: number;
 }
 
-export interface LotteryFull {
+export interface Lottery {
   id: number;
-  total_ticket_count: number;
+  name: string;
+  total_tickets: number;
   ticket_price: number;
   start_date: string;
   end_date: string;
-  auction_status: "created" | "started" | "sold out" | "cancelled";
+  lottery_status: "created" | "started" | "sold out" | "cancelled";
   user: LotteryUser;
   items: Item[];
-  auctionBids?: LotteryBid[];
+  lotteryBids: LotteryBid[];
 }
 
 export interface LotteryBid {
   id: number;
   ticket_count: number;
-  user: LotteryUser;
 }
 
 export interface CreateLotteryDto {
-  total_ticket_count: number;
+  name: string;
+  total_tickets: number;
   ticket_price: number;
   start_date: string;
   end_date: string;
-  user: LotteryUser;
-  items: LotteryItem[];
+  itemIds: number[];
 }
 
 export interface CreateLotteryBidDto {

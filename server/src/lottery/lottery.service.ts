@@ -64,7 +64,7 @@ export class LotteryService {
   async findActiveLotteries(): Promise<LotteryEntity[]> {
     return (
       await this.lotteryRepository.find({
-        relations: { items: true },
+        relations: { items: true, user: true, lotteryBids: true },
       })
     ).filter(
       (lottery) =>

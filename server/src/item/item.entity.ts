@@ -85,7 +85,7 @@ export class ItemEntity {
   })
   tags: TagEntity[];
 
-  @OneToOne(() => ImageEntity, { eager: true })
+  @OneToOne(() => ImageEntity, { nullable: false, eager: true })
   @JoinColumn({ name: 'fk_image' })
   image: ImageEntity;
 

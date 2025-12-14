@@ -5,9 +5,16 @@ import {
   IsDate,
   IsArray,
   ArrayNotEmpty,
+  MaxLength,
+  IsString,
 } from 'class-validator';
 
 export class CreateLotteryDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(255)
+  name: string;
+
   @IsDate()
   @IsNotEmpty()
   @Type(() => Date)

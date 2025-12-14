@@ -1,10 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Ticket } from "lucide-react";
-import type { Lottery } from "@/types/profile";
+import type { LotteryForProfile } from "@/types/profile";
 
 type LotteryCardProps = {
-  lottery: Lottery;
+  lottery: LotteryForProfile;
 };
 
 export function LotteryCard({ lottery }: LotteryCardProps) {

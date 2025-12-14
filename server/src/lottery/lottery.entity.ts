@@ -16,6 +16,9 @@ export class LotteryEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  name: string;
+
   @Column({ type: 'timestamp', nullable: false })
   start_date: Date;
 

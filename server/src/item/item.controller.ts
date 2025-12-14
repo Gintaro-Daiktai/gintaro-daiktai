@@ -12,6 +12,7 @@ import {
   NotFoundException,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { ItemService } from './item.service';
 import { CreateItemDto } from './dto/createItem.dto';
@@ -63,8 +64,19 @@ export class ItemController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getItems(@User() userPayload: UserPayload): Promise<ItemEntity[]> {
+  async getItems(
+    @User() userPayload: UserPayload,
+    @Query('unassigned') unassigned?: boolean,
+  ): Promise<ItemEntity[]> {
     const items = await this.itemService.findItemsByUser(userPayload);
+
+    if (unassigned) {
+      const unassignedItems = items.filter(
+        (item) => !item.lottery && !item.auction,
+      );
+      return plainToInstance(ItemEntity, unassignedItems);
+    }
+
     return plainToInstance(ItemEntity, items);
   }
 

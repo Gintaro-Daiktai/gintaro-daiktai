@@ -1,4 +1,13 @@
-import { Body, Controller, Logger, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Param,
+  ParseIntPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { LotteryBidService } from './lottery_bid.service';
 import { CreateLotteryBidDto } from './dto/createLotteryBid.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
@@ -23,5 +32,12 @@ export class LotteryBidController {
     );
 
     return newBid;
+  }
+
+  @Get('lottery/:id')
+  async getLotteryBidsByLottery(
+    @Param('id', ParseIntPipe) lotteryId: number,
+  ): Promise<any> {
+    return this.lotteryBidService.findLotteryBidsByLotteryId(lotteryId);
   }
 }
