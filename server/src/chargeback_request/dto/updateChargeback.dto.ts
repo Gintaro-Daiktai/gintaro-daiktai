@@ -1,6 +1,6 @@
 import { IsBoolean, IsNotEmpty } from 'class-validator';
 
-export class UpdateDeliveryDto {
+export class UpdateChargebackDto {
   @IsBoolean()
   @IsNotEmpty()
   readonly confirmed: boolean;
