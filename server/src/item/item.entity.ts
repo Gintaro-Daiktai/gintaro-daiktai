@@ -15,6 +15,7 @@ import { AuctionEntity } from '../auction/auction.entity';
 import { ReviewEntity } from '../review/review.entity';
 import { DeliveryEntity } from '../delivery/delivery.entity';
 import { TagEntity } from '../tag/tag.entity';
+import { LotteryEntity } from '../lottery/lottery.entity';
 
 @Entity({ name: 'item' })
 export class ItemEntity {
@@ -56,8 +57,12 @@ export class ItemEntity {
   })
   condition: 'new' | 'used' | 'worn' | 'broken';
 
-  @Column({ type: 'int', nullable: true })
-  fk_lottery: number;
+  @ManyToOne(() => LotteryEntity, (lottery) => lottery.items, {
+    eager: true,
+    nullable: true,
+  })
+  @JoinColumn({ name: 'fk_lottery' })
+  lottery: LotteryEntity | null;
 
   @ManyToOne(() => UserEntity, (user) => user.items, {
     nullable: false,

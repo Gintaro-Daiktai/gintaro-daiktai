@@ -1,7 +1,6 @@
 import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
-  IsEnum,
   IsNumber,
   IsDate,
   IsArray,
@@ -19,10 +18,6 @@ export class CreateLotteryDto {
   @Type(() => Date)
   end_date: Date;
 
-  @IsEnum(['created', 'started', 'sold out', 'cancelled'])
-  @IsNotEmpty()
-  lottery_status: 'created' | 'started' | 'sold out' | 'cancelled';
-
   @IsNumber()
   @IsNotEmpty()
   total_tickets: number;
@@ -34,5 +29,5 @@ export class CreateLotteryDto {
   @IsArray()
   @IsNumber({}, { each: true })
   @ArrayNotEmpty()
-  items: number[];
+  itemIds: number[];
 }

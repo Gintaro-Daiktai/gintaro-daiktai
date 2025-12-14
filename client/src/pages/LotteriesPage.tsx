@@ -1,7 +1,6 @@
 import { NavLink } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -9,66 +8,93 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Clock, Ticket, TrendingUp, Sparkles, Plus } from "lucide-react";
+import { Clock, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import type { LotteryFull } from "@/types/lottery";
+import { lotteryApi } from "@/api/lottery";
+import { imageApi } from "@/api/image";
 
 export default function LotteriesPage() {
-  const lotteries = [
-    {
-      id: 1,
-      title: "MacBook Pro M3 Max",
-      ticketPrice: 25,
-      totalTickets: 500,
-      soldTickets: 342,
-      endTime: "3 days",
-      image: "/macbook.jpg",
-      value: 3499,
-      status: "active",
-    },
-    {
-      id: 2,
-      title: "PlayStation 5 Bundle",
-      ticketPrice: 10,
-      totalTickets: 800,
-      soldTickets: 623,
-      endTime: "5 days",
-      image: "/ps5.jpg",
-      value: 699,
-      status: "active",
-    },
-    {
-      id: 3,
-      title: "Designer Watch Collection",
-      ticketPrice: 50,
-      totalTickets: 300,
-      soldTickets: 187,
-      endTime: "2 days",
-      image: "/designer_watches.jpg",
-      value: 5200,
-      status: "hot",
-    },
-    {
-      id: 4,
-      title: "iPhone 16 Pro Max",
-      ticketPrice: 15,
-      totalTickets: 600,
-      soldTickets: 489,
-      endTime: "4 days",
-      image: "/iphone.jpg",
-      value: 1199,
-      status: "active",
-    },
-    {
-      id: 5,
-      title: "Mid-Century Modern Chair",
-      ticketPrice: 35,
-      totalTickets: 400,
-      soldTickets: 156,
-      endTime: "7 days",
-      image: "/chair.jpeg",
-      value: 4299,
-      status: "new",
-    },
-  ];
+  const [lotteries, setLotteries] = useState<LotteryFull[]>([]);
+  const [imageUrls, setImageUrls] = useState<Record<number, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchData();
+
+    console.log(lotteries);
+  }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setErrors([]);
+
+    const lotteries = await fetchLotteries();
+    setLotteries(lotteries);
+    const imageIds = lotteries.flatMap((lottery) =>
+      lottery.items.map((item) => item.id),
+    );
+    const images = await fetchImages(imageIds);
+    setImageUrls(images);
+    console.log(images);
+    console.log(lotteries[0].items);
+    console.log(lotteries[0].items[0].image);
+    console.log(imageUrls[lotteries[0].items[0].image.id]);
+
+    setLoading(false);
+  };
+
+  const fetchLotteries = async (): Promise<LotteryFull[]> => {
+    try {
+      return lotteryApi.getAllLotteries();
+    } catch (err) {
+      let errorMessage = "An unknown error occurred while fetching lotteries.";
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === "string") {
+        errorMessage = err;
+      }
+
+      console.error("Failed to fetch lotteries:", err);
+      setErrors((prevErrors) => [...prevErrors, errorMessage]);
+      return [];
+    }
+  };
+
+  const fetchImages = async (
+    imageIds: number[],
+  ): Promise<Record<number, string>> => {
+    const urls: Record<number, string> = {};
+
+    await Promise.all(
+      imageIds.map(async (imageId) => {
+        try {
+          urls[imageId] = await imageApi.getImageById(imageId);
+        } catch (err) {
+          console.error(`Failed to load image for item ${imageId}`, err);
+        }
+      }),
+    );
+
+    return urls;
+  };
+
+  if (loading) return <p></p>;
+
+  if (errors.length > 0) {
+    return (
+      <div className="color-red, p-10">
+        <h4>Data Fetching Failed:</h4>
+        {errors.map((err, index) => (
+          <p key={index} style={{ margin: "5px 0" }}>
+            {err}
+          </p>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -118,8 +144,8 @@ export default function LotteriesPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {lotteries.map((lottery) => {
-                const percentageSold =
-                  (lottery.soldTickets / lottery.totalTickets) * 100;
+                const percentageSold = 50;
+                //(lottery.soldTickets / lottery.totalTickets) * 100;
                 return (
                   <Card
                     key={lottery.id}
@@ -127,38 +153,17 @@ export default function LotteriesPage() {
                   >
                     <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                       <img
-                        src={lottery.image || "/placeholder.svg"}
-                        alt={lottery.title}
+                        src={
+                          imageUrls[lottery.items[0].image.id] ||
+                          "/placeholder.svg"
+                        }
+                        alt={lottery.items[0].name}
                         className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute top-3 left-3 flex gap-2">
-                        <Badge className="bg-accent text-accent-foreground">
-                          <Ticket className="h-3 w-3 mr-1" />
-                          Lottery
-                        </Badge>
-                        {lottery.status === "hot" && (
-                          <Badge variant="destructive">
-                            <TrendingUp className="h-3 w-3 mr-1" />
-                            Hot
-                          </Badge>
-                        )}
-                        {lottery.status === "new" && (
-                          <Badge className="bg-primary text-primary-foreground">
-                            <Sparkles className="h-3 w-3 mr-1" />
-                            New
-                          </Badge>
-                        )}
-                        {lottery.status === "ending-soon" && (
-                          <Badge variant="destructive">
-                            <Clock className="h-3 w-3 mr-1" />
-                            Ending Soon
-                          </Badge>
-                        )}
-                      </div>
                     </div>
                     <CardContent className="p-4 space-y-3">
                       <h3 className="font-semibold line-clamp-2 leading-snug">
-                        {lottery.title}
+                        {lottery.items[0].name}
                       </h3>
                       <div className="flex items-center justify-between">
                         <div>
@@ -166,23 +171,20 @@ export default function LotteriesPage() {
                             Ticket Price
                           </p>
                           <p className="text-xl font-bold text-accent">
-                            ${lottery.ticketPrice}
+                            ${lottery.ticket_price}
                           </p>
                         </div>
                         <div className="text-right">
                           <p className="text-xs text-muted-foreground">
                             Prize Value
                           </p>
-                          <p className="text-sm font-semibold">
-                            ${lottery.value.toLocaleString()}
-                          </p>
+                          <p className="text-sm font-semibold">100</p>
                         </div>
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-xs">
                           <span className="text-muted-foreground">
-                            {lottery.soldTickets} / {lottery.totalTickets}{" "}
-                            tickets sold
+                            X tickets sold
                           </span>
                           <span className="font-medium">
                             {Math.round(percentageSold)}%
@@ -198,7 +200,7 @@ export default function LotteriesPage() {
                       <div className="pt-2 border-t flex items-center justify-between">
                         <p className="text-xs text-muted-foreground flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          Ends in {lottery.endTime}
+                          Ends in {lottery.end_date}
                         </p>
                         <Button size="sm" asChild>
                           <NavLink to={`/lottery/${lottery.id}`}>

@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -34,9 +35,11 @@ export class LotteryService {
       throw new NotFoundException('User not found.');
     }
 
-    const items = await this.itemService.findItemsById(createLotteryDto.items);
+    const items = await this.itemService.findItemsById(
+      createLotteryDto.itemIds,
+    );
 
-    const alreadyAssigned = items.filter((item) => item.fk_lottery);
+    const alreadyAssigned = items.filter((item) => item.lottery);
     if (alreadyAssigned.length > 0) {
       throw new ConflictException(
         `Items already assigned to another lottery: ${alreadyAssigned.map((i) => i.id).join(', ')}`,
@@ -46,15 +49,28 @@ export class LotteryService {
     return this.dataSource.transaction(async (manager) => {
       const lottery = manager.create(LotteryEntity, {
         ...createLotteryDto,
+        lottery_status: 'created',
         user,
       });
       const savedLottery = await manager.save(lottery);
 
-      items.forEach((item) => (item.fk_lottery = savedLottery.id));
+      items.forEach((item) => (item.lottery = savedLottery));
       await manager.save(items);
 
       return savedLottery;
     });
+  }
+
+  async findActiveLotteries(): Promise<LotteryEntity[]> {
+    return (
+      await this.lotteryRepository.find({
+        relations: { items: true },
+      })
+    ).filter(
+      (lottery) =>
+        lottery.lottery_status != 'cancelled' &&
+        lottery.lottery_status != 'finished',
+    );
   }
 
   async findLotteryById(
@@ -84,5 +100,44 @@ export class LotteryService {
     }
 
     return lotteries;
+  }
+
+  async cancelLottery(
+    id: number,
+    userPayload: UserPayload,
+  ): Promise<LotteryEntity> {
+    const lottery = await this.lotteryRepository.findOne({
+      where: { id },
+      relations: { user: true, items: true },
+    });
+
+    if (!lottery) {
+      throw new NotFoundException(`Lottery with id ${id} not found.`);
+    }
+
+    if (lottery.user.id !== userPayload.userId) {
+      throw new ForbiddenException(
+        'You do not have permission to cancel this lottery.',
+      );
+    }
+
+    if (lottery.lottery_status === 'cancelled') {
+      throw new ConflictException('Lottery is already cancelled.');
+    }
+
+    if (lottery.lottery_status === 'finished') {
+      throw new ConflictException('Cannot cancel a sold lottery.');
+    }
+
+    lottery.lottery_status = 'cancelled';
+
+    return this.dataSource.transaction(async (manager) => {
+      lottery.items.forEach((item) => {
+        item.lottery = null;
+        manager.save(item);
+      });
+
+      return manager.save(lottery);
+    });
   }
 }
