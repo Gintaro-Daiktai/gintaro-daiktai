@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2, User } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { apiClient } from "@/api/client";
 import { auctionApi } from "@/api/auction";
@@ -301,12 +301,6 @@ export function CreateAuctionDialog({
               >
                 Create Auction
               </Button>
-              <Link to="/profile">
-                <Button variant="outline" size="lg">
-                  <User className="mr-2 h-4 w-4" />
-                  Profile
-                </Button>
-              </Link>
               <Button
                 variant="outline"
                 size="lg"
