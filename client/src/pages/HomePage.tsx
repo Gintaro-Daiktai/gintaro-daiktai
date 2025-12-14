@@ -90,47 +90,51 @@ function HomePage() {
                 key={auction.id}
                 className="group overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all hover:border-primary/50"
               >
-                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                  <img
-                    src={auction.image || "/placeholder.svg"}
-                    alt={auction.title}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <Button
-                    size="icon"
-                    variant="secondary"
-                    className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Heart className="h-4 w-4" />
-                  </Button>
-                </div>
-                <CardContent className="p-4 space-y-3">
-                  <h3 className="font-semibold line-clamp-2 leading-snug">
-                    {auction.title}
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <div>
+                <NavLink to={`/auction/${auction.id}`}>
+                  <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                    <img
+                      src={auction.image || "/placeholder.svg"}
+                      alt={auction.title}
+                      className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Heart className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <CardContent className="p-4 space-y-3">
+                    <h3 className="font-semibold line-clamp-2 leading-snug">
+                      {auction.title}
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-muted-foreground">
+                          Current Bid
+                        </p>
+                        <p className="text-xl font-bold text-primary">
+                          ${auction.currentBid.toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">
+                          Time Left
+                        </p>
+                        <p className="text-sm font-semibold flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {auction.endTime}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="pt-2 border-t">
                       <p className="text-xs text-muted-foreground">
-                        Current Bid
-                      </p>
-                      <p className="text-xl font-bold text-primary">
-                        ${auction.currentBid.toLocaleString()}
+                        {auction.bids} bids
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-xs text-muted-foreground">Time Left</p>
-                      <p className="text-sm font-semibold flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {auction.endTime}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="pt-2 border-t">
-                    <p className="text-xs text-muted-foreground">
-                      {auction.bids} bids
-                    </p>
-                  </div>
-                </CardContent>
+                  </CardContent>
+                </NavLink>
               </Card>
             ))}
           </div>

@@ -7,7 +7,9 @@ export type EmojiReaction = {
 export type Review = {
   id: number;
   reviewer: string;
+  reviewerId: number;
   rating: number;
+  title: string;
   comment: string;
   date: string;
   item: string;

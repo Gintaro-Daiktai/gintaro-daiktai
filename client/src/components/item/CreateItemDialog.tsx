@@ -163,8 +163,8 @@ export function CreateItemDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="flex flex-col max-h-[90vh] sm:max-w-xl">
         <DialogHeader className="px-4">
-          <DialogTitle>Edit Item</DialogTitle>
-          <DialogDescription>Make changes to your item here.</DialogDescription>
+          <DialogTitle>Create Item</DialogTitle>
+          <DialogDescription>Create a new item.</DialogDescription>
         </DialogHeader>
         <div className="overflow-y-auto grow px-4">
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

@@ -18,6 +18,7 @@ interface ProfileTabsProps {
   pastAuctionsCount?: number;
   pastLotteriesCount?: number;
   isOwnProfile?: boolean;
+  currentUserId?: number;
 }
 
 export function ProfileTabs({
@@ -30,6 +31,7 @@ export function ProfileTabs({
   pastAuctionsCount = 0,
   pastLotteriesCount = 0,
   isOwnProfile = false,
+  currentUserId,
 }: ProfileTabsProps) {
   return (
     <Tabs defaultValue="auctions" className="space-y-6 mt-6">
@@ -104,6 +106,7 @@ export function ProfileTabs({
                 availableEmojis={availableEmojis}
                 onToggleReaction={onToggleReaction}
                 onDelete={onDeleteReview}
+                currentUserId={currentUserId}
               />
             ))}
           </div>

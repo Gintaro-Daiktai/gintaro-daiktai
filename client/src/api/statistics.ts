@@ -33,26 +33,26 @@ export const statisticsApi = {
   },
 
   getAuctionStatistics: async (
-    auctionId: number
+    auctionId: number,
   ): Promise<AuctionStatisticsDto> => {
     return await apiClient<AuctionStatisticsDto>(
       `/statistics/auctions/${auctionId}`,
       {
         method: "GET",
         requiresAuth: true,
-      }
+      },
     );
   },
 
   getLotteryStatistics: async (
-    lotteryId: number
+    lotteryId: number,
   ): Promise<LotteryStatisticsDto> => {
     return await apiClient<LotteryStatisticsDto>(
       `/statistics/lotteries/${lotteryId}`,
       {
         method: "GET",
         requiresAuth: true,
-      }
+      },
     );
   },
 
@@ -63,15 +63,13 @@ export const statisticsApi = {
     });
   },
 
-  getBrowseStatistics: async (
-    filters?: {
-      minPrice?: number;
-      maxPrice?: number;
-      condition?: string;
-      status?: string;
-      category?: string;
-    }
-  ): Promise<BrowseStatisticsDto> => {
+  getBrowseStatistics: async (filters?: {
+    minPrice?: number;
+    maxPrice?: number;
+    condition?: string;
+    status?: string;
+    category?: string;
+  }): Promise<BrowseStatisticsDto> => {
     const params = new URLSearchParams();
     if (filters?.minPrice !== undefined)
       params.append("minPrice", filters.minPrice.toString());
@@ -96,7 +94,7 @@ export const statisticsApi = {
       {
         method: "GET",
         requiresAuth: false,
-      }
+      },
     );
   },
 };

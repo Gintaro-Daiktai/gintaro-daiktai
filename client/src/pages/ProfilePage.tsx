@@ -167,6 +167,7 @@ export default function ProfilePage() {
         pastAuctionsCount={pastAuctionsCount}
         pastLotteriesCount={pastLotteriesCount}
         isOwnProfile={isOwnProfile}
+        currentUserId={currentUser?.id}
       />
     </main>
   );

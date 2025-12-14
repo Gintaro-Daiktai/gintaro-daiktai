@@ -60,8 +60,10 @@ export function useProfileReviews(
       return {
         id: review.id,
         reviewer: `${review.reviewer.name} ${review.reviewer.last_name}`,
+        reviewerId: review.reviewer.id,
         rating: review.rating,
-        comment: review.body || review.title || "",
+        title: review.title || "",
+        comment: review.body || "",
         date: new Date(review.review_date).toLocaleDateString(),
         item: review.item.name,
         reactions: Object.entries(reactionCounts).map(([emoji, data]) => ({
