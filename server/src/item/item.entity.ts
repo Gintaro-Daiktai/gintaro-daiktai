@@ -77,8 +77,9 @@ export class ItemEntity {
   })
   tags: TagEntity[];
 
-  @OneToMany(() => ImageEntity, (image) => image.item)
-  images: ImageEntity[];
+  @OneToOne(() => ImageEntity, { eager: true })
+  @JoinColumn({ name: 'fk_image' })
+  image: ImageEntity;
 
   @OneToOne(() => AuctionEntity, (auction) => auction.item)
   auction: AuctionEntity;

@@ -12,6 +12,7 @@ import { UserService } from 'src/user/user.service';
 import { UserPayload } from 'src/common/interfaces/user_payload.interface';
 import { UpdateItemDto } from './dto/editItem.dto';
 import { TagService } from 'src/tag/tag.service';
+import { ImageService } from 'src/image/image.service';
 
 @Injectable()
 export class ItemService {
@@ -19,6 +20,7 @@ export class ItemService {
   constructor(
     @InjectRepository(ItemEntity)
     private readonly itemRepository: Repository<ItemEntity>,
+    private readonly imageService: ImageService,
     private readonly userService: UserService,
     private readonly tagService: TagService,
   ) {}
@@ -26,6 +28,7 @@ export class ItemService {
   async createItem(
     createItemDto: CreateItemDto,
     userPayload: UserPayload,
+    imageFile: Express.Multer.File,
   ): Promise<ItemEntity> {
     const { tagIds, ...itemData } = createItemDto;
 
@@ -41,16 +44,32 @@ export class ItemService {
       tagData = { tags };
     }
 
+    const image = await this.imageService.createImage(imageFile);
+
     const newItem = this.itemRepository.create({
       ...itemData,
       user,
       ...tagData,
+      image,
     });
 
     return this.itemRepository.save(newItem);
   }
 
-  async updateItem(updateItemDto: UpdateItemDto): Promise<ItemEntity> {
+  async updateItem(
+    id: number,
+    updateItemDto: UpdateItemDto,
+    imageFile?: Express.Multer.File,
+  ): Promise<ItemEntity> {
+    const item = await this.itemRepository.findOne({
+      where: { id },
+      relations: ['image'],
+    });
+
+    if (!item) {
+      throw new NotFoundException(`Item with ID ${id} not found`);
+    }
+
     const { tagIds, ...itemData } = updateItemDto;
 
     let tagData = {};
@@ -60,13 +79,10 @@ export class ItemService {
       tagData = { tags };
     }
 
-    const item = await this.itemRepository.preload({
-      ...itemData,
-      ...tagData,
-    });
+    Object.assign(item, itemData, tagData);
 
-    if (!item) {
-      throw new NotFoundException(`Item with ID ${updateItemDto.id} not found`);
+    if (imageFile) {
+      await this.imageService.updateImage(item.image.id, imageFile);
     }
 
     return this.itemRepository.save(item);
@@ -83,7 +99,7 @@ export class ItemService {
 
     return this.itemRepository.find({
       where: { user },
-      relations: { tags: true },
+      relations: { tags: true, image: true },
     });
   }
 

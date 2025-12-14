@@ -34,9 +34,12 @@ export const apiClient = async <T>(
   const { requiresAuth = false, ...fetchOptions } = options;
 
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     ...(fetchOptions.headers as Record<string, string>),
   };
+
+  if (!(fetchOptions.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
 
   // Add Authorization header if token exists
   if (requiresAuth) {

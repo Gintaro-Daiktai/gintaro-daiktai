@@ -5,17 +5,12 @@ import {
   IsEnum,
   IsOptional,
   IsNumber,
-  IsNotEmpty,
   IsArray,
   IsInt,
   ArrayUnique,
 } from 'class-validator';
 
 export class UpdateItemDto {
-  @IsNumber()
-  @IsNotEmpty()
-  id: number;
-
   @IsString()
   @IsOptional()
   @MaxLength(255)

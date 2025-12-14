@@ -22,7 +22,7 @@ import UserDeliveriesPage from "./pages/UserDeliveriesPage";
 import DeliveryPage from "./pages/DeliveryPage";
 import DisputeFormPage from "./pages/DisputeFormPage";
 import UserMessagingPage from "./pages/UserMessagingPage";
-import MyItemsPage from "./pages/ItemsPage";
+import MyItemsPage from "./pages/MyItemsPage";
 import LotteryEditPage from "./pages/LotteryEditPage";
 import ChargebackPage from "./pages/ChargebackPage";
 import AuctionsPage from "./pages/AuctionsPage";
