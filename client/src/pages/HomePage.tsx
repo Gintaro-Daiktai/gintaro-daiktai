@@ -1,106 +1,74 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Clock } from "lucide-react";
 import { NavLink } from "react-router";
+import { statisticsApi } from "@/api/statistics";
+import type { BrowseAuctionDto, BrowseLotteryDto, PopularTagDto } from "@/types/statistics";
 
 function HomePage() {
-  const featuredAuctions = [
-    {
-      id: 1,
-      title: "Vintage Rolex Submariner 1960s",
-      currentBid: 12500,
-      endTime: "2h 34m",
-      bids: 23,
-      image: "/rolex.jpg",
-    },
-    {
-      id: 2,
-      title: "Original iPhone 2007 Sealed",
-      currentBid: 8900,
-      endTime: "5h 12m",
-      bids: 45,
-      image: "/iphone.jpg",
-    },
-    {
-      id: 3,
-      title: "Rare Pokemon Card Collection",
-      currentBid: 3200,
-      endTime: "1h 45m",
-      bids: 67,
-      image: "/pokemon_cards.jpg",
-    },
-    {
-      id: 4,
-      title: "Mid-Century Modern Chair",
-      currentBid: 1850,
-      endTime: "8h 20m",
-      bids: 12,
-      image: "/chair.jpeg",
-    },
-  ];
+  const [featuredAuctions, setFeaturedAuctions] = useState<BrowseAuctionDto[]>([]);
+  const [featuredLotteries, setFeaturedLotteries] = useState<BrowseLotteryDto[]>([]);
+  const [popularCategories, setPopularCategories] = useState<PopularTagDto[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const featuredLotteries = [
-    {
-      id: 1,
-      title: "MacBook Pro M3 Max",
-      ticketPrice: 25,
-      totalTickets: 500,
-      soldTickets: 342,
-      endTime: "3 days",
-      image: "/macbook.jpg",
-      value: 3499,
-    },
-    {
-      id: 2,
-      title: "PlayStation 5 Bundle",
-      ticketPrice: 10,
-      totalTickets: 800,
-      soldTickets: 623,
-      endTime: "5 days",
-      image: "/ps5.jpg",
-      value: 699,
-    },
-    {
-      id: 3,
-      title: "Designer Watch Collection",
-      ticketPrice: 50,
-      totalTickets: 300,
-      soldTickets: 187,
-      endTime: "2 days",
-      image: "/designer_watches.jpg",
-      value: 5200,
-    },
-  ];
+  useEffect(() => {
+    const fetchFeaturedItems = async () => {
+      try {
+        const [browseData, tagsData] = await Promise.all([
+          statisticsApi.getBrowseStatistics(),
+          statisticsApi.getPopularTags(6),
+        ]);
 
-  const categories = [
-    { name: "Electronics", count: 1234 },
-    { name: "Collectibles", count: 892 },
-    { name: "Fashion", count: 2341 },
-    { name: "Art", count: 567 },
-    { name: "Jewelry", count: 423 },
-    { name: "Home & Garden", count: 1567 },
-  ];
+        const shuffledAuctions = [...browseData.auctions].sort(() => Math.random() - 0.5);
+        setFeaturedAuctions(shuffledAuctions.slice(0, 4));
+
+        const shuffledLotteries = [...browseData.lotteries].sort(() => Math.random() - 0.5);
+        setFeaturedLotteries(shuffledLotteries.slice(0, 3));
+        
+        setPopularCategories(tagsData);
+      } catch (error) {
+        console.error('Failed to fetch featured items:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFeaturedItems();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading featured items...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col gap-8 p-4">
-      <div>
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-2xl font-bold tracking-tight">
-                Featured Auctions
-              </h2>
+      {featuredAuctions.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h2 className="text-2xl font-bold tracking-tight">
+                  Featured Auctions
+                </h2>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                Ending soon - don't miss out!
+              </p>
             </div>
-            <p className="text-muted-foreground text-sm">
-              Ending soon - don't miss out!
-            </p>
+            <Button variant="ghost" asChild>
+              <NavLink to={"/browse"}>View All</NavLink>
+            </Button>
           </div>
-          <Button variant="ghost" asChild>
-            <NavLink to={"/browse"}>View All</NavLink>
-          </Button>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {featuredAuctions.map((auction) => (
             <Card
               key={auction.id}
@@ -148,25 +116,28 @@ function HomePage() {
             </Card>
           ))}
         </div>
-      </div>
-      <div>
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-2xl font-bold tracking-tight">
-                Featured Lotteries
-              </h2>
-            </div>
-            <p className="text-muted-foreground text-sm">
-              Win amazing prizes - buy tickets now!
-            </p>
-          </div>
-          <Button variant="ghost" asChild>
-            <NavLink to={"/browse"}>View All</NavLink>
-          </Button>
         </div>
+      )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {featuredLotteries.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h2 className="text-2xl font-bold tracking-tight">
+                  Featured Lotteries
+                </h2>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                Win amazing prizes - buy tickets now!
+              </p>
+            </div>
+            <Button variant="ghost" asChild>
+              <NavLink to={"/browse"}>View All</NavLink>
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {featuredLotteries.map((lottery) => {
             const percentageSold =
               (lottery.soldTickets / lottery.totalTickets) * 100;
@@ -184,7 +155,7 @@ function HomePage() {
                 </div>
                 <CardContent className="p-4 space-y-3">
                   <h3 className="font-semibold line-clamp-2 leading-snug">
-                    {lottery.title}
+                    Lottery #{lottery.id}
                   </h3>
                   <div className="flex items-center justify-between">
                     <div>
@@ -197,10 +168,10 @@ function HomePage() {
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-muted-foreground">
-                        Prize Value
+                        Total Tickets
                       </p>
                       <p className="text-sm font-semibold">
-                        ${lottery.value.toLocaleString()}
+                        {lottery.totalTickets}
                       </p>
                     </div>
                   </div>
@@ -227,7 +198,7 @@ function HomePage() {
                       Ends in {lottery.endTime}
                     </p>
                     <Button size="sm" variant="outline" asChild>
-                      <a href={`/lottery/${lottery.id}`}>Buy Tickets</a>
+                      <NavLink to={`/lottery/${lottery.id}`}>Buy Tickets</NavLink>
                     </Button>
                   </div>
                 </CardContent>
@@ -235,7 +206,9 @@ function HomePage() {
             );
           })}
         </div>
-      </div>
+        </div>
+      )}
+
       <div className="rounded-xl bg-card/50 p-8 border">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold tracking-tight">
@@ -247,9 +220,9 @@ function HomePage() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {categories.map((category) => (
+          {popularCategories.map((category) => (
             <NavLink
-              to={"/category/" + category.name.toLowerCase()}
+              to={`/browse?category=${encodeURIComponent(category.name)}`}
               key={category.name}
             >
               <Card className="hover:shadow-md hover:border-primary/50 transition-all cursor-pointer">
