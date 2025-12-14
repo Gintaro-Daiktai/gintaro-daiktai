@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import ormconfig from './ormconfig';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
-import { AddressModule } from './address/address.module';
 import { ItemModule } from './item/item.module';
 import { TagModule } from './tag/tag.module';
 import { ItemTagModule } from './item_tag/item_tag.module';
@@ -38,7 +37,6 @@ import { StatisticsModule } from './statistics/statistics.module';
     EmailModule,
     StripeModule,
     UserModule,
-    AddressModule,
     ItemModule,
     TagModule,
     ItemTagModule,
