@@ -49,6 +49,7 @@ export class ReviewEmoteEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.reviewEmotes, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'fk_user' })
   user: UserEntity;

@@ -33,6 +33,7 @@ export class ReviewEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.reviewsWritten, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'fk_reviewer' })
   reviewer: UserEntity;
@@ -43,6 +44,7 @@ export class ReviewEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.reviewsReceived, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'fk_reviewee' })
   reviewee: UserEntity;
