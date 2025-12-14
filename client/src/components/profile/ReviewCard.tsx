@@ -26,6 +26,7 @@ type ReviewCardProps = {
   availableEmojis: string[];
   onToggleReaction: (reviewId: number, emoji: string) => void;
   onDelete: (reviewId: number) => void;
+  currentUserId?: number;
 };
 
 export function ReviewCard({
@@ -33,6 +34,7 @@ export function ReviewCard({
   availableEmojis,
   onToggleReaction,
   onDelete,
+  currentUserId,
 }: ReviewCardProps) {
   return (
     <Card>
@@ -60,37 +62,42 @@ export function ReviewCard({
                 />
               ))}
             </div>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Review</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to delete this review? This action
-                    cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => onDelete(review.id)}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            {currentUserId === review.reviewerId && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
                   >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Review</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete this review? This action
+                      cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => onDelete(review.id)}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
           </div>
         </div>
+        {review.title && (
+          <h3 className="font-semibold text-lg mb-2">{review.title}</h3>
+        )}
         <p className="text-muted-foreground mb-2">{review.comment}</p>
         <p className="text-xs text-muted-foreground mb-4">
           Purchase:{" "}

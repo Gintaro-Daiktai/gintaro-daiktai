@@ -44,7 +44,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchPastCounts = async () => {
       if (!isOwnProfile) return;
-      
+
       try {
         const [auctions, lotteries] = await Promise.all([
           statisticsApi.getAuctionsList(),
@@ -53,7 +53,7 @@ export default function ProfilePage() {
         setPastAuctionsCount(auctions.length);
         setPastLotteriesCount(lotteries.length);
       } catch (error) {
-        console.error('Failed to fetch past auctions/lotteries:', error);
+        console.error("Failed to fetch past auctions/lotteries:", error);
       }
     };
 
@@ -167,6 +167,7 @@ export default function ProfilePage() {
         pastAuctionsCount={pastAuctionsCount}
         pastLotteriesCount={pastLotteriesCount}
         isOwnProfile={isOwnProfile}
+        currentUserId={currentUser?.id}
       />
     </main>
   );
