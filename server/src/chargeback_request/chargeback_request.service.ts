@@ -1,6 +1,6 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { ChargebackRequestEntity } from './chargeback_request.entity';
 import { CreateChargeBackDto } from './dto/createChargeBack.dto';
 import { UpdateChargebackDto } from './dto/updateChargeback.dto';
@@ -27,6 +27,7 @@ export class ChargebackRequestService {
 
   async getAllChargebackRequests(): Promise<ChargebackRequestResponseDto[]> {
     const chargebackRequests = await this.chargebackRequestRepository.find({
+      where: { confirmed: IsNull() },
       relations: [
         'delivery',
         'delivery.sender',
@@ -73,7 +74,6 @@ export class ChargebackRequestService {
     }
 
     const newChargebackRequest = new ChargebackRequestEntity();
-    newChargebackRequest.confirmed = false;
     Object.assign(newChargebackRequest, createChargebackRequestDto);
     const savedChargebackRequest =
       await this.chargebackRequestRepository.save(newChargebackRequest);
