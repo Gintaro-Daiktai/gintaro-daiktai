@@ -20,6 +20,7 @@ export class ChargebackRequestEntity {
 
   @ManyToOne(() => DeliveryEntity, (delivery) => delivery.chargebackRequests, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'fk_delivery' })
   delivery: DeliveryEntity;
