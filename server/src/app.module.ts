@@ -7,7 +7,6 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { ItemModule } from './item/item.module';
 import { TagModule } from './tag/tag.module';
-import { ItemTagModule } from './item_tag/item_tag.module';
 import { ImageModule } from './image/image.module';
 import { LotteryModule } from './lottery/lottery.module';
 import { LotteryBidModule } from './lottery_bid/lottery_bid.module';
@@ -39,7 +38,6 @@ import { StatisticsModule } from './statistics/statistics.module';
     UserModule,
     ItemModule,
     TagModule,
-    ItemTagModule,
     ImageModule,
     LotteryModule,
     LotteryBidModule,

@@ -45,7 +45,6 @@ import {
 } from './dto/browseStatistics.dto';
 
 import { PopularTagDto } from './dto/popularTags.dto';
-import { ItemTagEntity } from '../item_tag/item_tag.entity';
 import { TagEntity } from '../tag/tag.entity';
 
 @Injectable()
@@ -65,8 +64,6 @@ export class StatisticsService {
     private readonly deliveryRepository: Repository<DeliveryEntity>,
     @InjectRepository(ItemEntity)
     private readonly itemRepository: Repository<ItemEntity>,
-    @InjectRepository(ItemTagEntity)
-    private readonly itemTagRepository: Repository<ItemTagEntity>,
     @InjectRepository(TagEntity)
     private readonly tagRepository: Repository<TagEntity>,
   ) {}
@@ -79,12 +76,7 @@ export class StatisticsService {
 
     const auctionBids = await this.auctionBidRepository.find({
       where: { user: { id: userId } },
-      relations: [
-        'auction',
-        'auction.item',
-        'auction.item.itemTags',
-        'auction.item.itemTags.tag',
-      ],
+      relations: ['auction', 'auction.item', 'auction.item.tags'],
     });
 
     const lotteryBids = await this.lotteryBidRepository.find({
@@ -94,7 +86,7 @@ export class StatisticsService {
 
     const userAuctions = await this.auctionRepository.find({
       where: { user: { id: userId } },
-      relations: ['item', 'item.itemTags', 'item.itemTags.tag'],
+      relations: ['item', 'item.tags'],
     });
 
     const userLotteries = await this.lotteryRepository.find({
@@ -107,7 +99,7 @@ export class StatisticsService {
             where: {
               fk_lottery: In(userLotteries.map((l) => l.id)),
             },
-            relations: ['itemTags', 'itemTags.tag'],
+            relations: ['tags'],
           })
         : [];
 
@@ -171,9 +163,8 @@ export class StatisticsService {
     const auctions = await this.auctionRepository
       .createQueryBuilder('auction')
       .leftJoinAndSelect('auction.item', 'item')
-      .leftJoinAndSelect('item.images', 'images')
-      .leftJoinAndSelect('item.itemTags', 'itemTags')
-      .leftJoinAndSelect('itemTags.tag', 'tag')
+      .leftJoinAndSelect('item.image', 'image')
+      .leftJoinAndSelect('item.tags', 'tags')
       .leftJoinAndSelect('auction.auctionBids', 'auctionBids')
       .leftJoin('auctionBids.user', 'user')
       .leftJoin('auction.user', 'auctionOwner')
@@ -191,12 +182,11 @@ export class StatisticsService {
         totalBids > 0 ? Math.max(...bids.map((b) => b.sum)) : 0;
       const profit = highestBid - startingBid;
 
-      const category =
-        auction.item?.itemTags?.[0]?.tag?.name || 'Uncategorized';
+      const category = auction.item?.tags?.[0]?.name || 'Uncategorized';
 
-      const firstImage = auction.item?.images?.[0];
-      const image = firstImage
-        ? `data:image/jpeg;base64,${firstImage.image.toString('base64')}`
+      const itemImage = auction.item?.image;
+      const image = itemImage
+        ? `data:image/jpeg;base64,${itemImage.image.toString('base64')}`
         : null;
 
       return {
@@ -230,9 +220,8 @@ export class StatisticsService {
       lotteries.map(async (lottery) => {
         const items = await this.itemRepository
           .createQueryBuilder('item')
-          .leftJoinAndSelect('item.images', 'images')
-          .leftJoinAndSelect('item.itemTags', 'itemTags')
-          .leftJoinAndSelect('itemTags.tag', 'tag')
+          .leftJoinAndSelect('item.image', 'image')
+          .leftJoinAndSelect('item.tags', 'tags')
           .where('item.fk_lottery = :lotteryId', { lotteryId: lottery.id })
           .getMany();
 
@@ -248,10 +237,10 @@ export class StatisticsService {
         const profit = totalRevenue - itemsCost;
 
         const lotteryItems: LotteryItemDto[] = items.map((item) => {
-          const category = item.itemTags?.[0]?.tag?.name || 'Uncategorized';
-          const firstImage = item.images?.[0];
-          const image = firstImage
-            ? `data:image/jpeg;base64,${firstImage.image.toString('base64')}`
+          const category = item.tags?.[0]?.name || 'Uncategorized';
+          const itemImage = item.image;
+          const image = itemImage
+            ? `data:image/jpeg;base64,${itemImage.image.toString('base64')}`
             : null;
 
           return {
@@ -771,10 +760,10 @@ export class StatisticsService {
     const categoryMap = new Map<string, number>();
 
     items.forEach((item) => {
-      if (item?.itemTags) {
-        item.itemTags.forEach((itemTag) => {
-          if (itemTag.tag) {
-            const categoryName = itemTag.tag.name;
+      if (item?.tags) {
+        item.tags.forEach((tag) => {
+          if (tag) {
+            const categoryName = tag.name;
             categoryMap.set(
               categoryName,
               (categoryMap.get(categoryName) || 0) + 1,
@@ -802,9 +791,8 @@ export class StatisticsService {
     const auctionQuery = this.auctionRepository
       .createQueryBuilder('auction')
       .leftJoinAndSelect('auction.item', 'item')
-      .leftJoinAndSelect('item.images', 'images')
-      .leftJoinAndSelect('item.itemTags', 'itemTags')
-      .leftJoinAndSelect('itemTags.tag', 'tag')
+      .leftJoinAndSelect('item.image', 'image')
+      .leftJoinAndSelect('item.tags', 'tags')
       .leftJoinAndSelect('auction.auctionBids', 'auctionBids')
       .where('auction.auction_status = :status', { status: 'started' });
 
@@ -815,7 +803,7 @@ export class StatisticsService {
     }
 
     if (filters?.category) {
-      auctionQuery.andWhere('tag.name = :category', {
+      auctionQuery.andWhere('tags.name = :category', {
         category: filters.category,
       });
     }
@@ -885,12 +873,12 @@ export class StatisticsService {
       const endTime =
         diffHours > 0 ? `${diffHours}h ${diffMinutes}m` : `${diffMinutes}m`;
 
-      const firstImage = auction.item?.images?.[0];
-      const image = firstImage
-        ? `data:image/jpeg;base64,${firstImage.image.toString('base64')}`
+      const itemImage = auction.item?.image;
+      const image = itemImage
+        ? `data:image/jpeg;base64,${itemImage.image.toString('base64')}`
         : null;
 
-      const category = auction.item?.itemTags?.[0]?.tag?.name;
+      const category = auction.item?.tags?.[0]?.name;
 
       return {
         id: auction.id,
@@ -964,12 +952,13 @@ export class StatisticsService {
   }
 
   async getPopularTags(limit: number = 10): Promise<PopularTagDto[]> {
-    const tags = await this.itemTagRepository
-      .createQueryBuilder('itemTag')
-      .leftJoinAndSelect('itemTag.tag', 'tag')
+    const tags = await this.itemRepository
+      .createQueryBuilder('item')
+      .innerJoin('item.tags', 'tag')
       .select('tag.name', 'name')
-      .addSelect('COUNT(itemTag.fk_tag)', 'count')
-      .groupBy('tag.name')
+      .addSelect('COUNT(tag.id)', 'count')
+      .groupBy('tag.id')
+      .addGroupBy('tag.name')
       .orderBy('count', 'DESC')
       .limit(limit)
       .getRawMany<{ name: string; count: string }>();

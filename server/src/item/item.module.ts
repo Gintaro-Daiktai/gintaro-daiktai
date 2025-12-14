@@ -4,9 +4,16 @@ import { ItemService } from './item.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ItemEntity } from './item.entity';
 import { UserModule } from 'src/user/user.module';
+import { TagModule } from 'src/tag/tag.module';
+import { ImageModule } from 'src/image/image.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ItemEntity]), UserModule],
+  imports: [
+    TypeOrmModule.forFeature([ItemEntity]),
+    UserModule,
+    TagModule,
+    ImageModule,
+  ],
   controllers: [ItemController],
   providers: [ItemService],
   exports: [ItemService],

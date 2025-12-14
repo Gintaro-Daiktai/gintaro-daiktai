@@ -1,11 +1,5 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
-import { ItemEntity } from '../item/item.entity';
+import { Exclude } from 'class-transformer';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'image' })
 export class ImageEntity {
@@ -13,9 +7,9 @@ export class ImageEntity {
   id: number;
 
   @Column({ type: 'bytea', nullable: false })
+  @Exclude()
   image: Buffer;
 
-  @ManyToOne(() => ItemEntity, (item) => item.images, { nullable: false })
-  @JoinColumn({ name: 'fk_item' })
-  item: ItemEntity;
+  @Column()
+  mimeType: string;
 }

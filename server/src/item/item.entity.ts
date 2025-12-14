@@ -6,13 +6,15 @@ import {
   JoinColumn,
   OneToMany,
   OneToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { UserEntity } from '../user/user.entity';
-import { ItemTagEntity } from '../item_tag/item_tag.entity';
 import { ImageEntity } from '../image/image.entity';
 import { AuctionEntity } from '../auction/auction.entity';
 import { ReviewEntity } from '../review/review.entity';
 import { DeliveryEntity } from '../delivery/delivery.entity';
+import { TagEntity } from '../tag/tag.entity';
 
 @Entity({ name: 'item' })
 export class ItemEntity {
@@ -64,11 +66,23 @@ export class ItemEntity {
   @JoinColumn({ name: 'fk_user' })
   user: UserEntity;
 
-  @OneToMany(() => ItemTagEntity, (itemTag) => itemTag.item)
-  itemTags: ItemTagEntity[];
+  @ManyToMany(() => TagEntity, (tag) => tag.items, { eager: true })
+  @JoinTable({
+    name: 'item_tag',
+    joinColumn: {
+      name: 'fk_item',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'fk_tag',
+      referencedColumnName: 'id',
+    },
+  })
+  tags: TagEntity[];
 
-  @OneToMany(() => ImageEntity, (image) => image.item)
-  images: ImageEntity[];
+  @OneToOne(() => ImageEntity, { eager: true })
+  @JoinColumn({ name: 'fk_image' })
+  image: ImageEntity;
 
   @OneToOne(() => AuctionEntity, (auction) => auction.item)
   auction: AuctionEntity;

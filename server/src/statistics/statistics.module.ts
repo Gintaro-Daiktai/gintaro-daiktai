@@ -9,7 +9,6 @@ import { AuctionBidEntity } from '../auction_bid/auction_bid.entity';
 import { LotteryBidEntity } from '../lottery_bid/lottery_bid.entity';
 import { DeliveryEntity } from '../delivery/delivery.entity';
 import { ItemEntity } from '../item/item.entity';
-import { ItemTagEntity } from '../item_tag/item_tag.entity';
 import { TagEntity } from '../tag/tag.entity';
 
 @Module({
@@ -22,7 +21,6 @@ import { TagEntity } from '../tag/tag.entity';
       LotteryBidEntity,
       DeliveryEntity,
       ItemEntity,
-      ItemTagEntity,
       TagEntity,
     ]),
   ],
