@@ -19,7 +19,10 @@ export class LotteryBidEntity {
   @Column({ type: 'timestamp', nullable: false })
   bid_date: Date;
 
-  @ManyToOne(() => UserEntity, (user) => user.lotteryBids, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => UserEntity, (user) => user.lotteryBids, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'fk_user' })
   user: UserEntity;
 

@@ -57,7 +57,10 @@ export class ItemEntity {
   @Column({ type: 'int', nullable: true })
   fk_lottery: number;
 
-  @ManyToOne(() => UserEntity, (user) => user.items, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => UserEntity, (user) => user.items, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'fk_user' })
   user: UserEntity;
 

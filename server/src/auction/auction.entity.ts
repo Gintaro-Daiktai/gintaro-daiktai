@@ -34,7 +34,10 @@ export class AuctionEntity {
   })
   auction_status: 'started' | 'sold' | 'cancelled' | 'created';
 
-  @ManyToOne(() => UserEntity, (user) => user.auctions, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => UserEntity, (user) => user.auctions, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'fk_user' })
   user: UserEntity;
 
