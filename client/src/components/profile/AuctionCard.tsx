@@ -4,6 +4,8 @@ import { Clock } from "lucide-react";
 import type { Auction } from "@/types/auction";
 import { getCurrentBid, getTimeRemaining } from "@/utils/auction";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { imageApi } from "@/api/image";
 
 type AuctionCardProps = {
   auction: Auction;
@@ -13,7 +15,23 @@ export function AuctionCard({ auction }: AuctionCardProps) {
   const currentBid = getCurrentBid(auction);
   const timeRemaining = getTimeRemaining(auction.end_date);
   const bidCount = auction.auctionBids?.length || 0;
-  const itemImage = auction.item?.images?.[0]?.url || "/placeholder.svg";
+
+  const [itemImageUrl, setItemImageUrl] = useState<string>("/placeholder.svg");
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const fetchedUrl = await imageApi.getImageById(auction.item.image.id);
+
+        setItemImageUrl(fetchedUrl || "/placeholder.svg");
+      } catch (error) {
+        console.error("Failed to fetch image:", error);
+        setItemImageUrl("/placeholder.svg");
+      }
+    };
+
+    fetchImage();
+  }, [auction.item.image.id]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -33,7 +51,7 @@ export function AuctionCard({ auction }: AuctionCardProps) {
       <Card className="group overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
         <div className="relative aspect-[4/3] overflow-hidden bg-muted">
           <img
-            src={itemImage}
+            src={itemImageUrl}
             alt={auction.item?.name}
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
           />
