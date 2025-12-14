@@ -1,18 +1,18 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Clock, Ticket, Users, Loader2, Filter } from "lucide-react"
-import { NavLink, useSearchParams } from "react-router"
-import { useEffect, useState, useCallback } from "react"
-import { statisticsApi } from "@/api/statistics"
-import type { BrowseStatisticsDto, PopularTagDto } from "@/types/statistics"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Clock, Ticket, Users, Loader2, Filter } from "lucide-react";
+import { NavLink, useSearchParams } from "react-router";
+import { useEffect, useState, useCallback } from "react";
+import { statisticsApi } from "@/api/statistics";
+import type { BrowseStatisticsDto, PopularTagDto } from "@/types/statistics";
 
 export default function BrowsePage() {
   const [searchParams] = useSearchParams();
   const categoryFromUrl = searchParams.get("category") || "";
-  
+
   const [data, setData] = useState<BrowseStatisticsDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,49 +22,53 @@ export default function BrowsePage() {
   const [maxPrice, setMaxPrice] = useState<string>("");
   const [selectedCondition, setSelectedCondition] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>(categoryFromUrl);
+  const [selectedCategory, setSelectedCategory] =
+    useState<string>(categoryFromUrl);
   const [activeTab, setActiveTab] = useState<string>("auctions");
 
-  const fetchData = useCallback(async (filterValues?: {
-    minPrice: string;
-    maxPrice: string;
-    condition: string;
-    status: string;
-    category: string;
-  }) => {
-    try {
-      setIsLoading(true);
-      const filters: {
-        minPrice?: number;
-        maxPrice?: number;
-        condition?: string;
-        status?: string;
-        category?: string;
-      } = {};
-      
-      const values = filterValues || {
-        minPrice,
-        maxPrice,
-        condition: selectedCondition,
-        status: selectedStatus,
-        category: selectedCategory
-      };
-      
-      if (values.minPrice) filters.minPrice = parseFloat(values.minPrice);
-      if (values.maxPrice) filters.maxPrice = parseFloat(values.maxPrice);
-      if (values.condition) filters.condition = values.condition;
-      if (values.status) filters.status = values.status;
-      if (values.category) filters.category = values.category;
+  const fetchData = useCallback(
+    async (filterValues?: {
+      minPrice: string;
+      maxPrice: string;
+      condition: string;
+      status: string;
+      category: string;
+    }) => {
+      try {
+        setIsLoading(true);
+        const filters: {
+          minPrice?: number;
+          maxPrice?: number;
+          condition?: string;
+          status?: string;
+          category?: string;
+        } = {};
 
-      const result = await statisticsApi.getBrowseStatistics(filters);
-      setData(result);
-    } catch (err) {
-      console.error("Failed to fetch browse data:", err);
-      setError("Failed to load browse data");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [minPrice, maxPrice, selectedCondition, selectedStatus, selectedCategory]);
+        const values = filterValues || {
+          minPrice,
+          maxPrice,
+          condition: selectedCondition,
+          status: selectedStatus,
+          category: selectedCategory,
+        };
+
+        if (values.minPrice) filters.minPrice = parseFloat(values.minPrice);
+        if (values.maxPrice) filters.maxPrice = parseFloat(values.maxPrice);
+        if (values.condition) filters.condition = values.condition;
+        if (values.status) filters.status = values.status;
+        if (values.category) filters.category = values.category;
+
+        const result = await statisticsApi.getBrowseStatistics(filters);
+        setData(result);
+      } catch (err) {
+        console.error("Failed to fetch browse data:", err);
+        setError("Failed to load browse data");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [minPrice, maxPrice, selectedCondition, selectedStatus, selectedCategory],
+  );
 
   const fetchPopularTags = useCallback(async () => {
     try {
@@ -97,7 +101,7 @@ export default function BrowsePage() {
       maxPrice: "",
       condition: "",
       status: "",
-      category: ""
+      category: "",
     };
     setMinPrice("");
     setMaxPrice("");
@@ -121,7 +125,9 @@ export default function BrowsePage() {
     return (
       <div className="flex min-h-screen flex-col">
         <main className="flex-1 flex items-center justify-center">
-          <p className="text-muted-foreground">{error || "No data available"}</p>
+          <p className="text-muted-foreground">
+            {error || "No data available"}
+          </p>
         </main>
       </div>
     );
@@ -133,7 +139,9 @@ export default function BrowsePage() {
         <div className="border-b bg-muted/30">
           <div className="container py-8">
             <h1 className="text-3xl font-bold tracking-tight mb-2">Browse</h1>
-            <p className="text-muted-foreground">Discover auctions and lotteries for unique items</p>
+            <p className="text-muted-foreground">
+              Discover auctions and lotteries for unique items
+            </p>
           </div>
         </div>
 
@@ -147,26 +155,32 @@ export default function BrowsePage() {
                       <Filter className="h-4 w-4" />
                       Filters
                     </h2>
-                    <Button variant="ghost" size="sm" onClick={handleClearFilters}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleClearFilters}
+                    >
                       Clear All
                     </Button>
                   </div>
 
                   <div className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium mb-3 block">Price Range</label>
+                      <label className="text-sm font-medium mb-3 block">
+                        Price Range
+                      </label>
                       <div className="flex items-center gap-2">
-                        <Input 
-                          placeholder="Min" 
-                          type="number" 
-                          min={0} 
+                        <Input
+                          placeholder="Min"
+                          type="number"
+                          min={0}
                           value={minPrice}
                           onChange={(e) => setMinPrice(e.target.value)}
                         />
                         <span className="text-muted-foreground">-</span>
-                        <Input 
-                          placeholder="Max" 
-                          type="number" 
+                        <Input
+                          placeholder="Max"
+                          type="number"
                           value={maxPrice}
                           onChange={(e) => setMaxPrice(e.target.value)}
                         />
@@ -174,7 +188,9 @@ export default function BrowsePage() {
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-3 block">Category</label>
+                      <label className="text-sm font-medium mb-3 block">
+                        Category
+                      </label>
                       <select
                         className="w-full p-2 border rounded-md bg-background"
                         value={selectedCategory}
@@ -190,7 +206,9 @@ export default function BrowsePage() {
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-3 block">Condition</label>
+                      <label className="text-sm font-medium mb-3 block">
+                        Condition
+                      </label>
                       <select
                         className="w-full p-2 border rounded-md bg-background"
                         value={selectedCondition}
@@ -205,7 +223,9 @@ export default function BrowsePage() {
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-3 block">Status</label>
+                      <label className="text-sm font-medium mb-3 block">
+                        Status
+                      </label>
                       <select
                         className="w-full p-2 border rounded-md bg-background"
                         value={selectedStatus}
@@ -228,7 +248,11 @@ export default function BrowsePage() {
             </aside>
 
             <div className="lg:col-span-3 space-y-6">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="space-y-6"
+              >
                 <TabsList className="grid w-full grid-cols-2 max-w-md">
                   <TabsTrigger value="auctions">Auctions</TabsTrigger>
                   <TabsTrigger value="lotteries">Lotteries</TabsTrigger>
@@ -237,16 +261,22 @@ export default function BrowsePage() {
                 <TabsContent value="auctions" className="space-y-6">
                   <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                     <p className="text-sm text-muted-foreground">
-                      Showing <span className="font-medium text-foreground">{data.totalAuctions}</span> auctions
+                      Showing{" "}
+                      <span className="font-medium text-foreground">
+                        {data.totalAuctions}
+                      </span>{" "}
+                      auctions
                     </p>
                   </div>
 
                   {data.auctions.length === 0 ? (
-                    <p className="text-center text-muted-foreground py-12">No auctions found</p>
+                    <p className="text-center text-muted-foreground py-12">
+                      No auctions found
+                    </p>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                       {data.auctions.map((auction) => (
-                        <NavLink key={auction.id} to={`/auctions/${auction.id}`}>
+                        <NavLink key={auction.id} to={`/auction/${auction.id}`}>
                           <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
                             <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                               <img
@@ -256,12 +286,16 @@ export default function BrowsePage() {
                               />
                               {auction.category && (
                                 <div className="absolute top-3 left-3">
-                                  <Badge variant="secondary">{auction.category}</Badge>
+                                  <Badge variant="secondary">
+                                    {auction.category}
+                                  </Badge>
                                 </div>
                               )}
                             </div>
                             <CardContent className="p-4 space-y-3">
-                              <h3 className="font-semibold line-clamp-2 leading-snug">{auction.title}</h3>
+                              <h3 className="font-semibold line-clamp-2 leading-snug">
+                                {auction.title}
+                              </h3>
                               {auction.condition && (
                                 <Badge variant="outline" className="text-xs">
                                   {auction.condition}
@@ -269,11 +303,17 @@ export default function BrowsePage() {
                               )}
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <p className="text-xs text-muted-foreground">Current Bid</p>
-                                  <p className="text-xl font-bold text-primary">${auction.currentBid.toLocaleString()}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Current Bid
+                                  </p>
+                                  <p className="text-xl font-bold text-primary">
+                                    ${auction.currentBid.toLocaleString()}
+                                  </p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-xs text-muted-foreground">Time Left</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Time Left
+                                  </p>
                                   <p className="text-sm font-semibold flex items-center gap-1">
                                     <Clock className="h-3 w-3" />
                                     {auction.endTime}
@@ -281,7 +321,9 @@ export default function BrowsePage() {
                                 </div>
                               </div>
                               <div className="pt-2 border-t">
-                                <p className="text-xs text-muted-foreground">{auction.bids} bids</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {auction.bids} bids
+                                </p>
                               </div>
                             </CardContent>
                           </Card>
@@ -294,18 +336,28 @@ export default function BrowsePage() {
                 <TabsContent value="lotteries" className="space-y-6">
                   <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                     <p className="text-sm text-muted-foreground">
-                      Showing <span className="font-medium text-foreground">{data.totalLotteries}</span> lotteries
+                      Showing{" "}
+                      <span className="font-medium text-foreground">
+                        {data.totalLotteries}
+                      </span>{" "}
+                      lotteries
                     </p>
                   </div>
 
                   {data.lotteries.length === 0 ? (
-                    <p className="text-center text-muted-foreground py-12">No lotteries found</p>
+                    <p className="text-center text-muted-foreground py-12">
+                      No lotteries found
+                    </p>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                       {data.lotteries.map((lottery) => {
-                        const sellPercentage = (lottery.soldTickets / lottery.totalTickets) * 100
+                        const sellPercentage =
+                          (lottery.soldTickets / lottery.totalTickets) * 100;
                         return (
-                          <NavLink key={lottery.id} to={`/lotteries/${lottery.id}`}>
+                          <NavLink
+                            key={lottery.id}
+                            to={`/lotteries/${lottery.id}`}
+                          >
                             <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
                               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                                 <img
@@ -321,17 +373,25 @@ export default function BrowsePage() {
                                 </div>
                                 {lottery.category && (
                                   <div className="absolute top-3 right-3">
-                                    <Badge variant="secondary">{lottery.category}</Badge>
+                                    <Badge variant="secondary">
+                                      {lottery.category}
+                                    </Badge>
                                   </div>
                                 )}
                               </div>
                               <CardContent className="p-4 space-y-3">
-                                <h3 className="font-semibold line-clamp-2 leading-snug">Lottery #{lottery.id}</h3>
+                                <h3 className="font-semibold line-clamp-2 leading-snug">
+                                  Lottery #{lottery.id}
+                                </h3>
 
                                 <div className="space-y-2">
                                   <div className="flex items-center justify-between text-sm">
-                                    <span className="text-muted-foreground">Ticket Price</span>
-                                    <span className="font-semibold text-primary">${lottery.ticketPrice}</span>
+                                    <span className="text-muted-foreground">
+                                      Ticket Price
+                                    </span>
+                                    <span className="font-semibold text-primary">
+                                      ${lottery.ticketPrice}
+                                    </span>
                                   </div>
                                 </div>
 
@@ -339,7 +399,8 @@ export default function BrowsePage() {
                                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                                     <span className="flex items-center gap-1">
                                       <Users className="h-3 w-3" />
-                                      {lottery.soldTickets} / {lottery.totalTickets} sold
+                                      {lottery.soldTickets} /{" "}
+                                      {lottery.totalTickets} sold
                                     </span>
                                     <span>{sellPercentage.toFixed(0)}%</span>
                                   </div>
@@ -361,7 +422,7 @@ export default function BrowsePage() {
                               </CardContent>
                             </Card>
                           </NavLink>
-                        )
+                        );
                       })}
                     </div>
                   )}
@@ -372,5 +433,5 @@ export default function BrowsePage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

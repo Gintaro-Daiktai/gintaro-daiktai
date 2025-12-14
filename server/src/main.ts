@@ -32,6 +32,12 @@ async function bootstrap() {
   const seeder = app.get(SeederService);
   await seeder.seedAdminUser();
 
+  // Seed database with sample data if SEED_DATABASE env variable is set to 'true'
+  const shouldSeed = configService.get<string>('SEED_DATABASE') === 'true';
+  if (shouldSeed) {
+    await seeder.seedDatabase();
+  }
+
   const port: number | undefined = configService.get<number>('PORT');
   const frontend_url: string | undefined =
     configService.get<string>('FRONTEND_URL');
