@@ -78,10 +78,7 @@ function App() {
       <Route path="/deliveries" element={<UserDeliveriesPage />} />
       <Route path="/deliveries/:id" element={<DeliveryPage />} />
       <Route path="/deliveries/:id/messages" element={<UserMessagingPage />} />
-      <Route
-        path="/deliveries/:id/dispute"
-        element={<DisputeFormPage params={{ id: "1" }} />}
-      />
+      <Route path="/deliveries/:id/dispute" element={<DisputeFormPage />} />
       <Route
         path="/admin/chargebacks"
         element={
