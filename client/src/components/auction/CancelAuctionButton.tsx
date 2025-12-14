@@ -44,6 +44,7 @@ export function CancelAuctionButton({
   return (
     <>
       <Button
+        className="cursor-pointer"
         variant="destructive"
         size="sm"
         onClick={() => setConfirmOpen(true)}
@@ -63,6 +64,7 @@ export function CancelAuctionButton({
           </DialogHeader>
           <DialogFooter className="flex gap-2">
             <Button
+              className="cursor-pointer"
               variant="outline"
               onClick={() => setConfirmOpen(false)}
               disabled={isSubmitting}
@@ -70,6 +72,7 @@ export function CancelAuctionButton({
               No, Keep It
             </Button>
             <Button
+              className="cursor-pointer"
               variant="destructive"
               onClick={handleCancel}
               disabled={isSubmitting}

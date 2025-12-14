@@ -1,14 +1,20 @@
 import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
-  IsEnum,
   IsNumber,
   IsDate,
   IsArray,
   ArrayNotEmpty,
+  MaxLength,
+  IsString,
 } from 'class-validator';
 
 export class CreateLotteryDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(255)
+  name: string;
+
   @IsDate()
   @IsNotEmpty()
   @Type(() => Date)
@@ -18,10 +24,6 @@ export class CreateLotteryDto {
   @IsNotEmpty()
   @Type(() => Date)
   end_date: Date;
-
-  @IsEnum(['created', 'started', 'sold out', 'cancelled'])
-  @IsNotEmpty()
-  lottery_status: 'created' | 'started' | 'sold out' | 'cancelled';
 
   @IsNumber()
   @IsNotEmpty()
@@ -34,5 +36,5 @@ export class CreateLotteryDto {
   @IsArray()
   @IsNumber({}, { each: true })
   @ArrayNotEmpty()
-  items: number[];
+  itemIds: number[];
 }

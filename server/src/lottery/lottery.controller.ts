@@ -1,4 +1,14 @@
-import { Body, Controller, Logger, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  ParseIntPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { LotteryService } from './lottery.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CreateLotteryDto } from './dto/createLottery.dto';
@@ -19,5 +29,19 @@ export class LotteryController {
     @User() user: UserPayload,
   ): Promise<LotteryEntity> {
     return this.lotteryService.createLottery(createLotteryDto, user);
+  }
+
+  @Get()
+  async getLotteries(): Promise<LotteryEntity[]> {
+    return this.lotteryService.findActiveLotteries();
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  async cancelLottery(
+    @Param('id', ParseIntPipe) id: number,
+    @User() userPayload: UserPayload,
+  ): Promise<LotteryEntity> {
+    return this.lotteryService.cancelLottery(id, userPayload);
   }
 }

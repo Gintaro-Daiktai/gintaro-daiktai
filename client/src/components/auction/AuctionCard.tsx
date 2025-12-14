@@ -10,6 +10,8 @@ import {
   getCurrentBid,
 } from "@/utils/auction";
 import { formatDateTime } from "@/utils/dateFormat";
+import { imageApi } from "@/api/image";
+import { useEffect, useState } from "react";
 
 interface AuctionCardProps {
   auction: Auction;
@@ -21,7 +23,23 @@ export function AuctionCard({ auction, isHot }: AuctionCardProps) {
   const bidCount = auction.auctionBids?.length || 0;
   const timeRemaining = getTimeRemaining(auction.end_date);
   const status = getAuctionStatus(auction.end_date);
-  const itemImage = auction.item?.images?.[0]?.url || "/placeholder.svg";
+
+  const [itemImageUrl, setItemImageUrl] = useState<string>("/placeholder.svg");
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const fetchedUrl = await imageApi.getImageById(auction.item.image.id);
+
+        setItemImageUrl(fetchedUrl || "/placeholder.svg");
+      } catch (error) {
+        console.error("Failed to fetch image:", error);
+        setItemImageUrl("/placeholder.svg");
+      }
+    };
+
+    fetchImage();
+  }, [auction.item.image.id]);
 
   const now = new Date().getTime();
   const start = new Date(auction.start_date).getTime();
@@ -31,7 +49,7 @@ export function AuctionCard({ auction, isHot }: AuctionCardProps) {
     <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <img
-          src={itemImage}
+          src={itemImageUrl}
           alt={auction.item?.name}
           className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
         />

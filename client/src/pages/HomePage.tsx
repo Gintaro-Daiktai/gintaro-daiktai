@@ -4,12 +4,22 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Clock } from "lucide-react";
 import { NavLink } from "react-router";
 import { statisticsApi } from "@/api/statistics";
-import type { BrowseAuctionDto, BrowseLotteryDto, PopularTagDto } from "@/types/statistics";
+import type {
+  BrowseAuctionDto,
+  BrowseLotteryDto,
+  PopularTagDto,
+} from "@/types/statistics";
 
 function HomePage() {
-  const [featuredAuctions, setFeaturedAuctions] = useState<BrowseAuctionDto[]>([]);
-  const [featuredLotteries, setFeaturedLotteries] = useState<BrowseLotteryDto[]>([]);
-  const [popularCategories, setPopularCategories] = useState<PopularTagDto[]>([]);
+  const [featuredAuctions, setFeaturedAuctions] = useState<BrowseAuctionDto[]>(
+    [],
+  );
+  const [featuredLotteries, setFeaturedLotteries] = useState<
+    BrowseLotteryDto[]
+  >([]);
+  const [popularCategories, setPopularCategories] = useState<PopularTagDto[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -20,15 +30,19 @@ function HomePage() {
           statisticsApi.getPopularTags(6),
         ]);
 
-        const shuffledAuctions = [...browseData.auctions].sort(() => Math.random() - 0.5);
+        const shuffledAuctions = [...browseData.auctions].sort(
+          () => Math.random() - 0.5,
+        );
         setFeaturedAuctions(shuffledAuctions.slice(0, 4));
 
-        const shuffledLotteries = [...browseData.lotteries].sort(() => Math.random() - 0.5);
+        const shuffledLotteries = [...browseData.lotteries].sort(
+          () => Math.random() - 0.5,
+        );
         setFeaturedLotteries(shuffledLotteries.slice(0, 3));
-        
+
         setPopularCategories(tagsData);
       } catch (error) {
-        console.error('Failed to fetch featured items:', error);
+        console.error("Failed to fetch featured items:", error);
       } finally {
         setIsLoading(false);
       }
@@ -42,7 +56,9 @@ function HomePage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading featured items...</p>
+          <p className="mt-4 text-muted-foreground">
+            Loading featured items...
+          </p>
         </div>
       </div>
     );
@@ -69,55 +85,59 @@ function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {featuredAuctions.map((auction) => (
-            <Card
-              key={auction.id}
-              className="group overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all hover:border-primary/50"
-            >
-              <NavLink to={`/auction/${auction.id}`} >
-              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <img
-                  src={auction.image || "/placeholder.svg"}
-                  alt={auction.title}
-                  className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                />
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Heart className="h-4 w-4" />
-                </Button>
-              </div>
-              <CardContent className="p-4 space-y-3">
-                <h3 className="font-semibold line-clamp-2 leading-snug">
-                  {auction.title}
-                </h3>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Current Bid</p>
-                    <p className="text-xl font-bold text-primary">
-                      ${auction.currentBid.toLocaleString()}
-                    </p>
+            {featuredAuctions.map((auction) => (
+              <Card
+                key={auction.id}
+                className="group overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all hover:border-primary/50"
+              >
+                <NavLink to={`/auction/${auction.id}`}>
+                  <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                    <img
+                      src={auction.image || "/placeholder.svg"}
+                      alt={auction.title}
+                      className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Heart className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs text-muted-foreground">Time Left</p>
-                    <p className="text-sm font-semibold flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {auction.endTime}
-                    </p>
-                  </div>
-                </div>
-                <div className="pt-2 border-t">
-                  <p className="text-xs text-muted-foreground">
-                    {auction.bids} bids
-                  </p>
-                </div>
-              </CardContent>
-              </NavLink>
-            </Card>
-          ))}
-        </div>
+                  <CardContent className="p-4 space-y-3">
+                    <h3 className="font-semibold line-clamp-2 leading-snug">
+                      {auction.title}
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-muted-foreground">
+                          Current Bid
+                        </p>
+                        <p className="text-xl font-bold text-primary">
+                          ${auction.currentBid.toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">
+                          Time Left
+                        </p>
+                        <p className="text-sm font-semibold flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {auction.endTime}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="pt-2 border-t">
+                      <p className="text-xs text-muted-foreground">
+                        {auction.bids} bids
+                      </p>
+                    </div>
+                  </CardContent>
+                </NavLink>
+              </Card>
+            ))}
+          </div>
         </div>
       )}
 
@@ -140,74 +160,76 @@ function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {featuredLotteries.map((lottery) => {
-            const percentageSold =
-              (lottery.soldTickets / lottery.totalTickets) * 100;
-            return (
-              <Card
-                key={lottery.id}
-                className="group overflow-hidden hover:shadow-xl hover:shadow-accent/5 transition-all hover:border-accent/50"
-              >
-                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                  <img
-                    src={lottery.image || "/placeholder.svg"}
-                    alt={lottery.title}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <CardContent className="p-4 space-y-3">
-                  <h3 className="font-semibold line-clamp-2 leading-snug">
-                    Lottery #{lottery.id}
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-muted-foreground">
-                        Ticket Price
-                      </p>
-                      <p className="text-xl font-bold text-accent">
-                        ${lottery.ticketPrice}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-muted-foreground">
-                        Total Tickets
-                      </p>
-                      <p className="text-sm font-semibold">
-                        {lottery.totalTickets}
-                      </p>
-                    </div>
+            {featuredLotteries.map((lottery) => {
+              const percentageSold =
+                (lottery.soldTickets / lottery.totalTickets) * 100;
+              return (
+                <Card
+                  key={lottery.id}
+                  className="group overflow-hidden hover:shadow-xl hover:shadow-accent/5 transition-all hover:border-accent/50"
+                >
+                  <div className="relative aspect-4/3 overflow-hidden bg-muted">
+                    <img
+                      src={lottery.image || "/placeholder.svg"}
+                      alt={lottery.title}
+                      className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                    />
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">
-                        {lottery.soldTickets} / {lottery.totalTickets} tickets
-                        sold
-                      </span>
-                      <span className="font-medium">
-                        {Math.round(percentageSold)}%
-                      </span>
+                  <CardContent className="p-4 space-y-3">
+                    <h3 className="font-semibold line-clamp-2 leading-snug">
+                      Lottery #{lottery.id}
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-muted-foreground">
+                          Ticket Price
+                        </p>
+                        <p className="text-xl font-bold text-accent">
+                          ${lottery.ticketPrice}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">
+                          Total Tickets
+                        </p>
+                        <p className="text-sm font-semibold">
+                          {lottery.totalTickets}
+                        </p>
+                      </div>
                     </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-accent transition-all"
-                        style={{ width: `${percentageSold}%` }}
-                      />
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">
+                          {lottery.soldTickets} / {lottery.totalTickets} tickets
+                          sold
+                        </span>
+                        <span className="font-medium">
+                          {Math.round(percentageSold)}%
+                        </span>
+                      </div>
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-accent transition-all"
+                          style={{ width: `${percentageSold}%` }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="pt-2 border-t flex items-center justify-between">
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      Ends in {lottery.endTime}
-                    </p>
-                    <Button size="sm" variant="outline" asChild>
-                      <NavLink to={`/lottery/${lottery.id}`}>Buy Tickets</NavLink>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                    <div className="pt-2 border-t flex items-center justify-between">
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        Ends in {lottery.endTime}
+                      </p>
+                      <Button size="sm" variant="outline" asChild>
+                        <NavLink to={`/lottery/${lottery.id}`}>
+                          Buy Tickets
+                        </NavLink>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
       )}
 

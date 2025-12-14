@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NavLink } from "react-router";
-import type { Review, Lottery } from "@/types/profile";
+import type { Review, LotteryForProfile } from "@/types/profile";
 import type { Auction } from "@/types/auction";
 import { AuctionCard } from "./AuctionCard";
 import { LotteryCard } from "./LotteryCard";
@@ -10,7 +10,7 @@ import { ReviewCard } from "./ReviewCard";
 
 interface ProfileTabsProps {
   auctions: Auction[];
-  lotteries: Lottery[];
+  lotteries: LotteryForProfile[];
   reviews: Review[];
   availableEmojis: string[];
   onToggleReaction: (reviewId: number, emoji: string) => void;

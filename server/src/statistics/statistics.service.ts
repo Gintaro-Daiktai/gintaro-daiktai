@@ -97,7 +97,7 @@ export class StatisticsService {
       userLotteries.length > 0
         ? await this.itemRepository.find({
             where: {
-              fk_lottery: In(userLotteries.map((l) => l.id)),
+              lottery: In(userLotteries.map((lottery) => lottery.id)),
             },
             relations: ['tags'],
           })

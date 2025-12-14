@@ -12,7 +12,7 @@ import { useProfileReviews } from "@/hooks/useProfileReviews";
 import { statisticsApi } from "@/api/statistics";
 import { useUserAuctions } from "@/hooks/useAuctions";
 import { createSafeAvatarDataUri } from "@/utils/imageValidation";
-import type { UserProfile, Lottery } from "@/types/profile";
+import type { UserProfile, LotteryForProfile } from "@/types/profile";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { BalanceCard } from "@/components/profile/BalanceCard";
 import { ProfileTabs } from "@/components/profile/ProfileTabs";
@@ -173,7 +173,7 @@ export default function ProfilePage() {
   );
 }
 
-const userLotteries: Lottery[] = [
+const userLotteries: LotteryForProfile[] = [
   {
     id: 1,
     title: "Gaming Console Bundle",

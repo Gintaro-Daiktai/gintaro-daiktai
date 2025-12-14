@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LotteryBidEntity } from './lottery_bid.entity';
 import { Repository } from 'typeorm';
 import { CreateLotteryBidDto } from './dto/createLotteryBid.dto';
-import { LotteryEntity } from 'src/lottery/lottery.entity';
 import { UserPayload } from 'src/common/interfaces/user_payload.interface';
 import { UserService } from 'src/user/user.service';
 import { LotteryService } from 'src/lottery/lottery.service';
@@ -47,11 +46,16 @@ export class LotteryBidService {
     return this.lotteryBidRepository.save(newLotteryBid);
   }
 
-  async findLotteryBidsByLottery(
-    lottery: LotteryEntity,
+  async findLotteryBidsByLotteryId(
+    lotteryId: number,
   ): Promise<LotteryBidEntity[]> {
+    const lottery = await this.lotteryService.findLotteryById(lotteryId);
+
+    if (!lottery)
+      throw new NotFoundException(`No lottery with ID ${lotteryId}.`);
+
     return await this.lotteryBidRepository.find({
-      where: { lottery: lottery },
+      where: { lottery: { id: lotteryId } },
       relations: { user: true },
     });
   }

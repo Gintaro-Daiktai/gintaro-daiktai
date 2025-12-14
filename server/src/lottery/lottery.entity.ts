@@ -8,11 +8,16 @@ import {
 } from 'typeorm';
 import { LotteryBidEntity } from '../lottery_bid/lottery_bid.entity';
 import { UserEntity } from '../user/user.entity';
+import { ItemEntity } from '../item/item.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'lottery' })
 export class LotteryEntity {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  name: string;
 
   @Column({ type: 'timestamp', nullable: false })
   start_date: Date;
@@ -37,10 +42,10 @@ export class LotteryEntity {
 
   @Column({
     type: 'enum',
-    enum: ['created', 'started', 'sold out', 'cancelled'],
+    enum: ['created', 'started', 'sold out', 'cancelled', 'finished'],
     nullable: false,
   })
-  lottery_status: 'created' | 'started' | 'sold out' | 'cancelled';
+  lottery_status: 'created' | 'started' | 'sold out' | 'cancelled' | 'finished';
 
   @ManyToOne(() => UserEntity, (user) => user.lotteries, {
     nullable: false,
@@ -51,4 +56,8 @@ export class LotteryEntity {
 
   @OneToMany(() => LotteryBidEntity, (lotteryBid) => lotteryBid.lottery)
   lotteryBids: LotteryBidEntity[];
+
+  @OneToMany(() => ItemEntity, (item) => item.lottery)
+  @Exclude()
+  items: ItemEntity[];
 }

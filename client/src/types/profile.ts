@@ -36,7 +36,7 @@ export type Auction = {
   image: string;
 };
 
-export type Lottery = {
+export type LotteryForProfile = {
   id: number;
   title: string;
   ticketPrice: number;
