@@ -107,6 +107,30 @@ export const authApi = {
     });
     return response;
   },
+
+  getAllSellers: async (): Promise<
+    Array<{
+      id: number;
+      name: string;
+      last_name: string;
+      registration_date: string;
+      avatar?: string;
+    }>
+  > => {
+    const response = await apiClient<
+      Array<{
+        id: number;
+        name: string;
+        last_name: string;
+        registration_date: string;
+        avatar?: string;
+      }>
+    >("/users/sellers/all", {
+      method: "GET",
+      requiresAuth: false,
+    });
+    return response;
+  },
 };
 
 // React Query Hooks
@@ -198,4 +222,12 @@ export const useLogout = () => {
     queryClient.clear();
     window.location.href = "/";
   };
+};
+
+export const useAllSellers = () => {
+  return useQuery({
+    queryKey: ["users", "sellers"],
+    queryFn: authApi.getAllSellers,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 };

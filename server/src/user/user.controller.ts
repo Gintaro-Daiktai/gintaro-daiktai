@@ -64,6 +64,22 @@ export class UserController {
     }));
   }
 
+  @Get('sellers/all')
+  async getAllSellers(): Promise<any> {
+    const users = await this.userService.findAllUsers();
+    return users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      last_name: user.last_name,
+      registration_date: user.registration_date,
+      avatar: user.avatar
+        ? Buffer.isBuffer(user.avatar)
+          ? user.avatar.toString('base64')
+          : user.avatar
+        : undefined,
+    }));
+  }
+
   @Get(':id')
   async getUserById(
     @User() user: UserPayload,

@@ -21,7 +21,13 @@ function Header() {
               to="/browse"
               className="text-sm font-medium hover:text-primary transition-colors"
             >
-              Browse                
+              Browse
+            </NavLink>
+            <NavLink
+              to="/sellers"
+              className="text-sm font-medium hover:text-primary transition-colors"
+            >
+              Sellers
             </NavLink>
             <NavLink
               to="/auctions"

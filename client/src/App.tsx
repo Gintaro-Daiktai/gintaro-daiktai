@@ -27,6 +27,7 @@ import LotteryEditPage from "./pages/LotteryEditPage";
 import ChargebackPage from "./pages/ChargebackPage";
 import AuctionsPage from "./pages/AuctionsPage";
 import AuctionPage from "./pages/AuctionPage";
+import SellersPage from "./pages/SellersPage";
 
 function App() {
   const { isLoading } = useAuth();
@@ -62,6 +63,7 @@ function App() {
       <Route path="/lotterieslist" element={<LotteriesList />} />
       <Route path="/userstats" element={<UserStatisticsPage />} />
       <Route path="/browse" element={<BrowsePage />} />
+      <Route path="/sellers" element={<SellersPage />} />
       <Route path="/auctions" element={<AuctionsPage />} />
       <Route path="/auction/:id" element={<AuctionPage />} />
       <Route path="/items" element={<MyItemsPage />} />
