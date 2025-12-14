@@ -161,7 +161,7 @@ export default function DeliveryDetailPage() {
                 variant="outline"
                 className="gap-2 bg-transparent"
               >
-                <NavLink to={`/messages?userId=${delivery.sender.id}`}>
+                <NavLink to={`/deliveries/${id}/messages`}>
                   <MessageSquare className="h-4 w-4" />
                   Message Seller
                 </NavLink>

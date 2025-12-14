@@ -77,11 +77,11 @@ function App() {
       <Route path="/review/create" element={<ReviewPage />} />
       <Route path="/deliveries" element={<UserDeliveriesPage />} />
       <Route path="/deliveries/:id" element={<DeliveryPage />} />
+      <Route path="/deliveries/:id/messages" element={<UserMessagingPage />} />
       <Route
         path="/deliveries/:id/dispute"
         element={<DisputeFormPage params={{ id: "1" }} />}
       />
-      <Route path="/messages" element={<UserMessagingPage />} />
       <Route
         path="/admin/chargebacks"
         element={

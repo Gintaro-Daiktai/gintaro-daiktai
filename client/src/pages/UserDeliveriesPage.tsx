@@ -2,14 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Package,
-  Truck,
-  CheckCircle,
-  Clock,
-  Calendar,
-  MessageSquare,
-} from "lucide-react";
+import { Package, Truck, CheckCircle, Clock, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "react-router";
 import { deliveryApi } from "@/api/delivery";
@@ -130,19 +123,11 @@ export default function UserDeliveriesPage() {
         <div className="container py-12 space-y-8">
           {/* Page Header */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Package className="h-6 w-6 text-primary" />
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-                  My Deliveries
-                </h1>
-              </div>
-              <Button asChild className="gap-2">
-                <NavLink to="/messages">
-                  <MessageSquare className="h-4 w-4" />
-                  Messages
-                </NavLink>
-              </Button>
+            <div className="flex items-center gap-2">
+              <Package className="h-6 w-6 text-primary" />
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                My Deliveries
+              </h1>
             </div>
             <p className="text-muted-foreground">
               Track all your won items from auctions and lotteries
