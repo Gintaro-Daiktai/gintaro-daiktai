@@ -5,9 +5,6 @@ export class RenameUserTable1763410733275 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "address" DROP CONSTRAINT "FK_08ca36829097b08d3b780d4337d"`,
-    );
-    await queryRunner.query(
       `ALTER TABLE "auction_bid" DROP CONSTRAINT "FK_fdcc45c564ecf859108fe1e3291"`,
     );
     await queryRunner.query(
@@ -48,9 +45,6 @@ export class RenameUserTable1763410733275 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE TABLE "users" ("id" SERIAL NOT NULL, "name" character varying(255) NOT NULL, "last_name" character varying(255) NOT NULL, "password" character varying(255) NOT NULL, "email" character varying(255) NOT NULL, "phone_number" character varying(255) NOT NULL, "balance" double precision NOT NULL, "confirmed" boolean NOT NULL DEFAULT false, "registration_date" TIMESTAMP NOT NULL DEFAULT now(), "birth_date" TIMESTAMP NOT NULL, "avatar" bytea, "role" "public"."users_role_enum" NOT NULL, CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "address" ADD CONSTRAINT "FK_08ca36829097b08d3b780d4337d" FOREIGN KEY ("fk_user") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "auction_bid" ADD CONSTRAINT "FK_fdcc45c564ecf859108fe1e3291" FOREIGN KEY ("fk_user") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
@@ -127,9 +121,6 @@ export class RenameUserTable1763410733275 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "auction_bid" DROP CONSTRAINT "FK_fdcc45c564ecf859108fe1e3291"`,
     );
-    await queryRunner.query(
-      `ALTER TABLE "address" DROP CONSTRAINT "FK_08ca36829097b08d3b780d4337d"`,
-    );
     await queryRunner.query(`DROP TABLE "users"`);
     await queryRunner.query(`DROP TYPE "public"."users_role_enum"`);
     await queryRunner.query(
@@ -167,9 +158,6 @@ export class RenameUserTable1763410733275 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "auction_bid" ADD CONSTRAINT "FK_fdcc45c564ecf859108fe1e3291" FOREIGN KEY ("fk_user") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "address" ADD CONSTRAINT "FK_08ca36829097b08d3b780d4337d" FOREIGN KEY ("fk_user") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
   }
 }
