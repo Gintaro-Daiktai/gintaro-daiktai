@@ -15,7 +15,7 @@ export class ChargebackRequestEntity {
   @Column({ type: 'text', nullable: false })
   reason: string;
 
-  @Column({ type: 'boolean', nullable: false })
+  @Column({ type: 'boolean', nullable: true, default: null })
   confirmed: boolean;
 
   @ManyToOne(() => DeliveryEntity, (delivery) => delivery.chargebackRequests, {

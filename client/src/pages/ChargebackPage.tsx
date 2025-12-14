@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,114 +13,87 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Check, X } from "lucide-react";
-import { useState } from "react";
-
-type ChargebackRequest = {
-  id: string;
-  userId: string;
-  userName: string;
-  userAvatar: string;
-  itemId: string;
-  itemTitle: string;
-  itemImage: string;
-  amount: number;
-  reason: string;
-  status: "pending" | "approved" | "denied";
-  requestedAt: string;
-};
+import { Check, X, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { chargebackApi } from "@/api/chargeback";
+import type { ChargebackRequest } from "@/types/chargeback";
 
 export default function ChargebackPage() {
-  const [chargebacks, setChargebacks] = useState<ChargebackRequest[]>([
-    {
-      id: "cb-001",
-      userId: "user-123",
-      userName: "Sarah Mitchell",
-      userAvatar: "/diverse-user-avatars.png",
-      itemId: "item-456",
-      itemTitle: "Vintage Rolex Submariner 1960s",
-      itemImage: "/vintage-rolex-watch.jpg",
-      amount: 12500,
-      reason:
-        "Item received was not as described. The watch case shows significant wear that was not mentioned in the listing photos or description. The crystal is also scratched.",
-      status: "pending",
-      requestedAt: "2 days ago",
-    },
-    {
-      id: "cb-002",
-      userId: "user-789",
-      userName: "Michael Chen",
-      userAvatar: "/diverse-user-avatars.png",
-      itemId: "item-321",
-      itemTitle: "Original iPhone 2007 Sealed",
-      itemImage: "/original-iphone-sealed.jpg",
-      amount: 8900,
-      reason:
-        "Package arrived damaged and the seal on the iPhone box was broken. This contradicts the 'sealed' description in the auction listing.",
-      status: "pending",
-      requestedAt: "5 days ago",
-    },
-    {
-      id: "cb-003",
-      userId: "user-456",
-      userName: "Emma Rodriguez",
-      userAvatar: "/diverse-user-avatars.png",
-      itemId: "item-654",
-      itemTitle: "Designer Handbag Limited Edition",
-      itemImage: "/luxury-quilted-handbag.png",
-      amount: 3800,
-      reason:
-        "Received a counterfeit item. The stitching, hardware, and serial number don't match authentic products from this brand.",
-      status: "pending",
-      requestedAt: "1 week ago",
-    },
-  ]);
+  const [chargebacks, setChargebacks] = useState<ChargebackRequest[]>([]);
+  const [processingId, setProcessingId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const [processingId, setProcessingId] = useState<string | null>(null);
+  useEffect(() => {
+    loadChargebacks();
+  }, []);
 
-  const handleApprove = async (chargebackId: string) => {
-    setProcessingId(chargebackId);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setChargebacks((prev) =>
-      prev.map((cb) =>
-        cb.id === chargebackId ? { ...cb, status: "approved" as const } : cb,
-      ),
-    );
-    setProcessingId(null);
+  const loadChargebacks = async () => {
+    try {
+      setLoading(true);
+      const data = await chargebackApi.getAllChargebackRequests();
+      setChargebacks(data);
+    } catch (error) {
+      console.error("Failed to load chargebacks:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeny = async (chargebackId: string) => {
+  const handleApprove = async (chargebackId: number) => {
     setProcessingId(chargebackId);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setChargebacks((prev) =>
-      prev.map((cb) =>
-        cb.id === chargebackId ? { ...cb, status: "denied" as const } : cb,
-      ),
-    );
-    setProcessingId(null);
+    try {
+      await chargebackApi.resolveChargebackRequest(chargebackId, {
+        confirmed: true,
+      });
+      setChargebacks((prev) => prev.filter((cb) => cb.id !== chargebackId));
+    } catch (error) {
+      console.error("Failed to approve chargeback:", error);
+    } finally {
+      setProcessingId(null);
+    }
   };
 
-  const pendingChargebacks = chargebacks.filter(
-    (cb) => cb.status === "pending",
-  );
-  const processedChargebacks = chargebacks.filter(
-    (cb) => cb.status !== "pending",
-  );
+  const handleDeny = async (chargebackId: number) => {
+    setProcessingId(chargebackId);
+    try {
+      await chargebackApi.resolveChargebackRequest(chargebackId, {
+        confirmed: false,
+      });
+      setChargebacks((prev) => prev.filter((cb) => cb.id !== chargebackId));
+    } catch (error) {
+      console.error("Failed to deny chargeback:", error);
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const getInitials = (name: string, lastName: string) => {
+    return `${name[0]}${lastName[0]}`.toUpperCase();
+  };
+
+  if (loading) {
+    return (
+      <main className="flex-1">
+        <div className="container py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex-1">
       <div className="container py-8">
-        {/* Pending Requests */}
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-bold mb-4">Pending Requests</h2>
-            {pendingChargebacks.length > 0 ? (
+            <h2 className="text-2xl font-bold mb-4">
+              Pending Chargeback Requests
+            </h2>
+            {chargebacks.length > 0 ? (
               <div className="space-y-4">
-                {pendingChargebacks.map((chargeback) => (
+                {chargebacks.map((chargeback) => (
                   <Card key={chargeback.id} className="border-primary/20">
                     <CardContent className="p-6">
                       <div className="space-y-4">
@@ -128,31 +101,25 @@ export default function ChargebackPage() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-10 w-10">
-                              <AvatarImage
-                                src={
-                                  chargeback.userAvatar || "/placeholder.svg"
-                                }
-                              />
                               <AvatarFallback>
-                                {chargeback.userName[0]}
+                                {getInitials(
+                                  chargeback.delivery.receiver.name,
+                                  chargeback.delivery.receiver.last_name,
+                                )}
                               </AvatarFallback>
                             </Avatar>
                             <div>
                               <p className="font-semibold">
-                                {chargeback.userName}
+                                {chargeback.delivery.receiver.name}{" "}
+                                {chargeback.delivery.receiver.last_name}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                User ID: {chargeback.userId}
+                                User ID: {chargeback.delivery.receiver.id}
                               </p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-muted-foreground">
-                              Requested
-                            </p>
-                            <p className="text-sm font-medium">
-                              {chargeback.requestedAt}
-                            </p>
+                            <p className="text-xs text-muted-foreground"></p>
                           </div>
                         </div>
 
@@ -160,28 +127,60 @@ export default function ChargebackPage() {
 
                         {/* Item Info */}
                         <div className="flex gap-4">
-                          <img
-                            src={chargeback.itemImage || "/placeholder.svg"}
-                            alt={chargeback.itemTitle}
-                            className="h-24 w-24 object-cover rounded-lg"
-                          />
+                          <div className="h-24 w-24 bg-muted rounded-lg flex items-center justify-center">
+                            <p className="text-xs text-muted-foreground text-center px-2">
+                              {chargeback.delivery.item.name}
+                            </p>
+                          </div>
                           <div className="flex-1">
                             <p className="text-left text-sm text-muted-foreground mb-1">
                               Item
                             </p>
                             <p className="text-left font-semibold mb-2">
-                              {chargeback.itemTitle}
+                              {chargeback.delivery.item.name}
                             </p>
                             <div className="flex items-center gap-2">
                               <Badge variant="secondary">
-                                Item ID: {chargeback.itemId}
+                                Item ID: {chargeback.delivery.item.id}
                               </Badge>
                               <Badge
                                 variant="outline"
-                                className="bg-destructive/10 text-destructive border-destructive/20"
+                                className={
+                                  chargeback.delivery.order_status ===
+                                  "delivered"
+                                    ? "bg-green-500/10 text-green-500 border-green-500/20"
+                                    : "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                                }
                               >
-                                ${chargeback.amount.toLocaleString()}
+                                {chargeback.delivery.order_status}
                               </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-2">
+                              {chargeback.delivery.item.description}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Delivery Info */}
+                        <div className="bg-muted/30 rounded-lg p-3">
+                          <p className="text-sm font-medium mb-2">
+                            Delivery Information
+                          </p>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div>
+                              <p className="text-muted-foreground">Sender:</p>
+                              <p className="font-medium">
+                                {chargeback.delivery.sender.name}{" "}
+                                {chargeback.delivery.sender.last_name}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-muted-foreground">
+                                Delivery ID:
+                              </p>
+                              <p className="font-medium">
+                                {chargeback.delivery.id}
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -206,7 +205,11 @@ export default function ChargebackPage() {
                                 className="flex-1 bg-green-600 hover:bg-green-700"
                                 disabled={processingId === chargeback.id}
                               >
-                                <Check className="h-4 w-4 mr-2" />
+                                {processingId === chargeback.id ? (
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                ) : (
+                                  <Check className="h-4 w-4 mr-2" />
+                                )}
                                 Approve Chargeback
                               </Button>
                             </AlertDialogTrigger>
@@ -216,10 +219,11 @@ export default function ChargebackPage() {
                                   Approve Chargeback Request?
                                 </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  This will refund $
-                                  {chargeback.amount.toLocaleString()} to{" "}
-                                  {chargeback.userName} and mark this chargeback
-                                  as approved. This action cannot be undone.
+                                  This will approve the chargeback request from{" "}
+                                  {chargeback.delivery.receiver.name}{" "}
+                                  {chargeback.delivery.receiver.last_name} for
+                                  the item "{chargeback.delivery.item.name}".
+                                  This action cannot be undone.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
@@ -241,7 +245,11 @@ export default function ChargebackPage() {
                                 className="flex-1"
                                 disabled={processingId === chargeback.id}
                               >
-                                <X className="h-4 w-4 mr-2" />
+                                {processingId === chargeback.id ? (
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                ) : (
+                                  <X className="h-4 w-4 mr-2" />
+                                )}
                                 Deny Chargeback
                               </Button>
                             </AlertDialogTrigger>
@@ -252,8 +260,9 @@ export default function ChargebackPage() {
                                 </AlertDialogTitle>
                                 <AlertDialogDescription>
                                   This will reject the chargeback request from{" "}
-                                  {chargeback.userName}. No refund will be
-                                  processed. This action cannot be undone.
+                                  {chargeback.delivery.receiver.name}{" "}
+                                  {chargeback.delivery.receiver.last_name}. This
+                                  action cannot be undone.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
@@ -285,48 +294,6 @@ export default function ChargebackPage() {
               </Card>
             )}
           </div>
-
-          {/* Processed Requests */}
-          {processedChargebacks.length > 0 && (
-            <div>
-              <h2 className="text-2xl font-bold mb-4">Recently Processed</h2>
-              <div className="space-y-3">
-                {processedChargebacks.map((chargeback) => (
-                  <Card key={chargeback.id} className="opacity-60">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <img
-                            src={chargeback.itemImage || "/placeholder.svg"}
-                            alt={chargeback.itemTitle}
-                            className="h-16 w-16 object-cover rounded-lg"
-                          />
-                          <div>
-                            <p className="font-semibold">
-                              {chargeback.itemTitle}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {chargeback.userName}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <p className="font-semibold">
-                            ${chargeback.amount.toLocaleString()}
-                          </p>
-                          {chargeback.status === "approved" ? (
-                            <Badge className="bg-green-500">Approved</Badge>
-                          ) : (
-                            <Badge variant="destructive">Denied</Badge>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </main>
