@@ -33,7 +33,7 @@ export function AuctionBidList({ bids }: AuctionBidListProps) {
               </div>
               <div>
                 <p className="text-sm font-medium">
-                  {bid.user?.username || `User #${bid.user?.id}`}
+                  {bid.user?.name || `User #${bid.user?.id}`}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {getTimeAgo(bid.bid_date)}

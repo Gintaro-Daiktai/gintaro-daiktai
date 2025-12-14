@@ -107,7 +107,7 @@ export class AuctionService {
 
   async findAuctionById(
     id: number,
-    relations: Record<string, boolean> = {},
+    relations: Record<string, boolean | Record<string, boolean>> = {},
   ): Promise<AuctionResponseDto | null> {
     const auction = await this.auctionRepository.findOne({
       where: { id },

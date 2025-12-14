@@ -1,6 +1,5 @@
 export interface AuctionUser {
   id: number;
-  username: string;
   name: string;
   surname: string;
   profile_picture: string;

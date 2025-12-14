@@ -48,7 +48,9 @@ export class AuctionController {
     const auction = await this.auctionService.findAuctionById(id, {
       user: true,
       item: true,
-      auctionBids: true,
+      auctionBids: {
+        user: true,
+      },
     });
 
     if (!auction) {
