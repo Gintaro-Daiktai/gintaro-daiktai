@@ -185,7 +185,7 @@ export interface BrowseLotteryDto {
   totalTickets: number;
   soldTickets: number;
   endTime: string;
-  image: string | null;
+  image: number;
   category?: string;
 }
 
