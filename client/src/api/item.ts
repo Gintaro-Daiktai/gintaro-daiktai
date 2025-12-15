@@ -24,6 +24,13 @@ export const itemApi = {
     });
   },
 
+  getAssignedItems: async (): Promise<Item[]> => {
+    return apiClient<Item[]>(`/items?unassigned=false`, {
+      method: "GET",
+      requiresAuth: true,
+    });
+  },
+
   createItem: async (
     data: UpdateItemDto,
     imageFile: File,

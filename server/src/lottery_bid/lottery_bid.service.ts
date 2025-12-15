@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LotteryBidEntity } from './lottery_bid.entity';
 import { Repository } from 'typeorm';
@@ -6,6 +11,7 @@ import { CreateLotteryBidDto } from './dto/createLotteryBid.dto';
 import { UserPayload } from 'src/common/interfaces/user_payload.interface';
 import { UserService } from 'src/user/user.service';
 import { LotteryService } from 'src/lottery/lottery.service';
+import { UserEntity } from 'src/user/user.entity';
 
 @Injectable()
 export class LotteryBidService {
@@ -14,6 +20,8 @@ export class LotteryBidService {
   constructor(
     @InjectRepository(LotteryBidEntity)
     private readonly lotteryBidRepository: Repository<LotteryBidEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private readonly userService: UserService,
     private readonly lotteryService: LotteryService,
   ) {}
@@ -34,7 +42,17 @@ export class LotteryBidService {
       throw new NotFoundException('Lottery not found.');
     }
 
-    // TODO: add logic for verifying wallet and holding money.
+    if (
+      user.balance <
+      lottery.ticket_price * createLotteryBidDto.ticket_count
+    ) {
+      throw new BadRequestException(
+        `Insufficient balance. Required: $${lottery.ticket_price * createLotteryBidDto.ticket_count}, Available: ${user.balance}`,
+      );
+    }
+
+    user.balance -= lottery.ticket_price * createLotteryBidDto.ticket_count;
+    await this.userRepository.save(user);
 
     const newLotteryBid = this.lotteryBidRepository.create({
       ...createLotteryBidDto,

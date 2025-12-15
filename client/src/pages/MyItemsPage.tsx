@@ -9,21 +9,25 @@ import { CreateItemDialog } from "@/components/item/CreateItemDialog";
 import type { Tag } from "@/types/tag";
 import { tagApi } from "@/api/tag";
 import { imageApi } from "@/api/image";
+import { ViewItemDialog } from "@/components/item/ViewItemDialog";
 
 export default function MyItemsPage() {
-  const [items, setItems] = useState<Item[]>([]);
+  const [unassignedItems, setUnassignedItems] = useState<Item[]>([]);
   const [imageUrls, setImageUrls] = useState<Record<number, string>>({});
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<string[]>([]);
 
+  const [viewItemDialogOpen, setViewItemDialogOpen] = useState<boolean>(false);
+  const [viewItem, setViewItem] = useState<Item>();
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  const fetchItems = async (): Promise<Item[]> => {
+  const fetchUnassignedItems = async (): Promise<Item[]> => {
     try {
-      return itemApi.getItems();
+      return itemApi.getUnassignedItems();
     } catch (err) {
       let errorMessage = "An unknown error occurred while fetching items.";
 
@@ -81,8 +85,8 @@ export default function MyItemsPage() {
     setLoading(true);
     setErrors([]);
 
-    const items = await fetchItems();
-    setItems(items);
+    const items = await fetchUnassignedItems();
+    setUnassignedItems(items);
     const tags = await fetchTags();
     setTags(tags);
     const images = await fetchImages(items);
@@ -93,6 +97,11 @@ export default function MyItemsPage() {
 
   const updateItemMutation = useUpdateItem();
   const deleteItemMutation = useDeleteItem();
+
+  const handleItemView = async (item: Item) => {
+    setViewItem(item);
+    setViewItemDialogOpen(true);
+  };
 
   const handleItemCreate = async (
     createItemDto: CreateItemDto,
@@ -142,6 +151,15 @@ export default function MyItemsPage() {
             </div>
           </div>
 
+          {viewItem && (
+            <ViewItemDialog
+              isOpen={viewItemDialogOpen}
+              onOpenChange={setViewItemDialogOpen}
+              item={viewItem}
+              itemImageUrl={imageUrls[viewItem.id]}
+            ></ViewItemDialog>
+          )}
+
           <div className="container py-8 space-y-8">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
@@ -158,7 +176,7 @@ export default function MyItemsPage() {
               </CardHeader>
 
               <CardContent>
-                {items.length === 0 ? (
+                {unassignedItems.length === 0 ? (
                   <div className="text-center py-12">
                     <p className="text-muted-foreground mb-4">
                       No items yet...
@@ -175,51 +193,54 @@ export default function MyItemsPage() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {items.map((item) => (
-                      <Card
-                        key={item.id}
-                        className="p-0 group overflow-hidden hover:shadow-lg transition-shadow text-left cursor-pointer gap-0"
-                      >
-                        <div className="relative aspect-4/3 overflow-hidden bg-muted cursor-pointer">
-                          <img
-                            src={imageUrls[item.id] || "/placeholder.svg"}
-                            alt={item.name}
-                            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                        <CardContent className="p-4 space-y-4">
-                          <h3 className="font-semibold line-clamp-2 leading-snug cursor-pointer hover:text-primary transition-colors">
-                            {item.name}
-                          </h3>
-                          <p className="line-clamp-2 leading-snug cursor-pointer">
-                            {item.description}
-                          </p>
-                          <div className="flex justify-end-safe gap-2">
-                            <EditItemDialog
-                              currentItem={item}
-                              availableTags={tags}
-                              onSave={handleItemUpdate}
-                              onDelete={handleItemDelete}
-                            >
-                              <Button
-                                className="cursor-pointer"
-                                variant={"outline"}
-                              >
-                                <EditIcon className="h-4 w-4" />
-                                Edit
-                              </Button>
-                            </EditItemDialog>
-                            <Button
-                              className="cursor-pointer text-red-500"
-                              variant={"outline"}
-                              onClick={() => handleItemDelete(item.id)}
-                            >
-                              <Trash2Icon className="h-4 w-4" />
-                              Delete
-                            </Button>
+                    {unassignedItems.map((item) => (
+                      <>
+                        <Card
+                          key={item.id}
+                          className="p-0 group overflow-hidden hover:shadow-lg transition-shadow text-left cursor-pointer gap-0"
+                          onClick={() => handleItemView(item)}
+                        >
+                          <div className="relative aspect-4/3 overflow-hidden bg-muted cursor-pointer">
+                            <img
+                              src={imageUrls[item.id] || "/placeholder.svg"}
+                              alt={item.name}
+                              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                            />
                           </div>
-                        </CardContent>
-                      </Card>
+                          <CardContent className="p-4 space-y-4">
+                            <h3 className="font-semibold line-clamp-2 leading-snug cursor-pointer hover:text-primary transition-colors">
+                              {item.name}
+                            </h3>
+                            <p className="line-clamp-2 leading-snug cursor-pointer">
+                              {item.description}
+                            </p>
+                            <div className="flex justify-end-safe gap-2">
+                              <EditItemDialog
+                                currentItem={item}
+                                availableTags={tags}
+                                onSave={handleItemUpdate}
+                                onDelete={handleItemDelete}
+                              >
+                                <Button
+                                  className="cursor-pointer"
+                                  variant={"outline"}
+                                >
+                                  <EditIcon className="h-4 w-4" />
+                                  Edit
+                                </Button>
+                              </EditItemDialog>
+                              <Button
+                                className="cursor-pointer text-red-500"
+                                variant={"outline"}
+                                onClick={() => handleItemDelete(item.id)}
+                              >
+                                <Trash2Icon className="h-4 w-4" />
+                                Delete
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </>
                     ))}
                   </div>
                 )}

@@ -9,6 +9,7 @@ import type {
   BrowseLotteryDto,
   PopularTagDto,
 } from "@/types/statistics";
+import { imageApi } from "@/api/image";
 
 function HomePage() {
   const [featuredAuctions, setFeaturedAuctions] = useState<BrowseAuctionDto[]>(
@@ -21,6 +22,7 @@ function HomePage() {
     [],
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [imageUrls, setImageUrls] = useState<Record<number, string>>({});
 
   useEffect(() => {
     const fetchFeaturedItems = async () => {
@@ -39,6 +41,9 @@ function HomePage() {
           () => Math.random() - 0.5,
         );
         setFeaturedLotteries(shuffledLotteries.slice(0, 3));
+        console.log(shuffledLotteries);
+        const images = await fetchImages(shuffledLotteries);
+        setImageUrls(images);
 
         setPopularCategories(tagsData);
       } catch (error) {
@@ -50,6 +55,26 @@ function HomePage() {
 
     fetchFeaturedItems();
   }, []);
+
+  const fetchImages = async (
+    lotteryItemsToLoad: BrowseLotteryDto[],
+  ): Promise<Record<number, string>> => {
+    const urls: Record<number, string> = {};
+
+    await Promise.all(
+      lotteryItemsToLoad.map(async (item) => {
+        if (item.image) {
+          try {
+            urls[item.image] = await imageApi.getImageById(item.image);
+          } catch (err) {
+            console.error(`Failed to load image for item ${item.id}`, err);
+          }
+        }
+      }),
+    );
+
+    return urls;
+  };
 
   if (isLoading) {
     return (
@@ -170,14 +195,14 @@ function HomePage() {
                 >
                   <div className="relative aspect-4/3 overflow-hidden bg-muted">
                     <img
-                      src={lottery.image || "/placeholder.svg"}
+                      src={imageUrls[lottery.image] || "/placeholder.svg"}
                       alt={lottery.title}
                       className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <CardContent className="p-4 space-y-3">
                     <h3 className="font-semibold line-clamp-2 leading-snug">
-                      Lottery #{lottery.id}
+                      {lottery.title}
                     </h3>
                     <div className="flex items-center justify-between">
                       <div>

@@ -99,7 +99,7 @@ export class ItemService {
 
     return this.itemRepository.find({
       where: { user },
-      relations: { tags: true, image: true },
+      relations: { tags: true, image: true, lottery: true, auction: true },
     });
   }
 

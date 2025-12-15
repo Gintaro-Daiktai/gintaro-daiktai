@@ -23,7 +23,7 @@ export class BrowseLotteryDto {
   totalTickets: number;
   soldTickets: number;
   endTime: string;
-  image: string | null;
+  image: number | null;
   category?: string;
 }
 

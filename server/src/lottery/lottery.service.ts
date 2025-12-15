@@ -12,6 +12,7 @@ import { UserPayload } from 'src/common/interfaces/user_payload.interface';
 import { UserService } from 'src/user/user.service';
 import { ItemService } from 'src/item/item.service';
 import { DataSource, In, Repository } from 'typeorm';
+import { LotterySchedulerService } from 'src/lottery-scheduler/lottery-scheduler.service';
 
 @Injectable()
 export class LotteryService {
@@ -23,6 +24,7 @@ export class LotteryService {
     @InjectRepository(LotteryEntity)
     private readonly lotteryRepository: Repository<LotteryEntity>,
     private readonly userService: UserService,
+    private readonly lotterySchedulerService: LotterySchedulerService,
     private readonly itemService: ItemService,
   ) {}
 
@@ -53,6 +55,8 @@ export class LotteryService {
         user,
       });
       const savedLottery = await manager.save(lottery);
+
+      this.lotterySchedulerService.scheduleLotteryJobs(savedLottery);
 
       items.forEach((item) => (item.lottery = savedLottery));
       await manager.save(items);

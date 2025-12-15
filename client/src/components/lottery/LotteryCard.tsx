@@ -101,7 +101,7 @@ export function LotteryCard({
             {timeRemaining}
           </p>
           <Button size="sm" asChild>
-            <Link to={`/lotteries/${lottery.id}`}>View Details</Link>
+            <Link to={`/lottery/${lottery.id}`}>View Details</Link>
           </Button>
         </div>
       </CardContent>

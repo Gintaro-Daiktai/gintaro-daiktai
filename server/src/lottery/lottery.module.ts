@@ -5,9 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { LotteryEntity } from './lottery.entity';
 import { UserModule } from 'src/user/user.module';
 import { ItemModule } from 'src/item/item.module';
+import { LotterySchedulerModule } from 'src/lottery-scheduler/lottery-scheduler.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LotteryEntity]), UserModule, ItemModule],
+  imports: [
+    TypeOrmModule.forFeature([LotteryEntity]),
+    UserModule,
+    ItemModule,
+    LotterySchedulerModule,
+  ],
   controllers: [LotteryController],
   providers: [LotteryService],
   exports: [LotteryService],

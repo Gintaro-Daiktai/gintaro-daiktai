@@ -49,6 +49,7 @@ export interface LotteryItemDto {
 
 export interface LotteryListItemDto {
   id: number;
+  name: string;
   ticketPrice: number;
   ticketsSold: number;
   totalTickets: number;
@@ -185,7 +186,7 @@ export interface BrowseLotteryDto {
   totalTickets: number;
   soldTickets: number;
   endTime: string;
-  image: string | null;
+  image: string;
   category?: string;
 }
 

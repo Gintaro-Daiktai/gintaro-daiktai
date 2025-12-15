@@ -41,4 +41,12 @@ export const lotteryApi = {
     });
     return auction;
   },
+
+  cancelLottery: async (lotteryId: number): Promise<Lottery> => {
+    const auction = await apiClient<Lottery>(`/lotteries/${lotteryId}`, {
+      method: "DELETE",
+      requiresAuth: true,
+    });
+    return auction;
+  },
 };

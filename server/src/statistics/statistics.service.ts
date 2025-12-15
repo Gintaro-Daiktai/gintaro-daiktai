@@ -254,6 +254,7 @@ export class StatisticsService {
 
         return {
           id: lottery.id,
+          name: lottery.name,
           ticketPrice: Math.round(lottery.ticket_price * 100) / 100,
           ticketsSold,
           totalTickets,
@@ -499,7 +500,7 @@ export class StatisticsService {
 
     return {
       lotteryId: lottery.id,
-      title: 'Lottery Item',
+      title: lottery.name,
       totalRevenue: Math.round(totalRevenue * 100) / 100,
       ticketPrice: Math.round(ticketPrice * 100) / 100,
       ticketsSold,
@@ -814,6 +815,8 @@ export class StatisticsService {
 
     const lotteryQuery = this.lotteryRepository
       .createQueryBuilder('lottery')
+      .leftJoinAndSelect('lottery.items', 'item')
+      .leftJoinAndSelect('item.image', 'image')
       .leftJoinAndSelect('lottery.lotteryBids', 'lotteryBids')
       .where('lottery.lottery_status IN (:...statuses)', {
         statuses: ['started', 'created'],
@@ -922,12 +925,12 @@ export class StatisticsService {
 
       return {
         id: lottery.id,
-        title: 'Lottery Item',
+        title: lottery.name,
         ticketPrice: Math.round(lottery.ticket_price * 100) / 100,
         totalTickets: lottery.total_tickets,
         soldTickets,
         endTime,
-        image: null,
+        image: lottery.items[0].id,
         category: undefined,
       };
     });

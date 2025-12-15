@@ -22,12 +22,13 @@ import { Link } from "react-router-dom";
 import { apiClient } from "@/api/client";
 import { auctionApi } from "@/api/auction";
 import { toast } from "sonner";
+import { imageApi } from "@/api/image";
 
 interface UserItem {
   id: number;
   name: string;
   description: string;
-  images: { id: number; url: string }[];
+  image: { id: number };
 }
 
 interface CreateAuctionDialogProps {
@@ -44,6 +45,7 @@ export function CreateAuctionDialog({
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<string>("");
   const [userItems, setUserItems] = useState<UserItem[]>([]);
+  const [imageUrls, setImageUrls] = useState<Record<number, string>>({});
   const [loadingItems, setLoadingItems] = useState(false);
 
   const [auctionForm, setAuctionForm] = useState({
@@ -62,17 +64,39 @@ export function CreateAuctionDialog({
   const loadUserItems = async () => {
     try {
       setLoadingItems(true);
-      const items = await apiClient<UserItem[]>("/items", {
+      const items = await apiClient<UserItem[]>("/items?unassigned=true", {
         method: "GET",
         requiresAuth: true,
       });
+      const imageUrls = await fetchImages(items);
       setUserItems(items);
+      setImageUrls(imageUrls);
     } catch (error) {
       console.error("Failed to load items:", error);
       toast.error("Failed to load your items");
     } finally {
       setLoadingItems(false);
     }
+  };
+
+  const fetchImages = async (
+    itemsToLoad: UserItem[],
+  ): Promise<Record<number, string>> => {
+    const urls: Record<number, string> = {};
+
+    await Promise.all(
+      itemsToLoad.map(async (item) => {
+        if (item.image) {
+          try {
+            urls[item.image.id] = await imageApi.getImageById(item.image.id);
+          } catch (err) {
+            console.error(`Failed to load image for item ${item.id}`, err);
+          }
+        }
+      }),
+    );
+
+    return urls;
   };
 
   const handleCreateAuctionClick = () => {
@@ -208,7 +232,7 @@ export function CreateAuctionDialog({
                     <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                       <img
                         src={
-                          selectedItem.images?.[0]?.url || "/placeholder.svg"
+                          imageUrls[selectedItem.image.id] || "/placeholder.svg"
                         }
                         alt="Selected item"
                         className="w-full h-full object-cover"

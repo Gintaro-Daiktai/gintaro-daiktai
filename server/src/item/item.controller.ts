@@ -13,6 +13,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Query,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { ItemService } from './item.service';
 import { CreateItemDto } from './dto/createItem.dto';
@@ -66,15 +67,17 @@ export class ItemController {
   @UseGuards(JwtAuthGuard)
   async getItems(
     @User() userPayload: UserPayload,
-    @Query('unassigned') unassigned?: boolean,
+    @Query('unassigned', ParseBoolPipe) unassigned?: boolean,
   ): Promise<ItemEntity[]> {
     const items = await this.itemService.findItemsByUser(userPayload);
 
-    if (unassigned) {
-      const unassignedItems = items.filter(
-        (item) => !item.lottery && !item.auction,
+    if (unassigned !== undefined) {
+      const filteredItems = items.filter((item) =>
+        unassigned
+          ? !item.lottery && !item.auction
+          : (item.lottery && !item.auction) || (!item.lottery && item.auction),
       );
-      return plainToInstance(ItemEntity, unassignedItems);
+      return plainToInstance(ItemEntity, filteredItems);
     }
 
     return plainToInstance(ItemEntity, items);

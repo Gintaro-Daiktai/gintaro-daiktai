@@ -216,7 +216,7 @@ export class SeederService {
 
         // Create a simple placeholder image
         const imageBuffer = Buffer.from(
-          `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==`,
+          `iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==`,
           'base64',
         );
         const image = this.imageRepository.create({
