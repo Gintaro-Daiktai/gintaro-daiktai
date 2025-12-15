@@ -36,6 +36,17 @@ export class LotteryController {
     return this.lotteryService.findActiveLotteries();
   }
 
+  @Get(':id')
+  async getLotteryById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<LotteryEntity | null> {
+    return this.lotteryService.findLotteryById(id, {
+      items: true,
+      lotteryBids: true,
+      user: true,
+    });
+  }
+
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   async cancelLottery(

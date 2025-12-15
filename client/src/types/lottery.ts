@@ -21,7 +21,7 @@ export interface Lottery {
   ticket_price: number;
   start_date: string;
   end_date: string;
-  lottery_status: "created" | "started" | "sold out" | "cancelled";
+  lottery_status: "created" | "started" | "sold out" | "cancelled" | "finished";
   user: LotteryUser;
   items: Item[];
   lotteryBids: LotteryBid[];
@@ -42,6 +42,6 @@ export interface CreateLotteryDto {
 }
 
 export interface CreateLotteryBidDto {
-  lotteryId: number;
+  lottery: number;
   ticket_count: number;
 }
