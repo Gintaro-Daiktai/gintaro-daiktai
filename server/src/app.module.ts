@@ -24,6 +24,7 @@ import { VerificationModule } from './verification/verification.module';
 import { EmailModule } from './email/email.module';
 import { StripeModule } from './stripe/stripe.module';
 import { StatisticsModule } from './statistics/statistics.module';
+import { LotterySchedulerModule } from './lottery-scheduler/lottery-scheduler.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { StatisticsModule } from './statistics/statistics.module';
     AuctionModule,
     AuctionBidModule,
     AuctionSchedulerModule,
+    LotterySchedulerModule,
     ReviewModule,
     ReviewEmoteModule,
     DeliveryModule,

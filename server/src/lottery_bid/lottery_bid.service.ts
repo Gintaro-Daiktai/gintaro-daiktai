@@ -11,6 +11,7 @@ import { CreateLotteryBidDto } from './dto/createLotteryBid.dto';
 import { UserPayload } from 'src/common/interfaces/user_payload.interface';
 import { UserService } from 'src/user/user.service';
 import { LotteryService } from 'src/lottery/lottery.service';
+import { UserEntity } from 'src/user/user.entity';
 
 @Injectable()
 export class LotteryBidService {
@@ -19,6 +20,8 @@ export class LotteryBidService {
   constructor(
     @InjectRepository(LotteryBidEntity)
     private readonly lotteryBidRepository: Repository<LotteryBidEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private readonly userService: UserService,
     private readonly lotteryService: LotteryService,
   ) {}
@@ -48,7 +51,8 @@ export class LotteryBidService {
       );
     }
 
-    // TODO: add logic for verifying wallet and holding money.
+    user.balance -= lottery.ticket_price * createLotteryBidDto.ticket_count;
+    await this.userRepository.save(user);
 
     const newLotteryBid = this.lotteryBidRepository.create({
       ...createLotteryBidDto,

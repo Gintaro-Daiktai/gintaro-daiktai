@@ -29,7 +29,7 @@ export default function LotteryPage() {
 
   const isOwner = lottery?.user?.id === user?.id;
 
-  const isActive = new Date(lottery.start_date) <= new Date();
+  const isActive = new Date(lottery.end_date) > new Date();
   const canBid = !isOwner && isActive;
   const canCancel = isOwner && !(lottery?.lottery_status === "finished");
 
