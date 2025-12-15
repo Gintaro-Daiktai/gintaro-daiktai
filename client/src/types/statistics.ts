@@ -49,6 +49,7 @@ export interface LotteryItemDto {
 
 export interface LotteryListItemDto {
   id: number;
+  name: string;
   ticketPrice: number;
   ticketsSold: number;
   totalTickets: number;

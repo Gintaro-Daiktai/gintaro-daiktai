@@ -254,6 +254,7 @@ export class StatisticsService {
 
         return {
           id: lottery.id,
+          name: lottery.name,
           ticketPrice: Math.round(lottery.ticket_price * 100) / 100,
           ticketsSold,
           totalTickets,
