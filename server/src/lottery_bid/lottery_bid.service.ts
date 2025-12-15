@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LotteryBidEntity } from './lottery_bid.entity';
 import { Repository } from 'typeorm';
@@ -32,6 +37,15 @@ export class LotteryBidService {
     );
     if (!lottery) {
       throw new NotFoundException('Lottery not found.');
+    }
+
+    if (
+      user.balance <
+      lottery.ticket_price * createLotteryBidDto.ticket_count
+    ) {
+      throw new BadRequestException(
+        `Insufficient balance. Required: $${lottery.ticket_price * createLotteryBidDto.ticket_count}, Available: ${user.balance}`,
+      );
     }
 
     // TODO: add logic for verifying wallet and holding money.
